@@ -1,9 +1,43 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# CULT.URE Project Development Rules
 
-## This is NOT the Next.js you know
+## Project
+Premium personal branding agency website.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+## Tech Stack
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS v4
+- GSAP when required
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+## Brand Identity
+- White: #FFFFFF
+- Black: #000000
+- Burgundy: #240C0E
+- Premium editorial design
+- Minimal and sophisticated UI
 
-<!-- END:nextjs-agent-rules -->
+## Development Rules
+
+1. Always inspect existing code before editing.
+2. Never rewrite unrelated components.
+3. Follow existing project architecture.
+4. Build responsive components by default.
+5. Use reusable components where practical.
+6. Avoid unnecessary dependencies.
+7. Use semantic HTML and proper TypeScript.
+8. Ensure every button and link works.
+9. Optimize images, videos and animations.
+10. Respect prefers-reduced-motion.
+11. Avoid generic AI-generated UI patterns.
+12. Maintain consistent spacing, typography and colors.
+
+## Workflow
+
+- Implement directly when requirements are clear.
+- Do not provide lengthy plans before simple tasks.
+- Ask questions only when important requirements are missing.
+- Do not wait for approval for routine implementation.
+- Run relevant checks after changes.
+- Report modified files and remaining issues briefly.
+- Never claim tests passed without running them.
