@@ -14,14 +14,16 @@ export default function CinematicIntro({
   onComplete,
 }: CinematicIntroProps) {
   const [showBrand, setShowBrand] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() => {
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    );
-
-    setReducedMotion(mediaQuery.matches);
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
     const handleMotionChange = (event: MediaQueryListEvent) => {
       setReducedMotion(event.matches);
@@ -36,7 +38,6 @@ export default function CinematicIntro({
 
   useEffect(() => {
     if (reducedMotion) {
-      setShowBrand(true);
       onComplete?.();
       return;
     }
@@ -48,6 +49,8 @@ export default function CinematicIntro({
 
     return () => window.clearTimeout(timer);
   }, [reducedMotion, onComplete]);
+
+  const isBrandVisible = reducedMotion || showBrand;
 
   return (
     <section
@@ -75,7 +78,7 @@ export default function CinematicIntro({
       />
 
       {/* Brand Reveal */}
-      <BrandReveal visible={showBrand} />
+      <BrandReveal visible={isBrandVisible} />
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">

@@ -113,7 +113,7 @@ export const RippleButton = React.forwardRef<
       event: MouseEvent<HTMLButtonElement | HTMLAnchorElement>
     ) => {
       createRipple(event);
-      onClick?.(event as any);
+      onClick?.(event as unknown as MouseEvent<HTMLButtonElement>);
     };
 
     const rippleElements = (
@@ -143,7 +143,7 @@ export const RippleButton = React.forwardRef<
           className={baseClasses}
           onClick={handleClick}
           ref={ref as React.Ref<HTMLAnchorElement>}
-          {...(props as any)}
+          {...(props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
         >
           <span className="relative z-10 flex items-center gap-[inherit] text-[inherit]">
             {children}

@@ -109,11 +109,11 @@ export default function Navbar({
         return;
       }
 
-      if (currentScroll <= 20) {
+      if (pathname === "/" && currentScroll <= 20) {
         hide();
       } else if (delta < -4) {
         reveal();
-      } else if (delta > 5) {
+      } else if (delta > 5 && currentScroll > 80) {
         hide();
       }
 
@@ -132,8 +132,8 @@ export default function Navbar({
       passive: true,
     });
 
-    // Initial state.
-    if (!introActive && window.scrollY > 20) {
+    // Initial state: reveal immediately on subpages or when intro is passed
+    if (pathname !== "/" || (!introActive && window.scrollY > 20)) {
       reveal();
     }
 
@@ -141,7 +141,7 @@ export default function Navbar({
       window.removeEventListener("scroll", handleScroll);
       gsap.killTweensOf(header);
     };
-  }, []);
+  }, [introActive, pathname]);
 
   // Mobile menu animation.
   const openMenu = useCallback(() => {
@@ -410,7 +410,7 @@ export default function Navbar({
               rippleColor="rgba(255, 255, 255, 0.45)"
               className="flex w-full items-center justify-between rounded-full bg-[#240C0E] px-7 py-5 text-xs uppercase tracking-[0.2em] text-white transition-colors hover:bg-[#3A1518]"
             >
-              <span>Let's Talk</span>
+              <span>Let&apos;s Talk</span>
               <span>↗</span>
             </RippleButton>
 

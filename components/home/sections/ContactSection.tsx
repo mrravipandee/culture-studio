@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { RippleButton } from "@/registry/magicui/ripple-button";
 import { contact } from "@/lib/content/home";
