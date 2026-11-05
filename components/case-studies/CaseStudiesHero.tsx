@@ -47,3 +47,4 @@ export default function CaseStudiesHero() {
     </section>
   );
 }
+
