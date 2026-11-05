@@ -51,14 +51,14 @@ export const heroPillars = [
 
 export const heroMedia: { primary: HeroImage; secondary: HeroImage } = {
   primary: {
-    src: null, // e.g. "/images/hero/portrait.jpg" (portrait, ≥1600px tall)
-    alt: "",
-    caption: undefined,
-    focus: "50% 35%",
+    src: "/images/hero/portrait.jpg",
+    alt: "Executive portrait for CULT.URE editorial practice",
+    caption: "CULT.URE / 2026",
+    focus: "50% 30%",
   },
   secondary: {
-    src: null, // e.g. "/images/hero/detail.jpg" (portrait detail, ≥800px tall)
-    alt: "",
+    src: "/images/hero/detail.jpg",
+    alt: "Architectural monograph detail",
     focus: "50% 50%",
   },
 };

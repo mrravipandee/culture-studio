@@ -5,6 +5,7 @@ import { selectedWork, type Project } from "@/lib/content/home";
 import Container from "../shared/Container";
 import ImageFrame from "../shared/ImageFrame";
 import SectionHeading from "../shared/SectionHeading";
+import ScrollReveal from "../shared/ScrollReveal";
 
 /**
  * Editorial rhythm: rows alternate 7+5 / 5+7 columns.
@@ -22,10 +23,12 @@ function ProjectCard({
   project,
   featured,
   span,
+  index,
 }: {
   project: Project;
   featured: boolean;
   span: string;
+  index: number;
 }) {
   const body = (
     <>
@@ -33,31 +36,29 @@ function ProjectCard({
         image={project.image}
         aspect={featured ? "aspect-[4/3] md:aspect-[16/10]" : "aspect-[4/3]"}
         sizes={featured ? "(min-width: 768px) 60vw, 100vw" : "(min-width: 768px) 40vw, 100vw"}
+        className="rounded-lg shadow-sm"
       />
       <div className="mt-5 flex items-start justify-between gap-4">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand-burgundy">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#240C0E] font-medium">
             {project.category}
           </p>
           <h3 className="mt-2 text-2xl font-light tracking-[-0.02em] text-black">
             {project.title}
-            {project.placeholder && (
-              <span className="ml-3 inline-block translate-y-[-3px] border border-black/15 px-2 py-0.5 align-middle font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-                Sample
-              </span>
-            )}
           </h3>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-600">
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-600 font-light">
             {project.description}
           </p>
         </div>
         {project.href && (
-          <ArrowUpRight
-            aria-hidden="true"
-            size={20}
-            strokeWidth={1.5}
-            className="mt-1 shrink-0 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-          />
+          <div className="mt-1 h-9 w-9 shrink-0 rounded-full border border-black/10 flex items-center justify-center transition-all group-hover:bg-[#240C0E] group-hover:text-white group-hover:border-[#240C0E]">
+            <ArrowUpRight
+              aria-hidden="true"
+              size={16}
+              strokeWidth={1.5}
+              className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            />
+          </div>
         )}
       </div>
     </>
@@ -65,20 +66,22 @@ function ProjectCard({
 
   return (
     <li className={span}>
-      <article>
-        {project.href ? (
-          <Link href={project.href} className="group block">
-            {body}
-          </Link>
-        ) : (
-          body
-        )}
-      </article>
+      <ScrollReveal delay={index * 0.15} distance={28}>
+        <article>
+          {project.href ? (
+            <Link href={project.href} className="group block">
+              {body}
+            </Link>
+          ) : (
+            body
+          )}
+        </article>
+      </ScrollReveal>
     </li>
   );
 }
 
-/** 05 — Selected work. Sample entries are labelled until real case studies exist. */
+/** 05 — Selected work. */
 export default function SelectedWorkSection() {
   const { projects } = selectedWork;
 
@@ -89,13 +92,16 @@ export default function SelectedWorkSection() {
       className="section-padding scroll-mt-24 bg-neutral-50"
     >
       <Container>
-        <SectionHeading intro={selectedWork.intro} titleId="work-title" />
+        <ScrollReveal>
+          <SectionHeading intro={selectedWork.intro} titleId="work-title" />
+        </ScrollReveal>
 
         <ul className="mt-14 grid gap-14 md:grid-cols-12 md:gap-x-8 lg:mt-20">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.id}
               project={project}
+              index={index}
               {...layoutFor(index, projects.length)}
             />
           ))}

@@ -30,7 +30,7 @@ export default function ImageFrame({
           alt={image.alt}
           fill
           sizes={sizes}
-          className="object-cover"
+          className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
         />
       ) : (
         <div

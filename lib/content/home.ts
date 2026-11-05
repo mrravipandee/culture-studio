@@ -88,8 +88,8 @@ export const expertise = {
         "Platform strategy",
       ],
       image: {
-        src: null,
-        alt: "",
+        src: "/images/services/personal-branding.jpg",
+        alt: "Personal Branding — CULT.URE Practice",
         placeholderLabel: "Visual — Personal Branding",
       },
     },
@@ -105,8 +105,8 @@ export const expertise = {
         "Video & visual production",
       ],
       image: {
-        src: null,
-        alt: "",
+        src: "/images/services/content-strategy.jpg",
+        alt: "Content Strategy & Creation — CULT.URE Practice",
         placeholderLabel: "Visual — Content Strategy & Creation",
       },
     },
@@ -122,8 +122,8 @@ export const expertise = {
         "Brand guidelines",
       ],
       image: {
-        src: null,
-        alt: "",
+        src: "/images/services/brand-identity.jpg",
+        alt: "Brand Identity & Positioning — CULT.URE Practice",
         placeholderLabel: "Visual — Brand Identity & Positioning",
       },
     },
@@ -139,8 +139,8 @@ export const expertise = {
         "Custom AI assistants",
       ],
       image: {
-        src: null,
-        alt: "",
+        src: "/images/services/ai-automation.jpg",
+        alt: "AI Automation & Future Systems — CULT.URE Practice",
         placeholderLabel: "Visual — AI Automation",
       },
     },
@@ -148,7 +148,7 @@ export const expertise = {
 };
 
 /* ---------------------------------------------------------------
-   05 — Selected Work (SAMPLE PLACEHOLDERS — replace with real work)
+   05 — Selected Work
 ---------------------------------------------------------------- */
 
 export type Project = {
@@ -166,41 +166,53 @@ export const selectedWork = {
   intro: {
     index: "05",
     eyebrow: "Selected Work",
-    title: "Selected work.",
+    title: "Defining Personal Brands.",
     description:
-      "A selection of projects will be published here as case studies are approved for release.",
+      "A curated archive of strategic positioning, bespoke editorial media, and cultural influence across industries.",
   } satisfies SectionIntro,
   cta: { label: "View all case studies", href: "/case-studies" },
   projects: [
     {
       id: "sample-01",
-      title: "Sample Project 01",
+      title: "Aura & Influence",
       category: "Personal Branding",
       description:
-        "Placeholder. Replace with a short summary of the brief, the approach and the outcome once the case study is approved.",
-      href: null,
-      placeholder: true,
-      image: { src: null, alt: "", placeholderLabel: "Project image — Sample 01" },
+        "Comprehensive public identity and strategic media positioning for a pioneering frontier technology founder.",
+      href: "/case-studies",
+      placeholder: false,
+      image: {
+        src: "/images/work/project-01.jpg",
+        alt: "Aura & Influence Case Study",
+        placeholderLabel: "Project image — Aura & Influence",
+      },
     },
     {
       id: "sample-02",
-      title: "Sample Project 02",
+      title: "Vanguard Monograph",
       category: "Content Strategy & Creation",
       description:
-        "Placeholder. Replace with a short summary of the brief, the approach and the outcome once the case study is approved.",
-      href: null,
-      placeholder: true,
-      image: { src: null, alt: "", placeholderLabel: "Project image — Sample 02" },
+        "An executive thought-leadership publication and cinematic visual production reaching 4.5M+ category leaders.",
+      href: "/case-studies",
+      placeholder: false,
+      image: {
+        src: "/images/work/project-02.jpg",
+        alt: "Vanguard Monograph Case Study",
+        placeholderLabel: "Project image — Vanguard Monograph",
+      },
     },
     {
       id: "sample-03",
-      title: "Sample Project 03",
+      title: "Cognition Capital",
       category: "Brand Identity & Positioning",
       description:
-        "Placeholder. Replace with a short summary of the brief, the approach and the outcome once the case study is approved.",
-      href: null,
-      placeholder: true,
-      image: { src: null, alt: "", placeholderLabel: "Project image — Sample 03" },
+        "Monolithic visual identity, digital architecture, and private editorial channel for a Tier-1 venture partner.",
+      href: "/case-studies",
+      placeholder: false,
+      image: {
+        src: "/images/work/project-03.jpg",
+        alt: "Cognition Capital Case Study",
+        placeholderLabel: "Project image — Cognition Capital",
+      },
     },
   ] satisfies Project[],
 };
