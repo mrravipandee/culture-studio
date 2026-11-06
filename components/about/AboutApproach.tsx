@@ -70,3 +70,4 @@ export default function AboutApproach() {
     </section>
   );
 }
+

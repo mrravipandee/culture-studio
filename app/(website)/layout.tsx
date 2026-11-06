@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SmoothScroll from "@/components/motion/SmoothScroll";
 
 export const metadata: Metadata = {
   title: "CULT.URE | Beyond the Noise. Into the Culture.",
@@ -13,6 +14,7 @@ export default function WebsiteLayout({
 }) {
   return (
     <div className="relative min-h-screen bg-white text-black selection:bg-[#240c0e] selection:text-white">
+      <SmoothScroll />
       {children}
     </div>
   );

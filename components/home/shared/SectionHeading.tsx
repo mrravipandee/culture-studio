@@ -1,4 +1,5 @@
 import type { SectionIntro } from "@/lib/content/home";
+import SplitWords from "@/components/motion/SplitWords";
 
 interface SectionHeadingProps {
   intro: SectionIntro;
@@ -39,11 +40,11 @@ export default function SectionHeading({
 
       <h2
         id={titleId}
-        className={`font-serif text-4xl leading-[1.02] tracking-[-0.03em] text-balance sm:text-5xl lg:col-span-7 lg:text-6xl ${
+        className={`text-4xl font-semibold tracking-[-0.035em] text-balance sm:text-5xl lg:col-span-7 lg:text-6xl ${
           dark ? "text-white" : "text-black"
         }`}
       >
-        {intro.title}
+        <SplitWords text={intro.title} />
       </h2>
 
       {intro.description && (

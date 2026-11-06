@@ -57,3 +57,4 @@ export default function AboutPrinciples() {
     </section>
   );
 }
+

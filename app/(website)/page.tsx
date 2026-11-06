@@ -7,6 +7,7 @@ import ThinkingSection from "@/components/home/sections/ThinkingSection";
 import ProcessSection from "@/components/home/sections/ProcessSection";
 import WhyCultureSection from "@/components/home/sections/WhyCultureSection";
 import ClientVoicesSection from "@/components/home/sections/ClientVoicesSection";
+import TaglineReveal from "@/components/motion/TaglineReveal";
 import ContactSection from "@/components/home/sections/ContactSection";
 
 /**
@@ -26,6 +27,14 @@ export default function HomePage() {
         <ManifestoSection />
         {/* 04 */}
         <ExpertiseSection />
+        {/* Tagline moment */}
+        <TaglineReveal
+          eyebrow="What we believe"
+          lines={[
+            "Your reputation walks into the room before you do.",
+            "We make sure it says the right thing.",
+          ]}
+        />
         {/* 05 */}
         <SelectedWorkSection />
         {/* 06 */}

@@ -24,16 +24,16 @@
     --burgundy: #240c0e;
 
     /* Typography */
-    --font-body: Arial, Helvetica, sans-serif;
-    --font-display: Georgia, "Times New Roman", serif;
+    --font-body: var(--font-manrope), system-ui, sans-serif;
+    --font-display: var(--font-manrope), system-ui, sans-serif;
 
     /* Layout */
     --container-width: 1440px;
     --page-padding: 5%;
 
     /* Transitions */
-    --transition-fast: 200ms ease;
-    --transition-normal: 350ms ease;
+    --transition-fast: 300ms cubic-bezier(0.22, 1, 0.36, 1);
+    --transition-normal: 500ms cubic-bezier(0.22, 1, 0.36, 1);
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
     --card: oklch(1 0 0);
@@ -83,7 +83,7 @@
     --color-brand-black: var(--black);
     --color-brand-burgundy: var(--burgundy);
 
-    --font-sans: var(--font-geist-sans);
+    --font-sans: var(--font-manrope);
     --font-serif: var(--font-display);
     --font-mono: var(--font-geist-mono);
     --font-heading: var(--font-sans);
@@ -150,7 +150,7 @@
         margin: 0;
         min-height: 100vh;
 
-        font-family: var(--font-geist-sans), Arial, sans-serif;
+        font-family: var(--font-manrope), system-ui, sans-serif;
 
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
@@ -528,7 +528,7 @@
 .hero-word--serif,
 .hero-word--accent {
     font-family: var(--font-display);
-    font-style: italic;
+    font-style: normal;
     font-weight: 400;
     letter-spacing: -0.035em;
 }
@@ -678,7 +678,7 @@
     letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--black);
-    transition: color 300ms ease;
+    transition: color 300ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .hero-link__label {
@@ -965,7 +965,7 @@
 
 .hero-card-plate__line {
     font-family: var(--font-display);
-    font-style: italic;
+    font-style: normal;
     font-size: clamp(1rem, 1.6vw, 1.5rem);
     line-height: 1.05;
     letter-spacing: -0.02em;
@@ -1095,4 +1095,40 @@
         transform: none;
         height: 40%;
     }
+}
+/* ========================================
+   MOTION SYSTEM
+======================================== */
+
+/* Single upright typeface: no italics anywhere. */
+.italic,
+em,
+i {
+    font-style: normal;
+}
+
+h1, h2, h3 {
+    text-wrap: balance;
+}
+
+p {
+    text-wrap: pretty;
+}
+
+/* Lenis smooth scroll */
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+html.lenis {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+    overflow: clip;
+}
+
+.lenis [data-lenis-prevent] {
+    overscroll-behavior: contain;
 }

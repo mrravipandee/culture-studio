@@ -1,7 +1,7 @@
 "use client";
 
 import React, { type ReactNode } from "react";
-import { motion, type HTMLMotionProps } from "motion/react";
+import { motion, useReducedMotion, type HTMLMotionProps } from "motion/react";
 
 interface ScrollRevealProps extends HTMLMotionProps<"div"> {
   children: ReactNode;
@@ -13,6 +13,15 @@ interface ScrollRevealProps extends HTMLMotionProps<"div"> {
   staggerChildren?: number;
 }
 
+const OFFSETS = {
+  up: (d: number) => ({ x: 0, y: d }),
+  down: (d: number) => ({ x: 0, y: -d }),
+  left: (d: number) => ({ x: d, y: 0 }),
+  right: (d: number) => ({ x: -d, y: 0 }),
+  none: () => ({ x: 0, y: 0 }),
+};
+
+/** Rise + fade once on entering the viewport. Opacity only under reduced motion. */
 export default function ScrollReveal({
   children,
   className = "",
@@ -23,42 +32,18 @@ export default function ScrollReveal({
   staggerChildren,
   ...props
 }: ScrollRevealProps) {
-  const getInitialOffset = () => {
-    switch (direction) {
-      case "up":
-        return { y: distance, x: 0 };
-      case "down":
-        return { y: -distance, x: 0 };
-      case "left":
-        return { x: distance, y: 0 };
-      case "right":
-        return { x: -distance, y: 0 };
-      case "none":
-      default:
-        return { x: 0, y: 0 };
-    }
-  };
-
-  const initial = {
-    opacity: 0,
-    ...getInitialOffset(),
-  };
-
-  const animate = {
-    opacity: 1,
-    x: 0,
-    y: 0,
-  };
+  const reduce = useReducedMotion();
+  const offset = reduce ? OFFSETS.none() : OFFSETS[direction](distance);
 
   return (
     <motion.div
-      initial={initial}
-      whileInView={animate}
+      initial={{ opacity: 0, ...offset }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
       viewport={{ once: true, margin: "-10% 0px" }}
       transition={{
         duration,
         delay,
-        ease: [0.16, 1, 0.3, 1],
+        ease: [0.22, 1, 0.36, 1],
         staggerChildren,
       }}
       className={className}
@@ -68,4 +53,3 @@ export default function ScrollReveal({
     </motion.div>
   );
 }
-
