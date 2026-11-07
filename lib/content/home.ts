@@ -177,6 +177,10 @@ export type Project = {
   href: string | null;
   placeholder: boolean;
   image: ContentImage;
+  year?: string;
+  tags?: string[];
+  scope?: string;
+  stat?: string;
 };
 
 export const selectedWork = {
@@ -195,10 +199,14 @@ export const selectedWork = {
       category: "Personal Branding",
       description:
         "Comprehensive public identity and strategic media positioning for a pioneering frontier technology founder.",
-      href: "/case-studies",
+      href: "/case-studies/aura-and-influence",
       placeholder: false,
+      year: "2026",
+      scope: "Frontier AI Pioneer",
+      stat: "Keynote & Global Narrative",
+      tags: ["Personal Branding", "Executive Narrative", "Film"],
       image: {
-        src: "/images/work/project-01.jpg",
+        src: "/images/work/featured.jpg",
         alt: "Aura & Influence Case Study",
         placeholderLabel: "Project image — Aura & Influence",
       },
@@ -209,8 +217,12 @@ export const selectedWork = {
       category: "Content Strategy & Creation",
       description:
         "An executive thought-leadership publication and cinematic visual production reaching 4.5M+ category leaders.",
-      href: "/case-studies",
+      href: "/case-studies/vanguard-monograph",
       placeholder: false,
+      year: "2025",
+      scope: "Venture Capital Partner",
+      stat: "4.5M+ Global Readers",
+      tags: ["Content Strategy", "Monograph Publication", "Essays"],
       image: {
         src: "/images/work/project-02.jpg",
         alt: "Vanguard Monograph Case Study",
@@ -223,12 +235,34 @@ export const selectedWork = {
       category: "Brand Identity & Positioning",
       description:
         "Monolithic visual identity, digital architecture, and private editorial channel for a Tier-1 venture partner.",
-      href: "/case-studies",
+      href: "/case-studies/cognition-capital",
       placeholder: false,
+      year: "2025",
+      scope: "Deep Tech Syndicate",
+      stat: "Private Syndicate Access",
+      tags: ["Brand Identity", "Digital Flagship", "Typography"],
       image: {
         src: "/images/work/project-03.jpg",
         alt: "Cognition Capital Case Study",
         placeholderLabel: "Project image — Cognition Capital",
+      },
+    },
+    {
+      id: "sample-04",
+      title: "The Synthesist",
+      category: "Executive Presence & AI",
+      description:
+        "Multi-platform presence architecture utilizing proprietary cognitive workflows to transform breakthroughs into cultural narrative.",
+      href: "/case-studies/the-synthesist",
+      placeholder: false,
+      year: "2026",
+      scope: "Biotech & Longevity Chair",
+      stat: "Cognitive AI Systems",
+      tags: ["Executive Presence", "AI Workflows", "Monograph"],
+      image: {
+        src: "/images/work/project-04.jpg",
+        alt: "The Synthesist Case Study",
+        placeholderLabel: "Project image — The Synthesist",
       },
     },
   ] satisfies Project[],
