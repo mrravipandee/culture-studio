@@ -34,10 +34,12 @@ export function ArchitecturalDialVector({ className = "" }: { className?: string
       {/* Coordinate ticks along circumference */}
       {Array.from({ length: 24 }).map((_, i) => {
         const angle = (i * 15 * Math.PI) / 180;
-        const x1 = 300 + Math.cos(angle) * 232;
-        const y1 = 300 + Math.sin(angle) * 232;
-        const x2 = 300 + Math.cos(angle) * 240;
-        const y2 = 300 + Math.sin(angle) * 240;
+        // Rounded so server and browser render identical attributes (no hydration mismatch).
+        const r3 = (n: number) => Math.round(n * 1000) / 1000;
+        const x1 = r3(300 + Math.cos(angle) * 232);
+        const y1 = r3(300 + Math.sin(angle) * 232);
+        const x2 = r3(300 + Math.cos(angle) * 240);
+        const y2 = r3(300 + Math.sin(angle) * 240);
         return (
           <line
             key={i}

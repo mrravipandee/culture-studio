@@ -1043,6 +1043,58 @@
 .svc:not([data-mode="static"]) .svc__of { display: none; }
 
 /* ========================================
+   FOOTER WORDMARK  (components/navigation/FooterWordmark.tsx)
+   Quiet outline; colour only inside a soft spotlight under the cursor.
+======================================== */
+
+.footer-mark {
+    --x: 50%;
+    --y: 50%;
+    position: relative;
+    overflow: hidden;
+    padding: 1.5rem 0 3vw;
+    text-align: center;
+    white-space: nowrap;
+    user-select: none;
+    font-weight: 600;
+    font-size: 17.5vw;
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+}
+
+.footer-mark__base,
+.footer-mark__spot {
+    display: block;
+}
+
+.footer-mark__base {
+    color: rgb(255 255 255 / 0.03);
+    -webkit-text-stroke: 1px rgb(255 255 255 / 0.12);
+}
+
+.footer-mark__spot {
+    position: absolute;
+    inset: 1.5rem 0 3vw;
+    color: transparent;
+    background-image: radial-gradient(
+        circle 16vw at var(--x) calc(var(--y) - 1.5rem),
+        var(--white) 0%,
+        color-mix(in oklab, var(--burgundy) 45%, var(--white)) 35%,
+        color-mix(in oklab, var(--burgundy) 70%, var(--white)) 60%,
+        transparent 100%
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    opacity: 0;
+    transition: opacity 400ms var(--ease);
+    pointer-events: none;
+}
+
+.footer-mark[data-active] .footer-mark__spot {
+    opacity: 1;
+}
+
+/* ========================================
    MOTION SYSTEM
 ======================================== */
 
