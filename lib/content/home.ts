@@ -311,23 +311,33 @@ export const processSteps = {
     index: "04",
     eyebrow: "Process",
     title: "A clear path from noise to culture.",
+    description:
+      "A structured 4-phase continuum translating raw leadership conviction into permanent cultural resonance.",
   } satisfies SectionIntro,
   steps: [
     {
       title: "Discover",
-      body: "We listen first — your story, goals, audience and the landscape you operate in — to find what is distinctive and true.",
+      tagline: "Excavation & Diagnostic",
+      body: "We listen first — your story, goals, audience and the landscape you operate in — to identify what is unrepeatable, distinctive and true.",
+      deliverables: ["Narrative Audit", "Archetype Mapping", "Ecosystem Whitespace"],
     },
     {
       title: "Define",
-      body: "We turn those insights into a clear position, narrative and identity: what you stand for, and how it should look and sound.",
+      tagline: "Positioning & Category Thesis",
+      body: "We turn those insights into a clear intellectual platform and identity: what you stand for, who it influences, and how it sounds.",
+      deliverables: ["Proprietary Framework", "Voice & Tone Blueprint", "Channel Architecture"],
     },
     {
       title: "Create",
-      body: "We bring it to life through content, visuals and systems — produced with editorial care and consistent across every platform.",
+      tagline: "Publication & Media Craft",
+      body: "We bring the narrative to life through monographs, cinematic video, essays and systems — produced with editorial precision.",
+      deliverables: ["Monograph Essays", "Cinematic Film", "Keynote Positioning"],
     },
     {
       title: "Evolve",
-      body: "We review what resonates, refine the approach and adapt as you, your audience and the culture around you change.",
+      tagline: "Compounding & Cultural Iteration",
+      body: "We review resonance, refine positioning and deploy autonomous distribution workflows as your authority compounds.",
+      deliverables: ["Cognitive Distribution", "Sentiment Tracking", "Authority Compounding"],
     },
   ],
 };

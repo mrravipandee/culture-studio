@@ -144,3 +144,91 @@ export function GridCrosshairMarker({ className = "" }: { className?: string }) 
     </span>
   );
 }
+
+/** 
+ * Clean vector glyphs representing the 4 stages of the CULT.URE continuum.
+ * Rendered with fine hair-thin lines and subtle opacity for a luxury editorial feel.
+ */
+export function ProcessStepGlyph({
+  step,
+  className = "",
+}: {
+  step: number;
+  className?: string;
+}) {
+  if (step === 1) {
+    // 01 — Discover: Reticle / Diagnostic Lens
+    return (
+      <svg
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`select-none ${className}`}
+        aria-hidden="true"
+      >
+        <circle cx="24" cy="24" r="20" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" opacity="0.4" />
+        <circle cx="24" cy="24" r="14" stroke="currentColor" strokeWidth="1.25" opacity="0.6" />
+        <circle cx="24" cy="24" r="3" fill="currentColor" opacity="0.9" />
+        <line x1="24" y1="4" x2="24" y2="10" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <line x1="24" y1="38" x2="24" y2="44" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <line x1="4" y1="24" x2="10" y2="24" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+        <line x1="38" y1="24" x2="44" y2="24" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" />
+      </svg>
+    );
+  }
+
+  if (step === 2) {
+    // 02 — Define: Architectural Positioning Grid
+    return (
+      <svg
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`select-none ${className}`}
+        aria-hidden="true"
+      >
+        <rect x="8" y="8" width="32" height="32" stroke="currentColor" strokeWidth="1" opacity="0.35" />
+        <rect x="14" y="14" width="20" height="20" stroke="currentColor" strokeWidth="1.25" opacity="0.6" />
+        <line x1="8" y1="24" x2="40" y2="24" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.4" />
+        <line x1="24" y1="8" x2="24" y2="40" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.4" />
+        <circle cx="24" cy="24" r="2" fill="currentColor" opacity="0.9" />
+      </svg>
+    );
+  }
+
+  if (step === 3) {
+    // 03 — Create: Prism & Editorial Craft
+    return (
+      <svg
+        viewBox="0 0 48 48"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`select-none ${className}`}
+        aria-hidden="true"
+      >
+        <polygon points="24,6 42,38 6,38" stroke="currentColor" strokeWidth="1.25" opacity="0.6" />
+        <polygon points="24,16 34,34 14,34" stroke="currentColor" strokeWidth="1" strokeDasharray="2 2" opacity="0.35" />
+        <line x1="24" y1="6" x2="24" y2="38" stroke="currentColor" strokeWidth="1" opacity="0.4" />
+        <circle cx="24" cy="26" r="2" fill="currentColor" opacity="0.9" />
+      </svg>
+    );
+  }
+
+  // 04 — Evolve: Compounding Orbital Loop
+  return (
+    <svg
+      viewBox="0 0 48 48"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={`select-none ${className}`}
+      aria-hidden="true"
+    >
+      <ellipse cx="24" cy="24" rx="20" ry="10" stroke="currentColor" strokeWidth="1.25" transform="rotate(-30 24 24)" opacity="0.6" />
+      <ellipse cx="24" cy="24" rx="20" ry="10" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" transform="rotate(30 24 24)" opacity="0.35" />
+      <circle cx="24" cy="24" r="3" fill="currentColor" opacity="0.9" />
+      <circle cx="38" cy="18" r="1.5" fill="currentColor" opacity="0.7" />
+    </svg>
+  );
+}
+
+
