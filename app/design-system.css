@@ -22,10 +22,12 @@
    1. RAW TOKENS
    -------------------------------------------------------------------------- */
 :root {
-    /* Brand */
+    /* Brand: iPhone Deep Burgundy & Matching Luxury Cream */
     --white: #ffffff;
     --black: #000000;
-    --burgundy: #240c0e;
+    --burgundy: #4a121a;        /* iPhone Deep Burgundy / Dark Cherry */
+    --cream: #faf7f2;           /* Editorial champagne cream */
+    --cream-subtle: #f4efe6;    /* Subtle cream tint */
 
     /* Derived ink scale (text on light surfaces) */
     --ink: var(--black);
@@ -39,9 +41,9 @@
     --paper-3: rgb(255 255 255 / 0.58);
     --paper-4: rgb(255 255 255 / 0.36);
 
-    /* Subtle backgrounds: a whisper of burgundy, never a new hue */
-    --subtle: color-mix(in oklab, var(--burgundy) 3%, var(--white));
-    --subtle-2: color-mix(in oklab, var(--burgundy) 6%, var(--white));
+    /* Subtle backgrounds: harmonious blend of iPhone burgundy & cream */
+    --subtle: color-mix(in oklab, var(--burgundy) 3.5%, var(--cream));
+    --subtle-2: color-mix(in oklab, var(--burgundy) 7.5%, var(--cream));
 
     /* Lines */
     --line: rgb(0 0 0 / 0.1);
@@ -49,8 +51,8 @@
     --line-inverse: rgb(255 255 255 / 0.15);
 
     /* Burgundy states */
-    --burgundy-hover: color-mix(in oklab, var(--burgundy) 86%, var(--white));
-    --burgundy-tint: color-mix(in oklab, var(--burgundy) 8%, var(--white));
+    --burgundy-hover: color-mix(in oklab, var(--burgundy) 82%, var(--cream));
+    --burgundy-tint: color-mix(in oklab, var(--burgundy) 10%, var(--cream));
 
     /* Typography */
     --font-body: var(--font-manrope), system-ui, sans-serif;
@@ -147,6 +149,8 @@
     --color-burgundy: var(--burgundy);
     --color-burgundy-hover: var(--burgundy-hover);
     --color-burgundy-tint: var(--burgundy-tint);
+    --color-cream: var(--cream);
+    --color-cream-subtle: var(--cream-subtle);
 
     /* Legacy aliases still used in components */
     --color-brand-white: var(--white);
