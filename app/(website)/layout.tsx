@@ -13,7 +13,7 @@ export default function WebsiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen bg-white text-black selection:bg-[#240c0e] selection:text-white">
+    <div className="relative min-h-screen overflow-x-clip bg-white text-black selection:bg-[#240c0e] selection:text-white">
       <SmoothScroll />
       {children}
     </div>

@@ -67,6 +67,23 @@ export type Service = {
   image: ContentImage;
 };
 
+/**
+ * Logo marquee. PLACEHOLDER names: replace with real, approved client logos
+ * (set `src` to an SVG in /public/images/clients/) before launch.
+ */
+export const trustedBy = {
+  label: "Trusted by founders and leaders at",
+  placeholder: true,
+  logos: [
+    { name: "Client One", src: null },
+    { name: "Client Two", src: null },
+    { name: "Client Three", src: null },
+    { name: "Client Four", src: null },
+    { name: "Client Five", src: null },
+    { name: "Client Six", src: null },
+  ],
+};
+
 export const expertise = {
   intro: {
     index: "04",

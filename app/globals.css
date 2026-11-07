@@ -1132,3 +1132,9 @@ html.lenis {
 .lenis [data-lenis-prevent] {
     overscroll-behavior: contain;
 }
+
+/* Logo marquee edge fade */
+.marquee-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}

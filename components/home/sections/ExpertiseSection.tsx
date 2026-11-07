@@ -1,8 +1,10 @@
-import { expertise } from "@/lib/content/home";
+import { expertise, trustedBy } from "@/lib/content/home";
 import Container from "../shared/Container";
 import ImageFrame from "../shared/ImageFrame";
 import SectionHeading from "../shared/SectionHeading";
 import ScrollReveal from "../shared/ScrollReveal";
+import LogoMarquee from "@/components/motion/LogoMarquee";
+import { CurtainReveal, LineDraw, StaggerItem, StaggerList } from "@/components/motion/Stagger";
 
 /** 04 — Expertise: alternating editorial rows, one per service. */
 export default function ExpertiseSection() {
@@ -17,6 +19,14 @@ export default function ExpertiseSection() {
           <SectionHeading intro={expertise.intro} titleId="expertise-title" />
         </ScrollReveal>
 
+        {/* Trusted by: logo marquee */}
+        <LogoMarquee
+          label={trustedBy.label}
+          logos={trustedBy.logos}
+          speed={18}
+          className="mt-16 lg:mt-24"
+        />
+
         <div className="mt-16 lg:mt-24 space-y-12">
           {expertise.services.map((service, index) => {
             const flipped = index % 2 === 1;
@@ -30,8 +40,9 @@ export default function ExpertiseSection() {
                 <article
                   id={service.id}
                   aria-labelledby={`${service.id}-title`}
-                  className="grid gap-8 border-t border-black/10 py-10 md:grid-cols-12 md:gap-8 lg:py-14"
+                  className="relative grid gap-8 py-10 md:grid-cols-12 md:gap-8 lg:py-14"
                 >
+                  <LineDraw className="absolute inset-x-0 top-0 bg-black/10" />
                   <div
                     className={`flex flex-col md:col-span-6 ${
                       flipped ? "md:order-2 md:col-start-7" : ""
@@ -50,17 +61,17 @@ export default function ExpertiseSection() {
                       {service.description}
                     </p>
 
-                    <ul className="mt-8 grid grid-cols-1 gap-x-6 gap-y-3 text-sm text-neutral-800 sm:grid-cols-2 md:mt-auto md:pt-8">
+                    <StaggerList className="mt-8 grid grid-cols-1 gap-x-6 gap-y-3 text-sm text-neutral-800 sm:grid-cols-2 md:mt-auto md:pt-8">
                       {service.includes.map((item) => (
-                        <li key={item} className="flex items-center gap-3">
+                        <StaggerItem key={item} className="flex items-center gap-3">
                           <span
                             aria-hidden="true"
                             className="h-1.5 w-1.5 rounded-full bg-brand-burgundy"
                           />
                           {item}
-                        </li>
+                        </StaggerItem>
                       ))}
-                    </ul>
+                    </StaggerList>
                   </div>
 
                   <div
@@ -68,12 +79,14 @@ export default function ExpertiseSection() {
                       flipped ? "md:order-1 md:col-start-1" : "md:col-start-8"
                     }`}
                   >
-                    <ImageFrame
-                      image={service.image}
-                      aspect="aspect-[4/3]"
-                      sizes="(min-width: 768px) 40vw, 100vw"
-                      className="rounded-lg shadow-sm"
-                    />
+                    <CurtainReveal className="rounded-lg">
+                      <ImageFrame
+                        image={service.image}
+                        aspect="aspect-[4/3]"
+                        sizes="(min-width: 768px) 40vw, 100vw"
+                        className="rounded-lg shadow-sm"
+                      />
+                    </CurtainReveal>
                   </div>
                 </article>
               </ScrollReveal>
