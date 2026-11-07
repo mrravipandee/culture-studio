@@ -50,17 +50,17 @@ export default function TaglineReveal({ eyebrow, lines }: TaglineRevealProps) {
   return (
     <section
       aria-label={lines.join(" ")}
-      className="section-padding bg-black text-white"
+      className="section-lg surface-ink"
     >
-      <div ref={ref} className="mx-auto max-w-[680px] px-6 text-center lg:max-w-4xl">
+      <div ref={ref} className="container-narrow text-center">
         {eyebrow && (
-          <p className="mb-8 font-mono text-xs uppercase tracking-[0.22em] text-white/50">
+          <p className="eyebrow mb-8 text-paper-3">
             {eyebrow}
           </p>
         )}
         <p
           aria-hidden="true"
-          className="text-4xl font-semibold tracking-[-0.03em] text-balance sm:text-5xl lg:text-6xl"
+          className="heading-1"
         >
           {lines.map((line, li) => (
             <span key={li} className="block">

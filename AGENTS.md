@@ -31,6 +31,7 @@ Premium personal branding agency website.
 10. Respect prefers-reduced-motion.
 11. Avoid generic AI-generated UI patterns.
 12. Maintain consistent spacing, typography and colors.
+13. Use the design system in `app/design-system.css` (text styles, containers, sections, surfaces, buttons) and `lib/motion.ts` for easing/durations. No arbitrary sizes, colours or curves.
 
 ## Workflow
 

@@ -11,7 +11,7 @@ export default function AboutStory() {
       <Container>
         {/* Section Header */}
         <div className="flex flex-col gap-4 border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-black/50">
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-black/50">
             [ {eyebrow} ]
           </p>
           <h2 className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1] max-w-4xl">
@@ -29,7 +29,7 @@ export default function AboutStory() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 border-t border-black/10 pt-8">
               <div>
-                <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-[#240C0E] font-semibold">
+                <h3 className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-semibold">
                   OUR PURPOSE
                 </h3>
                 <p className="mt-3 text-sm sm:text-base font-light leading-relaxed text-black/70">
@@ -38,7 +38,7 @@ export default function AboutStory() {
               </div>
 
               <div>
-                <h3 className="font-mono text-xs uppercase tracking-[0.2em] text-[#240C0E] font-semibold">
+                <h3 className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-semibold">
                   OUR VISION
                 </h3>
                 <p className="mt-3 text-sm sm:text-base font-light leading-relaxed text-black/70">
@@ -48,19 +48,19 @@ export default function AboutStory() {
             </div>
 
             {/* Editable Content Badge / Notice */}
-            <div className="rounded-lg border border-neutral-200 bg-neutral-50/80 p-5">
+            <div className="rounded-lg border border-line bg-subtle p-5">
               <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-black/60 uppercase">
-                <span className="inline-block w-2 h-2 rounded-full bg-[#240C0E]" />
+                <span className="inline-block w-2 h-2 rounded-full bg-burgundy" />
                 <span>STUDIO TRANSPARENCY NOTE</span>
               </div>
-              <p className="mt-2 text-xs text-neutral-500 font-mono leading-relaxed">
+              <p className="mt-2 text-xs text-ink-3 font-mono leading-relaxed">
                 {editableNotice}
               </p>
             </div>
 
             {/* Evolution Phases */}
             <div className="border-t border-black/10 pt-8">
-              <h4 className="font-mono text-xs uppercase tracking-[0.2em] text-black/50 mb-6">
+              <h4 className="font-mono text-xs uppercase tracking-eyebrow text-black/50 mb-6">
                 EVOLUTION PHASES
               </h4>
               <div className="space-y-6">
@@ -88,7 +88,7 @@ export default function AboutStory() {
 
           {/* Right Column: Editorial Framing */}
           <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-neutral-100 shadow-sm border border-black/5">
+            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-subtle shadow-sm border border-black/5">
               <Image
                 src="/images/hero/portrait.jpg"
                 alt="Editorial portrait representing leadership craft"
@@ -98,7 +98,7 @@ export default function AboutStory() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-5 left-5 right-5 text-white">
-                <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/70">
+                <p className="font-mono text-xs uppercase tracking-eyebrow text-white/70">
                   THE HUMAN ELEMENT
                 </p>
                 <p className="text-sm font-light tracking-wide mt-1">
@@ -107,7 +107,7 @@ export default function AboutStory() {
               </div>
             </div>
 
-            <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-black/40 text-center">
+            <p className="font-mono text-xs uppercase tracking-eyebrow text-black/40 text-center">
               CULT.URE STUDIO ARCHIVE &mdash; FIGURE 01
             </p>
           </div>

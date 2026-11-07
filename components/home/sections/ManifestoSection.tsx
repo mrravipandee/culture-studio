@@ -1,67 +1,37 @@
 import { manifesto } from "@/lib/content/home";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
-import ScrollReveal from "../shared/ScrollReveal";
 
-/** 03 — Brand manifesto. Burgundy band: the page's main colour accent. */
+/** 01 — Manifesto. Burgundy band: the page's one colour moment. */
 export default function ManifestoSection() {
   return (
-    <section
-      id="manifesto"
-      aria-labelledby="manifesto-title"
-      className="section-padding scroll-mt-24 bg-brand-burgundy text-white"
-    >
+    <section id="manifesto" aria-labelledby="manifesto-title" className="section surface-burgundy">
       <Container>
-        <ScrollReveal>
-          <SectionHeading
-            intro={manifesto.intro}
-            titleId="manifesto-title"
-            tone="dark"
-          />
-        </ScrollReveal>
+        <SectionHeading intro={manifesto.intro} titleId="manifesto-title" tone="dark" />
 
-        <div className="mt-12 grid gap-12 lg:mt-20 lg:grid-cols-12 lg:gap-8">
-          <ScrollReveal delay={0.1} className="lg:col-span-6">
-            <p className="text-xl leading-relaxed font-light text-white/85 sm:text-2xl">
-              {manifesto.lead}
-            </p>
-          </ScrollReveal>
+        <div className="mt-16 grid gap-12 lg:mt-24 lg:grid-cols-12 lg:gap-8">
+          <Reveal as="p" className="body-lead max-w-measure text-paper-2 lg:col-span-6">
+            {manifesto.lead}
+          </Reveal>
 
-          <ol className="grid gap-8 lg:col-span-5 lg:col-start-8">
+          <RevealGroup as="ol" count={manifesto.beliefs.length} delay={0.1} className="grid gap-8 lg:col-span-5 lg:col-start-8">
             {manifesto.beliefs.map((belief, index) => (
-              <ScrollReveal
-                key={belief.title}
-                delay={0.15 + index * 0.1}
-                distance={20}
-              >
-                <li className="grid grid-cols-[2.5rem_1fr] gap-x-4 border-t border-white/15 pt-6">
-                  <span className="font-mono text-[11px] tracking-[0.2em] text-white/50">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-normal text-white">
-                      {belief.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-white/65">
-                      {belief.body}
-                    </p>
-                  </div>
-                </li>
-              </ScrollReveal>
+              <RevealItem as="li" key={belief.title} className="grid grid-cols-[2.5rem_1fr] gap-x-4 border-t border-line pt-6">
+                <span className="eyebrow pt-1 text-paper-3">{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3 className="title-2 text-paper">{belief.title}</h3>
+                  <p className="body-6 mt-2 text-paper-2">{belief.body}</p>
+                </div>
+              </RevealItem>
             ))}
-          </ol>
+          </RevealGroup>
         </div>
 
-        <ScrollReveal delay={0.3}>
-          <aside className="mt-16 grid gap-6 border-t border-white/15 pt-10 lg:mt-24 lg:grid-cols-12 lg:gap-8">
-            <h3 className="font-serif text-2xl italic lg:col-span-4">
-              {manifesto.value.title}
-            </h3>
-            <p className="max-w-2xl leading-relaxed font-light text-white/75 lg:col-span-7 lg:col-start-6">
-              {manifesto.value.body}
-            </p>
-          </aside>
-        </ScrollReveal>
+        <aside className="mt-16 grid gap-6 border-t border-line pt-10 lg:mt-24 lg:grid-cols-12 lg:gap-8">
+          <h3 className="heading-5 text-paper lg:col-span-4">{manifesto.value.title}</h3>
+          <p className="body-3 max-w-measure text-paper-2 lg:col-span-7 lg:col-start-6">{manifesto.value.body}</p>
+        </aside>
       </Container>
     </section>
   );

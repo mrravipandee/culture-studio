@@ -9,7 +9,7 @@ export default function AboutPerspective() {
       <Container>
         {/* Section Header */}
         <div className="border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-black/50">
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-black/50">
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
@@ -27,12 +27,12 @@ export default function AboutPerspective() {
           {pillars.map((pillar) => (
             <article
               key={pillar.number}
-              className="group border border-black/10 bg-neutral-50/50 p-8 sm:p-10 rounded-sm hover:border-black/30 transition-all flex flex-col justify-between"
+              className="group border border-black/10 bg-subtle p-8 sm:p-10 rounded-sm hover:border-black/30 transition-all flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between text-xs font-mono tracking-[0.25em] text-black/40 pb-6 border-b border-black/10">
+                <div className="flex items-center justify-between text-xs font-mono tracking-eyebrow text-black/40 pb-6 border-b border-black/10">
                   <span className="text-black font-semibold">PILLAR {pillar.number}</span>
-                  <span className="text-[#240C0E] font-medium uppercase">
+                  <span className="text-burgundy font-medium uppercase">
                     CULT.URE THESIS
                   </span>
                 </div>
@@ -40,7 +40,7 @@ export default function AboutPerspective() {
                 <h3 className="mt-6 text-2xl sm:text-3xl font-light text-black tracking-tight">
                   {pillar.title}
                 </h3>
-                <p className="mt-2 text-xs font-mono uppercase tracking-[0.15em] text-[#240C0E]">
+                <p className="mt-2 text-xs font-mono uppercase tracking-eyebrow text-burgundy">
                   {pillar.subtitle}
                 </p>
 
@@ -53,7 +53,7 @@ export default function AboutPerspective() {
                 <span className="font-mono text-xs uppercase tracking-wider text-black/40 shrink-0">
                   IMPACT:
                 </span>
-                <p className="font-serif italic text-sm text-black/90">
+                <p className=" text-sm text-black/90">
                   &ldquo;{pillar.takeaway}&rdquo;
                 </p>
               </div>

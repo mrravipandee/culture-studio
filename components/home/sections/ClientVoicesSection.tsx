@@ -1,63 +1,36 @@
-import { clientVoices } from "@/lib/content/home";
+import { clientVoices, hasClientVoices } from "@/lib/content/home";
+import { RevealGroup, RevealItem } from "@/components/motion";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
 
 /**
- * 09 — Client voices. Structure only: entries flagged `placeholder`
- * render as clearly marked empty slots, never as real quotes.
+ * 07 — Client voices. Renders ONLY approved testimonials (placeholder: false).
+ * While none exist the whole section is omitted, so no stand-in quote ever ships.
  */
 export default function ClientVoicesSection() {
+  if (!hasClientVoices) return null;
+  const voices = clientVoices.testimonials.filter((v) => !v.placeholder);
+
   return (
-    <section
-      id="client-voices"
-      aria-labelledby="client-voices-title"
-      className="section-padding scroll-mt-24 bg-neutral-50"
-    >
+    <section id="client-voices" aria-labelledby="client-voices-title" className="section surface-subtle">
       <Container>
-        <SectionHeading
-          intro={clientVoices.intro}
-          titleId="client-voices-title"
-        />
+        <SectionHeading intro={clientVoices.intro} titleId="client-voices-title" />
 
-        <ul className="mt-14 grid gap-6 md:grid-cols-3 lg:mt-20">
-          {clientVoices.testimonials.map((voice) => (
-            <li key={voice.id}>
-              <figure
-                className={`flex h-full flex-col justify-between gap-10 p-8 ${
-                  voice.placeholder
-                    ? "border border-dashed border-black/20 bg-white/60"
-                    : "border border-black/10 bg-white"
-                }`}
-              >
-                <div>
-                  <span
-                    aria-hidden="true"
-                    className="block font-serif text-5xl leading-none text-brand-burgundy"
-                  >
-                    “
-                  </span>
-                  <blockquote
-                    className={`mt-4 font-serif text-xl leading-snug ${
-                      voice.placeholder ? "text-neutral-400 italic" : "text-black"
-                    }`}
-                  >
-                    <p>{voice.quote}</p>
-                  </blockquote>
-                </div>
-
-                <figcaption className="border-t border-black/10 pt-5">
-                  {voice.placeholder && (
-                    <span className="mb-3 inline-block border border-black/15 px-2 py-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-neutral-500">
-                      Placeholder
-                    </span>
-                  )}
-                  <p className="text-sm text-black">{voice.name}</p>
-                  <p className="text-xs text-neutral-500">{voice.role}</p>
+        <RevealGroup as="ul" count={voices.length} className="mt-16 grid gap-6 md:grid-cols-3 lg:mt-24">
+          {voices.map((voice) => (
+            <RevealItem as="li" key={voice.id}>
+              <figure className="flex h-full flex-col justify-between gap-10 rounded-lg border border-line bg-paper p-8">
+                <blockquote className="heading-5 text-ink">
+                  <p>“{voice.quote}”</p>
+                </blockquote>
+                <figcaption className="border-t border-line pt-5">
+                  <p className="title-4 text-ink">{voice.name}</p>
+                  <p className="caption-5 mt-1 text-ink-3">{voice.role}</p>
                 </figcaption>
               </figure>
-            </li>
+            </RevealItem>
           ))}
-        </ul>
+        </RevealGroup>
       </Container>
     </section>
   );

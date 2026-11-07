@@ -1,0 +1,440 @@
+/* ==========================================================================
+   CULT.URE — DESIGN SYSTEM
+   Premium editorial · minimal · high contrast · generous whitespace.
+
+   Three brand colours. Everything else (greys, lines, tints) is derived
+   from them, so the palette can never drift.
+
+   Usage cheatsheet
+   ----------------
+   Text      display · heading-1…6 · title-1…5 · body-1…6 · caption-1…5 · eyebrow
+   Layout    container-site · container-content · container-narrow · container-measure
+             section · section-sm · section-lg · grid-site
+   Surfaces  surface-paper · surface-subtle · surface-ink · surface-burgundy
+   Actions   btn btn-primary|btn-burgundy|btn-secondary|btn-inverse · btn-sm|btn-lg · link
+   Colours   text-ink / text-ink-2 / text-ink-3 / text-ink-4 · bg-paper · bg-subtle
+             border-line / border-line-strong · text-burgundy · bg-burgundy
+   Ratios    aspect-portrait 4/5 · aspect-landscape 3/2 · aspect-wide 16/9
+             aspect-cinema 21/9 · aspect-square
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. RAW TOKENS
+   -------------------------------------------------------------------------- */
+:root {
+    /* Brand */
+    --white: #ffffff;
+    --black: #000000;
+    --burgundy: #240c0e;
+
+    /* Derived ink scale (text on light surfaces) */
+    --ink: var(--black);
+    --ink-2: rgb(0 0 0 / 0.72);   /* secondary text */
+    --ink-3: rgb(0 0 0 / 0.56);   /* tertiary / meta (AA on white at 14px+) */
+    --ink-4: rgb(0 0 0 / 0.36);   /* disabled, decorative only */
+
+    /* Derived paper scale (text on dark surfaces) */
+    --paper: var(--white);
+    --paper-2: rgb(255 255 255 / 0.76);
+    --paper-3: rgb(255 255 255 / 0.58);
+    --paper-4: rgb(255 255 255 / 0.36);
+
+    /* Subtle backgrounds: a whisper of burgundy, never a new hue */
+    --subtle: color-mix(in oklab, var(--burgundy) 3%, var(--white));
+    --subtle-2: color-mix(in oklab, var(--burgundy) 6%, var(--white));
+
+    /* Lines */
+    --line: rgb(0 0 0 / 0.1);
+    --line-strong: rgb(0 0 0 / 0.2);
+    --line-inverse: rgb(255 255 255 / 0.15);
+
+    /* Burgundy states */
+    --burgundy-hover: color-mix(in oklab, var(--burgundy) 86%, var(--white));
+    --burgundy-tint: color-mix(in oklab, var(--burgundy) 8%, var(--white));
+
+    /* Typography */
+    --font-body: var(--font-manrope), system-ui, sans-serif;
+    --font-display: var(--font-body); /* legacy alias: one typeface site wide */
+
+    /* Letter spacing */
+    --track-display: -0.045em;
+    --track-heading: -0.035em;
+    --track-title: -0.015em;
+    --track-eyebrow: 0.2em;
+
+    /* Content widths */
+    --width-measure: 680px;
+    --width-narrow: 880px;
+    --width-content: 1280px;
+    --width-site: 1440px;
+
+    /* Layout */
+    --gutter: 24px;               /* page side padding, grows per breakpoint */
+    --grid-gap: 16px;
+    --section-space: 80px;        /* default vertical rhythm between sections */
+    --section-space-sm: 64px;
+    --section-space-lg: 96px;
+    --header-offset: 96px;        /* fixed navbar clearance for anchors */
+
+    /* Motion */
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --duration-fast: 300ms;
+    --duration-base: 500ms;
+    --duration-slow: 800ms;
+    --transition-fast: var(--duration-fast) var(--ease);   /* legacy alias */
+    --transition-normal: var(--duration-base) var(--ease); /* legacy alias */
+
+    /* shadcn bridge: existing ui/* components read these */
+    --background: var(--white);
+    --foreground: var(--black);
+    --card: var(--white);
+    --card-foreground: var(--black);
+    --popover: var(--white);
+    --popover-foreground: var(--black);
+    --primary: var(--black);
+    --primary-foreground: var(--white);
+    --primary-hover: var(--burgundy);
+    --secondary: var(--subtle);
+    --secondary-foreground: var(--black);
+    --muted: var(--subtle);
+    --muted-foreground: var(--ink-3);
+    --accent: var(--subtle-2);
+    --accent-foreground: var(--black);
+    --destructive: #b42318;
+    --border: var(--line);
+    --input: var(--line-strong);
+    --ring: var(--burgundy);
+}
+
+/* Breakpoint driven layout tokens (Tailwind defaults: sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536) */
+@media (width >= 40rem) {
+    :root { --gutter: 32px; --grid-gap: 24px; }
+}
+@media (width >= 48rem) {
+    :root { --section-space: 112px; --section-space-sm: 80px; --section-space-lg: 144px; }
+}
+@media (width >= 64rem) {
+    :root { --gutter: 48px; --grid-gap: 32px; --section-space: 144px; --section-space-sm: 96px; --section-space-lg: 192px; }
+}
+@media (width >= 80rem) {
+    :root { --gutter: 64px; }
+}
+
+.dark {
+    --background: var(--black);
+    --foreground: var(--white);
+    --border: var(--line-inverse);
+}
+
+/* --------------------------------------------------------------------------
+   2. TAILWIND THEME (generates utilities)
+   -------------------------------------------------------------------------- */
+@theme inline {
+    /* Colours */
+    --color-ink: var(--ink);
+    --color-ink-2: var(--ink-2);
+    --color-ink-3: var(--ink-3);
+    --color-ink-4: var(--ink-4);
+    --color-paper: var(--paper);
+    --color-paper-2: var(--paper-2);
+    --color-paper-3: var(--paper-3);
+    --color-paper-4: var(--paper-4);
+    --color-subtle: var(--subtle);
+    --color-subtle-2: var(--subtle-2);
+    --color-line: var(--line);
+    --color-line-strong: var(--line-strong);
+    --color-line-inverse: var(--line-inverse);
+    --color-burgundy: var(--burgundy);
+    --color-burgundy-hover: var(--burgundy-hover);
+    --color-burgundy-tint: var(--burgundy-tint);
+
+    /* Legacy aliases still used in components */
+    --color-brand-white: var(--white);
+    --color-brand-black: var(--black);
+    --color-brand-burgundy: var(--burgundy);
+
+    /* shadcn bridge */
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-primary-hover: var(--primary-hover);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+
+    /* Fonts */
+    --font-sans: var(--font-body);
+    --font-serif: var(--font-body); /* legacy: no serif in this system */
+    --font-heading: var(--font-body);
+    --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+    /* Letter spacing */
+    --tracking-display: var(--track-display);
+    --tracking-heading: var(--track-heading);
+    --tracking-title: var(--track-title);
+    --tracking-eyebrow: var(--track-eyebrow);
+
+    /* Content widths */
+    --container-measure: var(--width-measure);   /* hero copy, long reading */
+    --container-narrow: var(--width-narrow);     /* text-led sections */
+    --container-content: var(--width-content);   /* default page content + navbar */
+    --container-site: var(--width-site);         /* full bleed layouts */
+
+    /* Image ratios */
+    --aspect-portrait: 4 / 5;
+    --aspect-landscape: 3 / 2;
+    --aspect-wide: 16 / 9;
+    --aspect-cinema: 21 / 9;
+
+    /* Motion */
+    --ease-editorial: var(--ease);
+
+    /* Extra small breakpoint for 390px phones */
+    --breakpoint-xs: 24.375rem;
+
+    --animate-rippling: rippling var(--duration) ease-out;
+    @keyframes rippling {
+        0% { opacity: 1; }
+        100% { transform: scale(2); opacity: 0; }
+    }
+}
+
+/* --------------------------------------------------------------------------
+   3. BASE
+   -------------------------------------------------------------------------- */
+@layer base {
+    *, *::before, *::after { box-sizing: border-box; border-color: var(--line); }
+
+    html {
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-body);
+        scroll-padding-top: var(--header-offset);
+        -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-body);
+        font-size: 1rem;
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+
+    h1, h2, h3, h4, h5, h6 { text-wrap: balance; }
+    p, li, blockquote { text-wrap: pretty; }
+
+    /* Single upright typeface: no italics anywhere. */
+    em, i, .italic { font-style: normal; }
+
+    button, input, textarea, select { font: inherit; color: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    img, video, svg { display: block; max-width: 100%; }
+
+    ::selection { background: var(--burgundy); color: var(--white); }
+
+    :focus-visible {
+        outline: 2px solid var(--burgundy);
+        outline-offset: 3px;
+        border-radius: 2px;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   4. TYPOGRAPHY  (named styles, Tailwind scale steps only)
+   Responsive steps are built in; do not add size utilities next to them.
+   -------------------------------------------------------------------------- */
+
+/* Hero only. 48 → 72 → 96 */
+@utility display {
+    @apply text-5xl font-semibold tracking-display md:text-7xl xl:text-8xl;
+}
+
+/* Section headings. */
+@utility heading-1 { @apply text-4xl font-semibold tracking-heading sm:text-5xl lg:text-6xl; }   /* 36 → 48 → 60 */
+@utility heading-2 { @apply text-3xl font-semibold tracking-heading sm:text-4xl lg:text-5xl; }   /* 30 → 36 → 48 */
+@utility heading-3 { @apply text-2xl font-semibold tracking-heading sm:text-3xl lg:text-4xl; }   /* 24 → 30 → 36 */
+@utility heading-4 { @apply text-2xl font-semibold tracking-title lg:text-3xl; }                  /* 24 → 30 */
+@utility heading-5 { @apply text-xl font-semibold tracking-title lg:text-2xl; }                   /* 20 → 24 */
+@utility heading-6 { @apply text-xl font-semibold tracking-title; }                               /* 20 */
+
+/* Card titles, list titles, nav labels. */
+@utility title-1 { @apply text-xl font-medium tracking-title; }
+@utility title-2 { @apply text-lg font-medium tracking-title; }
+@utility title-3 { @apply text-base font-medium; }
+@utility title-4 { @apply text-sm font-medium; }
+@utility title-5 { @apply text-xs font-medium; }
+
+/* Running text. Lead paragraphs use body-lead. */
+@utility body-lead { @apply text-lg font-normal md:text-xl; }
+@utility body-1 { @apply text-base font-semibold; }
+@utility body-2 { @apply text-base font-medium; }
+@utility body-3 { @apply text-base font-normal; }
+@utility body-4 { @apply text-sm font-semibold; }
+@utility body-5 { @apply text-sm font-medium; }
+@utility body-6 { @apply text-sm font-normal; }
+
+/* Metadata, badges, fine print. */
+@utility caption-1 { @apply text-sm font-medium; }
+@utility caption-2 { @apply text-sm font-normal; }
+@utility caption-3 { @apply text-xs font-semibold; }
+@utility caption-4 { @apply text-xs font-medium; }
+@utility caption-5 { @apply text-xs font-normal; }
+
+/* Section index / eyebrow: "04 —— EXPERTISE". Mono is allowed for numeric UI. */
+@utility eyebrow {
+    @apply font-mono text-xs font-medium tracking-eyebrow uppercase;
+}
+
+/* --------------------------------------------------------------------------
+   5. LAYOUT
+   -------------------------------------------------------------------------- */
+@utility container-site    { @apply mx-auto w-full max-w-site;    padding-inline: var(--gutter); }
+@utility container-content { @apply mx-auto w-full max-w-content; padding-inline: var(--gutter); }
+@utility container-narrow  { @apply mx-auto w-full max-w-narrow;  padding-inline: var(--gutter); }
+@utility container-measure { @apply mx-auto w-full max-w-measure; padding-inline: var(--gutter); }
+
+@utility section    { padding-block: var(--section-space); scroll-margin-top: var(--header-offset); }
+@utility section-sm { padding-block: var(--section-space-sm); scroll-margin-top: var(--header-offset); }
+@utility section-lg { padding-block: var(--section-space-lg); scroll-margin-top: var(--header-offset); }
+
+/* 4 columns → 8 (md) → 12 (lg). Children span with col-span-*. */
+@utility grid-site {
+    display: grid;
+    column-gap: var(--grid-gap);
+    row-gap: var(--grid-gap);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    @media (width >= 48rem) { grid-template-columns: repeat(8, minmax(0, 1fr)); }
+    @media (width >= 64rem) { grid-template-columns: repeat(12, minmax(0, 1fr)); }
+}
+
+/* --------------------------------------------------------------------------
+   6. SURFACES  (set background + text + line colour together)
+   -------------------------------------------------------------------------- */
+@utility surface-paper    { background: var(--white);    color: var(--black); --line: rgb(0 0 0 / 0.1); }
+@utility surface-subtle   { background: var(--subtle);   color: var(--black); --line: rgb(0 0 0 / 0.1); }
+@utility surface-ink {
+    background: var(--black); color: var(--white); --line: var(--line-inverse);
+    & :focus-visible { outline-color: var(--white); }
+}
+@utility surface-burgundy {
+    background: var(--burgundy); color: var(--white); --line: var(--line-inverse);
+    & :focus-visible { outline-color: var(--white); }
+}
+
+/* Hairline divider that follows the current surface. */
+@utility rule { display: block; height: 1px; width: 100%; background: var(--line); }
+
+/* --------------------------------------------------------------------------
+   7. BUTTONS & LINKS
+   One shape (pill), three sizes, four tones. Text uses Button styles.
+   -------------------------------------------------------------------------- */
+@utility btn {
+    @apply inline-flex h-11 items-center justify-center gap-2 rounded-full px-6 text-base font-semibold whitespace-nowrap select-none;
+    border: 1px solid transparent;
+    transition:
+        background-color var(--duration-fast) var(--ease),
+        color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease),
+        transform var(--duration-fast) var(--ease);
+    @media (hover: hover) {
+        &:hover { transform: translateY(-1px); }
+    }
+    &:active { transform: scale(0.98); }
+    &:disabled, &[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+}
+@utility btn-sm { @apply h-9 px-4 text-sm; }
+@utility btn-lg { @apply h-14 px-8 text-lg; }
+
+@utility btn-primary {
+    background: var(--black); color: var(--white);
+    &:hover { background: var(--burgundy); }
+}
+@utility btn-burgundy {
+    background: var(--burgundy); color: var(--white);
+    &:hover { background: var(--burgundy-hover); }
+}
+@utility btn-secondary {
+    background: transparent; color: currentColor; border-color: var(--line-strong);
+    &:hover { border-color: currentColor; }
+}
+/* For dark surfaces */
+@utility btn-inverse {
+    background: var(--white); color: var(--black);
+    &:hover { background: var(--burgundy-tint); }
+}
+
+/* Editorial text link: underline draws in from the left on hover. */
+@utility link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    &::after {
+        content: "";
+        position: absolute;
+        inset-inline: 0;
+        bottom: -2px;
+        height: 1px;
+        background: currentColor;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform var(--duration-base) var(--ease);
+    }
+    &:hover::after, &:focus-visible::after, &[aria-current="page"]::after {
+        transform: scaleX(1);
+        transform-origin: left;
+    }
+}
+
+/* Button / link icon nudge: put .btn-arrow on the trailing icon. */
+@utility btn-arrow {
+    transition: transform var(--duration-fast) var(--ease);
+    :where(.btn, .link, .group):hover &,
+    :where(.btn, .link, .group):focus-visible & { transform: translate(3px, -3px); }
+}
+
+/* Circular icon badge inside a button (trailing). Rotates on hover. */
+@utility btn-badge {
+    @apply -mr-3 grid size-8 shrink-0 place-items-center rounded-full;
+    transition: transform var(--duration-base) var(--ease);
+    :where(.btn):hover &, :where(.btn):focus-visible & { transform: rotate(45deg); }
+}
+
+/* Cards: lift on hover, only on devices that can hover. */
+@utility hover-lift {
+    transition: transform var(--duration-base) var(--ease);
+    @media (hover: hover) {
+        &:hover { transform: translateY(-4px); }
+    }
+}
+
+/* --------------------------------------------------------------------------
+   8. MOTION SAFETY
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

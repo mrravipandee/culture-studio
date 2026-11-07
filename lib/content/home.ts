@@ -29,7 +29,7 @@ export type SectionIntro = {
 
 export const manifesto = {
   intro: {
-    index: "03",
+    index: "01",
     eyebrow: "Manifesto",
     title: "Attention is rented. Culture is owned.",
   } satisfies SectionIntro,
@@ -86,7 +86,7 @@ export const trustedBy = {
 
 export const expertise = {
   intro: {
-    index: "04",
+    index: "02",
     eyebrow: "Expertise",
     title: "Four disciplines. One coherent presence.",
     description:
@@ -181,9 +181,9 @@ export type Project = {
 
 export const selectedWork = {
   intro: {
-    index: "05",
-    eyebrow: "Selected Work",
-    title: "Defining Personal Brands.",
+    index: "03",
+    eyebrow: "Selected work",
+    title: "Defining personal brands.",
     description:
       "A curated archive of strategic positioning, bespoke editorial media, and cultural influence across industries.",
   } satisfies SectionIntro,
@@ -240,8 +240,8 @@ export const selectedWork = {
 
 export const thinking = {
   intro: {
-    index: "06",
-    eyebrow: "Our Thinking",
+    index: "05",
+    eyebrow: "Thinking",
     title: "How we see branding, content and culture.",
   } satisfies SectionIntro,
   statements: [
@@ -274,8 +274,8 @@ export const thinking = {
 
 export const processSteps = {
   intro: {
-    index: "07",
-    eyebrow: "Our Process",
+    index: "04",
+    eyebrow: "Process",
     title: "A clear path from noise to culture.",
   } satisfies SectionIntro,
   steps: [
@@ -304,7 +304,7 @@ export const processSteps = {
 
 export const whyCulture = {
   intro: {
-    index: "08",
+    index: "06",
     eyebrow: "Why CULT.URE",
     title: "Strategy, creativity and cultural relevance — in one practice.",
     description:
@@ -346,7 +346,7 @@ export type Testimonial = {
 
 export const clientVoices = {
   intro: {
-    index: "09",
+    index: "07",
     eyebrow: "Client Voices",
     title: "In their words.",
     description:
@@ -383,9 +383,12 @@ export const clientVoices = {
 
 export type SocialLink = { label: string; href: string };
 
+/** Only approved testimonials are ever shown; placeholders keep the section hidden. */
+export const hasClientVoices = clientVoices.testimonials.some((t) => !t.placeholder);
+
 export const contact = {
   intro: {
-    index: "10",
+    index: hasClientVoices ? "08" : "07",
     eyebrow: "Contact",
     title: "Let's build a name that outlasts the noise.",
     description:
@@ -396,5 +399,5 @@ export const contact = {
   /** Add real profiles, e.g. { label: "LinkedIn", href: "https://..." }. */
   socials: [] as SocialLink[],
   /** Used for the CTA while no email is configured. */
-  fallbackCta: { label: "Get in touch", href: "/services#contact" },
+  fallbackCta: { label: "Get in touch", href: "/#contact" },
 };

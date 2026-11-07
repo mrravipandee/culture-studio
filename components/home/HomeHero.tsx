@@ -1,9 +1,5 @@
 import { Fragment, type CSSProperties } from "react";
-import Link from "next/link";
-import { ArrowRight, ArrowUpRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { AnimatedGridPattern } from "@/registry/magicui/animated-grid-pattern";
-import { RippleButton } from "@/registry/magicui/ripple-button";
+import { Button, TextLink } from "@/components/ui/site-button";
 import HeroReveal from "./hero/HeroReveal";
 import HeroMedia from "./hero/HeroMedia";
 import {
@@ -39,17 +35,6 @@ export default function HomeHero() {
 
   return (
     <HeroReveal className="hero relative overflow-hidden" labelledBy="home-hero-title">
-      {/* Background Animated Grid Pattern */}
-      <AnimatedGridPattern
-        numSquares={30}
-        maxOpacity={0.08}
-        duration={3}
-        repeatDelay={1}
-        className={cn(
-          "[mask-image:radial-gradient(650px_circle_at_center,white,transparent)]",
-          "inset-x-0 inset-y-[-20%] h-[160%] skew-y-12"
-        )}
-      />
 
       <div className="hero__inner relative z-10">
         {/* Editorial meta bar */}
@@ -102,31 +87,13 @@ export default function HomeHero() {
           </p>
 
           <div className="hero-reveal hero-actions" style={motion({ "--d": "800ms" })}>
-            <RippleButton
-              href={heroActions.primary.href}
-              rippleColor="rgba(255, 255, 255, 0.45)"
-              className="hero-cta !text-white text-white group"
-            >
-              <span className="!text-white text-white font-medium">
-                {heroActions.primary.label}
-              </span>
-              <span className="hero-cta__icon" aria-hidden="true">
-                <ArrowRight size={16} strokeWidth={1.5} />
-                <ArrowRight size={16} strokeWidth={1.5} />
-              </span>
-            </RippleButton>
+            <Button href={heroActions.primary.href} variant="primary" size="lg" icon="arrow">
+              {heroActions.primary.label}
+            </Button>
 
-            <Link href={heroActions.secondary.href} className="hero-link">
-              <span className="hero-link__label">
-                {heroActions.secondary.label}
-              </span>
-              <ArrowUpRight
-                size={14}
-                strokeWidth={1.5}
-                className="hero-link__icon"
-                aria-hidden="true"
-              />
-            </Link>
+            <TextLink href={heroActions.secondary.href} arrow className="title-3 text-ink">
+              {heroActions.secondary.label}
+            </TextLink>
           </div>
         </div>
 

@@ -9,13 +9,13 @@ export default function BehindTheWork() {
         <ScrollReveal>
           {/* Eyebrow & Title */}
           <div className="max-w-3xl">
-            <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#240C0E] font-medium">
+            <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
               [ 03 / {behindTheWork.eyebrow} ]
             </span>
-            <h2 className="mt-6 text-3xl sm:text-5xl md:text-6xl font-light tracking-[-0.02em] text-black">
+            <h2 className="mt-6 text-3xl sm:text-5xl md:text-6xl font-light tracking-heading text-black">
               {behindTheWork.title}
             </h2>
-            <p className="mt-6 text-base sm:text-lg font-light leading-relaxed text-neutral-600">
+            <p className="mt-6 text-base sm:text-lg font-light leading-relaxed text-ink-2">
               {behindTheWork.description}
             </p>
           </div>
@@ -31,16 +31,16 @@ export default function BehindTheWork() {
               className="flex flex-col justify-between border-t border-black/15 pt-8"
             >
               <div>
-                <span className="font-mono text-sm tracking-[0.2em] text-[#240C0E] font-medium">
+                <span className="font-mono text-sm tracking-eyebrow text-burgundy font-medium">
                   {pillar.index}
                 </span>
-                <h3 className="mt-6 text-2xl font-light tracking-[-0.01em] text-black">
+                <h3 className="mt-6 text-2xl font-light tracking-title text-black">
                   {pillar.name}
                 </h3>
-                <p className="mt-2 font-mono text-xs uppercase tracking-wider text-neutral-400">
+                <p className="mt-2 font-mono text-xs uppercase tracking-wider text-ink-3">
                   {pillar.tagline}
                 </p>
-                <p className="mt-6 text-sm font-light leading-relaxed text-neutral-600">
+                <p className="mt-6 text-sm font-light leading-relaxed text-ink-2">
                   {pillar.body}
                 </p>
               </div>

@@ -9,7 +9,7 @@ export default function AboutPrinciples() {
       <Container>
         {/* Header */}
         <div className="border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-black/50">
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-black/50">
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
@@ -39,7 +39,7 @@ export default function AboutPrinciples() {
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight text-black">
                   {principle.title}
                 </h3>
-                <p className="mt-3 text-sm sm:text-base font-serif italic text-[#240C0E]">
+                <p className="mt-3 text-sm sm:text-base text-burgundy">
                   &ldquo;{principle.summary}&rdquo;
                 </p>
               </div>

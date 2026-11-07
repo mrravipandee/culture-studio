@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-/** Page container — matches the Navbar and Hero edges (max-w-7xl, px-5 / md:px-10). */
+/** Page container: design token `container-content` (1280px, responsive --gutter). Shares edges with Navbar and Hero. */
 export default function Container({
   children,
   className = "",
@@ -9,7 +9,7 @@ export default function Container({
   className?: string;
 }) {
   return (
-    <div className={`mx-auto w-full max-w-7xl px-5 md:px-10 ${className}`}>
+    <div className={`container-content ${className}`}>
       {children}
     </div>
   );

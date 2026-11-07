@@ -1,43 +1,28 @@
 import { processSteps } from "@/lib/content/home";
+import { RevealGroup, RevealItem } from "@/components/motion";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
-import ScrollReveal from "../shared/ScrollReveal";
 
-/** 07 — Process: four ordered steps, horizontal on desktop. */
+/** 04 — Process: four ordered steps, a row on desktop. */
 export default function ProcessSection() {
   return (
-    <section
-      id="process"
-      aria-labelledby="process-title"
-      className="section-padding scroll-mt-24 bg-neutral-50"
-    >
+    <section id="process" aria-labelledby="process-title" className="section surface-subtle">
       <Container>
-        <ScrollReveal>
-          <SectionHeading intro={processSteps.intro} titleId="process-title" />
-        </ScrollReveal>
+        <SectionHeading intro={processSteps.intro} titleId="process-title" />
 
-        <ol className="mt-14 grid gap-px overflow-hidden border border-black/10 bg-black/10 sm:grid-cols-2 lg:mt-20 lg:grid-cols-4">
+        <RevealGroup
+          as="ol"
+          count={processSteps.steps.length}
+          className="mt-16 grid gap-px overflow-hidden rounded-lg border border-line bg-line sm:grid-cols-2 lg:mt-24 lg:grid-cols-4"
+        >
           {processSteps.steps.map((step, index) => (
-            <ScrollReveal
-              key={step.title}
-              delay={index * 0.12}
-              distance={24}
-              className="flex flex-col bg-white p-6 lg:p-8"
-            >
-              <li>
-                <span className="font-mono text-[11px] tracking-[0.2em] text-brand-burgundy font-medium">
-                  Step {String(index + 1).padStart(2, "0")}
-                </span>
-                <h3 className="mt-10 text-3xl font-light tracking-[-0.02em] text-black lg:mt-16">
-                  {step.title}
-                </h3>
-                <p className="mt-4 text-sm leading-relaxed text-neutral-600 font-light">
-                  {step.body}
-                </p>
-              </li>
-            </ScrollReveal>
+            <RevealItem as="li" key={step.title} className="flex flex-col bg-paper p-6 lg:p-8">
+              <span className="eyebrow text-burgundy">Step {String(index + 1).padStart(2, "0")}</span>
+              <h3 className="heading-4 mt-12 text-ink lg:mt-16">{step.title}</h3>
+              <p className="body-6 mt-4 text-ink-2">{step.body}</p>
+            </RevealItem>
           ))}
-        </ol>
+        </RevealGroup>
       </Container>
     </section>
   );

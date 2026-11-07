@@ -73,7 +73,7 @@ export default function CinematicIntro({
 
       {/* Cinematic Overlay */}
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-[#240C0E]/50"
+        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-burgundy/50"
         aria-hidden="true"
       />
 
@@ -83,7 +83,7 @@ export default function CinematicIntro({
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
         <div className="flex flex-col items-center gap-3 text-white/70">
-          <span className="text-[10px] uppercase tracking-[0.3em]">
+          <span className="text-xs uppercase tracking-eyebrow">
             Scroll to explore
           </span>
 

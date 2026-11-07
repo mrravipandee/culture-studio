@@ -49,7 +49,7 @@ export default async function CaseStudyDetailPage({
   const nextProject = allProjects[(projectIndex + 1) % allProjects.length];
 
   return (
-    <div className="relative min-h-screen bg-white selection:bg-[#240C0E] selection:text-white">
+    <div className="relative min-h-screen bg-white selection:bg-burgundy selection:text-white">
       <Navbar />
 
       <main className="pt-36 pb-24 md:pt-48 md:pb-36">
@@ -57,7 +57,7 @@ export default async function CaseStudyDetailPage({
           {/* Back Navigation */}
           <Link
             href="/case-studies"
-            className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.2em] text-neutral-500 hover:text-black transition-colors"
+            className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-eyebrow text-ink-3 hover:text-black transition-colors"
           >
             <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
             <span>All Case Studies</span>
@@ -66,26 +66,26 @@ export default async function CaseStudyDetailPage({
           {/* Header */}
           <div className="mt-10 max-w-4xl">
             <div className="flex items-center gap-3">
-              <span className="font-mono text-xs uppercase tracking-[0.2em] text-[#240C0E] font-medium">
+              <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                 {project.category}
               </span>
-              <span className="text-neutral-300">•</span>
-              <span className="font-mono text-xs uppercase tracking-[0.18em] text-neutral-500">
+              <span className="text-ink-4">•</span>
+              <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
                 {project.year}
               </span>
             </div>
 
-            <h1 className="mt-6 text-4xl sm:text-6xl md:text-7xl font-light tracking-[-0.03em] leading-tight text-black">
+            <h1 className="mt-6 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-tight text-black">
               {project.title}
             </h1>
 
-            <p className="mt-4 font-mono text-xs uppercase tracking-[0.2em] text-neutral-400">
+            <p className="mt-4 font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               Client: {project.clientType}
             </p>
           </div>
 
           {/* Hero Image */}
-          <div className="mt-14 relative w-full overflow-hidden rounded-2xl bg-neutral-100 aspect-[16/9] shadow-[0_12px_45px_rgba(0,0,0,0.06)]">
+          <div className="mt-14 relative w-full overflow-hidden rounded-2xl bg-subtle aspect-[16/9] shadow-[0_12px_45px_rgba(0,0,0,0.06)]">
             <Image
               src={project.image.src}
               alt={project.image.alt}
@@ -100,16 +100,16 @@ export default async function CaseStudyDetailPage({
           <div className="mt-20 grid grid-cols-1 lg:grid-cols-12 gap-16 border-t border-black/10 pt-16">
             {/* Left: Deliverables & Specifications */}
             <div className="lg:col-span-4">
-              <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#240C0E] font-medium">
+              <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                 [ ENGAGEMENT SCOPE ]
               </span>
               <ul className="mt-6 space-y-3">
                 {project.deliverables.map((item) => (
                   <li
                     key={item}
-                    className="flex items-center gap-3 text-sm text-neutral-800 border-b border-black/5 pb-3 font-light"
+                    className="flex items-center gap-3 text-sm text-ink border-b border-black/5 pb-3 font-light"
                   >
-                    <span className="h-1 w-1 rounded-full bg-[#240C0E]" />
+                    <span className="h-1 w-1 rounded-full bg-burgundy" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -118,18 +118,18 @@ export default async function CaseStudyDetailPage({
 
             {/* Right: Narrative & Impact */}
             <div className="lg:col-span-8 max-w-2xl">
-              <span className="font-mono text-xs uppercase tracking-[0.25em] text-neutral-400">
+              <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
                 [ EXECUTIVE SUMMARY ]
               </span>
               <p className="mt-6 text-xl sm:text-2xl font-light leading-relaxed text-black">
                 {project.description}
               </p>
 
-              <div className="mt-12 space-y-8 text-neutral-600 font-light leading-relaxed">
+              <div className="mt-12 space-y-8 text-ink-2 font-light leading-relaxed">
                 <div>
-                  <h3 className="text-xs uppercase font-mono tracking-[0.2em] text-black font-medium mb-3">
+                  <h2 className="eyebrow mb-3 text-ink">
                     The Strategic Imperative
-                  </h3>
+                  </h2>
                   <p>
                     In noisy categories governed by superficial vanity metrics, genuine
                     authority stems from clarity and conviction. We worked directly with leadership
@@ -139,9 +139,9 @@ export default async function CaseStudyDetailPage({
                 </div>
 
                 <div>
-                  <h3 className="text-xs uppercase font-mono tracking-[0.2em] text-black font-medium mb-3">
+                  <h2 className="eyebrow mb-3 text-ink">
                     Cultural Resonance & Distribution
-                  </h3>
+                  </h2>
                   <p>
                     Rather than relying on uncalibrated volume, we created museum-grade editorial
                     artifacts: precision essays, keynote scripts, and cinematic digital monograph
@@ -154,13 +154,13 @@ export default async function CaseStudyDetailPage({
 
           {/* Next Project Nav */}
           <div className="mt-24 pt-12 border-t border-black/10 flex flex-col sm:flex-row items-center justify-between gap-6">
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-400">
+            <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               Next Engagement
             </span>
 
             <Link
               href={`/case-studies/${nextProject.slug}`}
-              className="group flex items-center gap-3 text-xl sm:text-2xl font-light text-black hover:text-[#240C0E] transition-colors"
+              className="group flex items-center gap-3 text-xl sm:text-2xl font-light text-black hover:text-burgundy transition-colors"
             >
               <span>{nextProject.title}</span>
               <ArrowUpRight

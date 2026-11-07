@@ -9,23 +9,23 @@ export default function CaseStudiesHero() {
         <ScrollReveal>
           {/* Eyebrow */}
           <div className="flex items-center gap-3">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#240C0E]" aria-hidden="true" />
-            <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#240C0E] font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
+            <p className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
               {caseStudiesHero.eyebrow}
             </p>
           </div>
 
           {/* Headline */}
-          <h1 className="mt-8 max-w-5xl font-light text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-[-0.03em] leading-[1.05] text-black">
+          <h1 className="mt-8 max-w-5xl font-light text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-heading leading-[1.05] text-black">
             Ideas built to{" "}
-            <span className="font-serif italic font-normal text-[#240C0E]">
+            <span className=" font-normal text-burgundy">
               shape perception
             </span>
             .
           </h1>
 
           {/* Description */}
-          <p className="mt-8 md:mt-10 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-neutral-600">
+          <p className="mt-8 md:mt-10 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-ink-2">
             {caseStudiesHero.description}
           </p>
 
@@ -33,10 +33,10 @@ export default function CaseStudiesHero() {
           <div className="mt-14 md:mt-20 pt-8 border-t border-black/10 grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs">
             {caseStudiesHero.meta.map((item) => (
               <div key={item.label}>
-                <span className="block font-mono text-[10px] uppercase tracking-[0.25em] text-neutral-400">
+                <span className="block font-mono text-xs uppercase tracking-eyebrow text-ink-3">
                   {item.label}
                 </span>
-                <span className="mt-1 block font-mono text-xs uppercase tracking-[0.18em] text-black">
+                <span className="mt-1 block font-mono text-xs uppercase tracking-eyebrow text-black">
                   {item.value}
                 </span>
               </div>

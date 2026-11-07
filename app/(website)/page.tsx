@@ -16,18 +16,19 @@ import ContactSection from "@/components/home/sections/ContactSection";
  */
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen bg-white">
+    <div className="relative min-h-screen bg-paper">
       {/* 01 — Cinematic opening + navbar */}
       <HomeIntroShell />
 
       <main className="relative z-0">
-        {/* 02 */}
         <HomeHero />
-        {/* 03 */}
+        {/* Why */}
         <ManifestoSection />
-        {/* 04 */}
+        {/* What */}
         <ExpertiseSection />
-        {/* Tagline moment */}
+        {/* Proof */}
+        <SelectedWorkSection />
+        {/* One type moment, between proof and method */}
         <TaglineReveal
           eyebrow="What we believe"
           lines={[
@@ -35,17 +36,13 @@ export default function HomePage() {
             "We make sure it says the right thing.",
           ]}
         />
-        {/* 05 */}
-        <SelectedWorkSection />
-        {/* 06 */}
-        <ThinkingSection />
-        {/* 07 */}
+        {/* How */}
         <ProcessSection />
-        {/* 08 */}
+        <ThinkingSection />
+        {/* Why us */}
         <WhyCultureSection />
-        {/* 09 */}
+        {/* Renders only with approved testimonials */}
         <ClientVoicesSection />
-        {/* 10 */}
         <ContactSection />
       </main>
     </div>

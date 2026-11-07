@@ -1,425 +1,270 @@
-
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import gsap from "gsap";
-import { RippleButton } from "@/registry/magicui/ripple-button";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { Button } from "@/components/ui/site-button";
+import { EASE } from "@/lib/motion";
+import { brand, contactCta, isActivePath, primaryNav } from "@/lib/navigation";
+import Wordmark from "./Wordmark";
 
 interface NavbarProps {
+  /** Home only: keeps the bar hidden while the cinematic intro plays. */
   introActive?: boolean;
 }
 
-const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Case Studies", href: "/case-studies" },
-  { label: "About", href: "/about" },
-  { label: "Services", href: "/services" },
-];
+const FOCUSABLE = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export default function Navbar({
-  introActive = false,
-}: NavbarProps) {
+/**
+ * Floating navbar + full height mobile menu.
+ * - Hides on scroll down, returns on scroll up (rAF throttled, passive listener).
+ * - On "/" it stays hidden at the very top and during the intro.
+ * - Reveals whenever it receives keyboard focus, so it is never focus trapped off screen.
+ * - Mobile menu is a modal dialog: focus trap, Escape, scroll lock, focus returns to the toggle.
+ */
+export default function Navbar({ introActive = false }: NavbarProps) {
   const pathname = usePathname();
+  const reduce = useReducedMotion();
+  const menuId = useId();
 
-  const headerRef = useRef<HTMLElement>(null);
-  const navRef = useRef<HTMLElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const menuContentRef = useRef<HTMLDivElement>(null);
-  const menuTimeline = useRef<gsap.core.Timeline | null>(null);
-
+  const [visible, setVisible] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const menuOpenRef = useRef(false);
   const introRef = useRef(introActive);
-  const visibleRef = useRef(false);
 
-  // Keep intro state synchronized.
   useEffect(() => {
     introRef.current = introActive;
-
-    if (introActive) {
-      visibleRef.current = false;
-      gsap.to(headerRef.current, {
-        yPercent: -110,
-        autoAlpha: 0,
-        duration: 0.5,
-        overwrite: true,
-      });
-    }
   }, [introActive]);
 
-  // Navbar entrance and scroll controller.
+  // Close the menu on navigation (render time state adjustment, no effect needed).
+  const [lastPath, setLastPath] = useState(pathname);
+  if (lastPath !== pathname) {
+    setLastPath(pathname);
+    setMenuOpen(false);
+  }
+
   useEffect(() => {
-    const header = headerRef.current;
-    if (!header) return;
+    menuOpenRef.current = menuOpen;
+  }, [menuOpen]);
 
-    gsap.set(header, {
-      yPercent: -110,
-      autoAlpha: 0,
-    });
-
-    let lastScroll = window.scrollY;
+  // Scroll controller.
+  useEffect(() => {
+    const isHome = pathname === "/";
+    let last = window.scrollY;
     let ticking = false;
 
-    const reveal = () => {
-      if (introRef.current || menuOpenRef.current) return;
+    const update = () => {
+      const y = window.scrollY;
+      const delta = y - last;
+      setScrolled(y > 24);
 
-      if (visibleRef.current) return;
-      visibleRef.current = true;
-
-      gsap.to(header, {
-        yPercent: 0,
-        autoAlpha: 1,
-        duration: 0.75,
-        ease: "power4.out",
-        overwrite: true,
-      });
-    };
-
-    const hide = () => {
-      if (!visibleRef.current) return;
-      visibleRef.current = false;
-
-      gsap.to(header, {
-        yPercent: -110,
-        autoAlpha: 0,
-        duration: 0.5,
-        ease: "power3.inOut",
-        overwrite: true,
-      });
-    };
-
-    const updateScroll = () => {
-      const currentScroll = window.scrollY;
-      const delta = currentScroll - lastScroll;
-
-      setScrolled(currentScroll > 30);
-
-      if (introRef.current || menuOpenRef.current) {
-        lastScroll = currentScroll;
-        ticking = false;
-        return;
+      if (!introRef.current && !menuOpenRef.current) {
+        if (isHome && y <= 20) setVisible(false);
+        else if (delta < -4) setVisible(true);
+        else if (delta > 6 && y > 96) setVisible(false);
       }
-
-      if (pathname === "/" && currentScroll <= 20) {
-        hide();
-      } else if (delta < -4) {
-        reveal();
-      } else if (delta > 5 && currentScroll > 80) {
-        hide();
-      }
-
-      lastScroll = currentScroll;
+      last = y;
       ticking = false;
     };
 
-    const handleScroll = () => {
+    const onScroll = () => {
       if (!ticking) {
-        window.requestAnimationFrame(updateScroll);
         ticking = true;
+        requestAnimationFrame(update);
       }
     };
 
-    window.addEventListener("scroll", handleScroll, {
-      passive: true,
-    });
+    // Initial state: visible on sub pages, or on home once scrolled past the intro.
+    const init = window.setTimeout(() => {
+      setScrolled(window.scrollY > 24);
+      if (!introRef.current && (!isHome || window.scrollY > 20)) setVisible(true);
+    }, 0);
 
-    // Initial state: reveal immediately on subpages or when intro is passed
-    if (pathname !== "/" || (!introActive && window.scrollY > 20)) {
-      reveal();
-    }
-
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", handleScroll);
-      gsap.killTweensOf(header);
+      window.clearTimeout(init);
+      window.removeEventListener("scroll", onScroll);
     };
-  }, [introActive, pathname]);
+  }, [pathname, introActive]);
 
-  // Mobile menu animation.
-  const openMenu = useCallback(() => {
-    const menu = menuRef.current;
-    const content = menuContentRef.current;
-
-    if (!menu || !content) return;
-
-    menuOpenRef.current = true;
-    setMenuOpen(true);
-
-    menuTimeline.current?.kill();
-
-    const links = content.querySelectorAll(".mobile-nav-link");
-
-    gsap.set(menu, {
-      autoAlpha: 1,
-      pointerEvents: "auto",
-    });
-
-    menuTimeline.current = gsap.timeline();
-
-    menuTimeline.current
-      .fromTo(
-        menu,
-        { clipPath: "inset(0 0 100% 0)" },
-        {
-          clipPath: "inset(0 0 0% 0)",
-          duration: 0.8,
-          ease: "power4.inOut",
-        }
-      )
-      .fromTo(
-        links,
-        {
-          y: 45,
-          autoAlpha: 0,
-        },
-        {
-          y: 0,
-          autoAlpha: 1,
-          duration: 0.65,
-          stagger: 0.08,
-          ease: "power3.out",
-        },
-        "-=0.35"
-      );
+  const closeMenu = useCallback((restoreFocus = true) => {
+    setMenuOpen(false);
+    if (restoreFocus) requestAnimationFrame(() => toggleRef.current?.focus());
   }, []);
 
-  const closeMenu = useCallback(() => {
-    const menu = menuRef.current;
-    const content = menuContentRef.current;
-
-    if (!menu || !content) return;
-
-    menuOpenRef.current = false;
-    menuTimeline.current?.kill();
-
-    const links = content.querySelectorAll(".mobile-nav-link");
-
-    menuTimeline.current = gsap.timeline({
-      onComplete: () => {
-        gsap.set(menu, {
-          autoAlpha: 0,
-          pointerEvents: "none",
-        });
-        setMenuOpen(false);
-      },
-    });
-
-    menuTimeline.current
-      .to(links, {
-        y: -20,
-        autoAlpha: 0,
-        duration: 0.2,
-        stagger: 0.025,
-        ease: "power2.in",
-      })
-      .to(
-        menu,
-        {
-          clipPath: "inset(0 0 100% 0)",
-          duration: 0.55,
-          ease: "power4.inOut",
-        },
-        "-=0.05"
-      );
-
+  // Close when resizing up to desktop.
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onChange = () => mq.matches && setMenuOpen(false);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  // Keyboard accessibility and body scroll lock.
+  // Modal behaviour while open.
   useEffect(() => {
     if (!menuOpen) return;
-
     document.body.style.overflow = "hidden";
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeMenu();
+    const items = () => [toggleRef.current, ...(panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE) ?? [])].filter(Boolean) as HTMLElement[];
+    requestAnimationFrame(() => items()[1]?.focus());
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") return closeMenu();
+      if (e.key !== "Tab") return;
+      const list = items();
+      const first = list[0];
+      const lastEl = list[list.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        lastEl.focus();
+      } else if (!e.shiftKey && document.activeElement === lastEl) {
+        e.preventDefault();
+        first.focus();
+      }
     };
-
-    window.addEventListener("keydown", handleKeyDown);
-
+    window.addEventListener("keydown", onKey);
     return () => {
       document.body.style.overflow = "";
-      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keydown", onKey);
     };
   }, [menuOpen, closeMenu]);
 
-  // Cleanup mobile animation.
-  useEffect(() => {
-    return () => {
-      menuTimeline.current?.kill();
-    };
-  }, []);
-
-  const isActive = (href: string) => {
-    if (href === "/") return pathname === "/";
-    return pathname.startsWith(href);
-  };
+  const shown = (visible && !introActive) || menuOpen;
+  const step = Math.min(0.06, 0.4 / (primaryNav.length + 1));
 
   return (
     <>
-      {/* Desktop / Main Navbar */}
-      <header
-        ref={headerRef}
-        className="fixed inset-x-0 top-0 z-40"
-        style={{ visibility: "hidden" }}
+      <motion.header
+        className="fixed inset-x-0 top-0 z-50 pt-4"
+        initial={false}
+        animate={shown ? { y: 0, opacity: 1 } : { y: "-110%", opacity: 0 }}
+        transition={{ duration: shown ? 0.6 : 0.4, ease: EASE }}
+        onFocusCapture={() => !introRef.current && setVisible(true)}
+        style={{ pointerEvents: shown ? "auto" : "none" }}
       >
-        <div className="mx-auto max-w-7xl px-5 py-4 md:px-10">
+        <div className="container-content">
           <nav
-            ref={navRef}
-            className={`flex items-center justify-between rounded-full border px-6 py-3 transition-all duration-500 ${scrolled
-                ? "border-black/5 bg-[#F9F8F6]/90 shadow-[0_8px_35px_rgba(0,0,0,0.06)] backdrop-blur-2xl"
-                : "border-white/20 bg-white/70 backdrop-blur-lg"
-              }`}
+            aria-label="Primary"
+            className={`flex h-14 items-center justify-between rounded-full border pr-2 pl-6 backdrop-blur-xl transition-colors duration-300 ease-editorial ${
+              scrolled || menuOpen ? "border-line bg-paper/85" : "border-transparent bg-paper/60"
+            }`}
           >
-            {/* Logo */}
-            <Link
-              href="/"
-              className="group relative z-10 text-xl font-light tracking-[0.2em] uppercase text-[#1C1717]"
-            >
-              CULT
-              <span className="font-serif font-bold text-[#240C0E]">
-                .
-              </span>
-              URE
-            </Link>
+            <Wordmark onClick={() => menuOpen && closeMenu(false)} />
 
-            {/* Desktop Links */}
-            <div className="hidden items-center gap-9 md:flex">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`nav-link relative py-2 text-[11px] uppercase tracking-[0.18em] transition-colors duration-300 ${isActive(link.href)
-                      ? "text-[#240C0E]"
-                      : "text-neutral-500 hover:text-[#240C0E]"
-                    }`}
-                >
-                  {link.label}
+            <ul className="hidden items-center gap-8 md:flex">
+              {primaryNav.map((link) => {
+                const active = isActivePath(pathname, link.href);
+                return (
+                  <li key={link.href}>
+                    <Link
+                      href={link.href}
+                      aria-current={active ? "page" : undefined}
+                      className={`link title-4 transition-colors duration-300 ease-editorial ${active ? "text-ink" : "text-ink-3 hover:text-ink"}`}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
 
-                  <span
-                    className={`absolute bottom-0 left-0 h-px bg-[#240C0E] transition-transform duration-500 origin-left ${isActive(link.href)
-                        ? "scale-x-100"
-                        : "scale-x-0"
-                      }`}
-                  />
-                </Link>
-              ))}
-            </div>
+            <Button href={contactCta.href} variant="burgundy" size="sm" icon="arrow" className="hidden md:inline-flex">
+              {contactCta.label}
+            </Button>
 
-            {/* Contact CTA */}
-            <RippleButton
-              href="/services#contact"
-              rippleColor="rgba(255, 255, 255, 0.45)"
-              className="group hidden items-center gap-2.5 rounded-full bg-[#240C0E] px-5 py-2.5 text-xs font-medium uppercase tracking-[0.16em] !text-white transition-all duration-300 hover:bg-[#3A1518] hover:shadow-[0_6px_20px_rgba(36,12,14,0.25)] active:scale-[0.98] md:inline-flex"
-            >
-              <span className="!text-white text-white">Get in Touch</span>
-              <span className="!text-white text-white text-xs leading-none transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-                ↗
-              </span>
-            </RippleButton>
-
-            {/* Mobile Menu Trigger */}
+            {/* Mobile toggle: two lines morph into a cross. */}
             <button
+              ref={toggleRef}
               type="button"
-              onClick={openMenu}
-              aria-label="Open navigation menu"
+              onClick={() => (menuOpen ? closeMenu() : setMenuOpen(true))}
               aria-expanded={menuOpen}
-              className="flex h-10 w-10 flex-col items-center justify-center gap-[5px] md:hidden"
+              aria-controls={menuId}
+              aria-label={menuOpen ? "Close menu" : "Open menu"}
+              className="relative grid size-11 place-items-center rounded-full md:hidden"
             >
-              <span className="h-px w-6 bg-[#240C0E]" />
-              <span className="h-px w-4 self-end bg-[#240C0E] transition-all duration-300 group-hover:w-6" />
+              <motion.span
+                aria-hidden="true"
+                className="absolute h-px w-5 bg-ink"
+                initial={false}
+                animate={menuOpen ? { y: 0, rotate: 45 } : { y: -4, rotate: 0 }}
+                transition={{ duration: 0.5, ease: EASE }}
+              />
+              <motion.span
+                aria-hidden="true"
+                className="absolute h-px w-5 origin-center bg-ink"
+                initial={false}
+                animate={menuOpen ? { y: 0, rotate: -45, scaleX: 1 } : { y: 4, rotate: 0, scaleX: 0.6 }}
+                transition={{ duration: 0.5, ease: EASE }}
+              />
             </button>
           </nav>
         </div>
-      </header>
+      </motion.header>
 
-      {/* Fullscreen Mobile Navigation */}
-      <div
-        ref={menuRef}
-        className="fixed inset-0 z-50 flex flex-col bg-[#F7F5F1] md:hidden"
-        style={{
-          visibility: "hidden",
-          pointerEvents: "none",
-          clipPath: "inset(0 0 100% 0)",
-        }}
-      >
-        <div
-          ref={menuContentRef}
-          className="flex h-full flex-col justify-between px-8 py-10"
-        >
-          {/* Top */}
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              onClick={closeMenu}
-              className="text-xl font-light tracking-[0.2em] text-[#1C1717]"
-            >
-              CULT<span className="font-serif text-[#240C0E]">.</span>URE
-            </Link>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            ref={panelRef}
+            id={menuId}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Site menu"
+            data-lenis-prevent
+            className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-paper/95 backdrop-blur-2xl md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.3, ease: EASE } }}
+            transition={{ duration: 0.4, ease: EASE }}
+          >
+            <div className="container-content flex min-h-full flex-col justify-between gap-12 pt-28 pb-10">
+              <nav aria-label="Mobile">
+                <p className="eyebrow mb-6 text-ink-3">Menu</p>
+                <ul className="grid">
+                  {primaryNav.map((link, i) => {
+                    const active = isActivePath(pathname, link.href);
+                    return (
+                      <motion.li
+                        key={link.href}
+                        initial={{ opacity: 0, y: reduce ? 0 : 24 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, ease: EASE, delay: 0.08 + i * step }}
+                        className="border-b border-line"
+                      >
+                        <Link
+                          href={link.href}
+                          onClick={() => closeMenu(false)}
+                          aria-current={active ? "page" : undefined}
+                          className={`flex items-baseline justify-between py-4 heading-3 transition-colors duration-300 ease-editorial ${active ? "text-burgundy" : "text-ink"}`}
+                        >
+                          {link.label}
+                          <span className="font-mono caption-5 text-ink-3">{String(i + 1).padStart(2, "0")}</span>
+                        </Link>
+                      </motion.li>
+                    );
+                  })}
+                </ul>
+              </nav>
 
-            <button
-              type="button"
-              onClick={closeMenu}
-              aria-label="Close navigation menu"
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-black/10 text-2xl text-[#240C0E] transition-transform hover:rotate-90"
-            >
-              ×
-            </button>
-          </div>
-
-          {/* Navigation */}
-          <div className="flex flex-col gap-5">
-            <span className="mb-3 text-[10px] uppercase tracking-[0.3em] text-neutral-400">
-              Navigation
-            </span>
-
-            {navLinks.map((link, index) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={closeMenu}
-                className={`mobile-nav-link flex items-center justify-between border-b border-black/10 pb-4 text-4xl font-light uppercase tracking-tight ${isActive(link.href)
-                    ? "text-[#240C0E]"
-                    : "text-neutral-800"
-                  }`}
+              <motion.div
+                initial={{ opacity: 0, y: reduce ? 0 : 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, ease: EASE, delay: 0.08 + primaryNav.length * step }}
+                className="grid gap-6"
               >
-                {link.label}
-                <span className="text-sm text-neutral-400">
-                  0{index + 1}
-                </span>
-              </Link>
-            ))}
-          </div>
-
-          {/* Bottom */}
-          <div className="mobile-nav-link">
-            <p className="mb-5 text-xs tracking-wide text-neutral-500">
-              Have a project in mind?
-            </p>
-
-            <RippleButton
-              href="/services#contact"
-              onClick={closeMenu}
-              rippleColor="rgba(255, 255, 255, 0.45)"
-              className="flex w-full items-center justify-between rounded-full bg-[#240C0E] px-7 py-5 text-xs uppercase tracking-[0.2em] text-white transition-colors hover:bg-[#3A1518]"
-            >
-              <span>Let&apos;s Talk</span>
-              <span>↗</span>
-            </RippleButton>
-
-            <p className="mt-8 text-[9px] uppercase tracking-[0.25em] text-neutral-400">
-              CULT.URE — Creative Digital Experiences
-            </p>
-          </div>
-        </div>
-      </div>
+                <p className="body-6 max-w-xs text-ink-2">{brand.tagline}</p>
+                <Button href={contactCta.href} variant="burgundy" size="lg" icon="badge" className="w-full justify-between" onClick={() => closeMenu(false)}>
+                  {contactCta.label}
+                </Button>
+              </motion.div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

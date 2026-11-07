@@ -51,14 +51,15 @@ export const heroPillars = [
 
 export const heroMedia: { primary: HeroImage; secondary: HeroImage } = {
   primary: {
-    src: "/images/hero/portrait.jpg",
-    alt: "Executive portrait for CULT.URE editorial practice",
-    caption: "CULT.URE / 2026",
-    focus: "50% 30%",
+    // Art directed from /images/work/featured.jpg: 4:5 crop, monochrome, burgundy shadows.
+    src: "/images/hero/campaign.jpg",
+    alt: "A man in a tailored dark suit fastening his jacket, photographed in black and white",
+    caption: "Fig. 01 — Presence",
+    focus: "50% 45%",
   },
+  // Inset card is a typographic SVG seal; set a src here to use a photo instead.
   secondary: {
-    src: "/images/hero/detail.jpg",
-    alt: "Architectural monograph detail",
-    focus: "50% 50%",
+    src: null,
+    alt: "",
   },
 };

@@ -1,45 +1,26 @@
 import { thinking } from "@/lib/content/home";
+import { RevealGroup, RevealItem } from "@/components/motion";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
-import ScrollReveal from "../shared/ScrollReveal";
 
-/** 06 — Our thinking: scannable editorial statements in a 2×2 grid. */
+/** 05 — Thinking: scannable editorial statements, 2 × 2. */
 export default function ThinkingSection() {
   return (
-    <section
-      id="thinking"
-      aria-labelledby="thinking-title"
-      className="section-padding scroll-mt-24 bg-white"
-    >
+    <section id="thinking" aria-labelledby="thinking-title" className="section surface-paper">
       <Container>
-        <ScrollReveal>
-          <SectionHeading intro={thinking.intro} titleId="thinking-title" />
-        </ScrollReveal>
+        <SectionHeading intro={thinking.intro} titleId="thinking-title" />
 
-        <div className="mt-14 grid border-t border-black/10 md:grid-cols-2 lg:mt-20">
-          {thinking.statements.map((item, index) => (
-            <ScrollReveal
-              key={item.topic}
-              delay={index * 0.1}
-              distance={24}
-              className={`border-b border-black/10 py-10 md:p-10 ${
-                index % 2 === 0 ? "md:border-r md:pl-0" : "md:pr-0"
-              }`}
-            >
+        <RevealGroup as="ul" count={thinking.statements.length} className="mt-16 grid gap-x-16 gap-y-12 md:grid-cols-2 lg:mt-24">
+          {thinking.statements.map((item) => (
+            <RevealItem as="li" key={item.topic} className="border-t border-line pt-8">
               <article>
-                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-brand-burgundy font-medium">
-                  {item.topic}
-                </p>
-                <h3 className="mt-5 font-serif text-2xl leading-snug tracking-[-0.02em] text-black text-balance sm:text-3xl">
-                  “{item.statement}”
-                </h3>
-                <p className="mt-5 max-w-md text-sm leading-relaxed text-neutral-600 font-light">
-                  {item.body}
-                </p>
+                <p className="eyebrow text-burgundy">{item.topic}</p>
+                <h3 className="heading-4 mt-5 text-ink">“{item.statement}”</h3>
+                <p className="body-6 mt-5 max-w-md text-ink-2">{item.body}</p>
               </article>
-            </ScrollReveal>
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
       </Container>
     </section>
   );

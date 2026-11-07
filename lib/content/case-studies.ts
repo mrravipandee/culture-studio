@@ -166,6 +166,6 @@ export const caseStudiesCta = {
   description:
     "We partner with a limited number of founders, executives, and category leaders each quarter to ensure rigorous focus and museum-grade execution.",
   ctaText: "Initiate Inquiry",
-  ctaHref: "/services#contact",
+  ctaHref: "/#contact",
 };
 

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function CaseStudiesPage() {
   return (
-    <div className="relative min-h-screen bg-white selection:bg-[#240C0E] selection:text-white">
+    <div className="relative min-h-screen bg-white selection:bg-burgundy selection:text-white">
       {/* Navigation */}
       <Navbar />
 

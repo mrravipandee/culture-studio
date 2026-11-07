@@ -123,12 +123,12 @@ export default function LogoMarquee({ logos, speed = 18, label, className = "" }
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-10% 0px" }}
       transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-      className={`relative left-1/2 w-screen -translate-x-1/2 border-y border-black/10 bg-[#F9F8F6] py-12 sm:py-16 ${className}`}
+      className={`relative left-1/2 w-screen -translate-x-1/2 border-y border-black/10 bg-subtle py-12 sm:py-16 ${className}`}
     >
       {label && (
-        <div className="mx-auto mb-10 flex max-w-7xl items-center gap-4 px-6 sm:mb-12 sm:px-10">
+        <div className="container-content mb-10 flex items-center gap-4 sm:mb-12">
           <span aria-hidden="true" className="h-px flex-1 bg-black/10" />
-          <p className="text-center font-mono text-xs uppercase tracking-[0.22em] text-neutral-500">{label}</p>
+          <p className="text-center eyebrow text-ink-3">{label}</p>
           <span aria-hidden="true" className="h-px flex-1 bg-black/10" />
         </div>
       )}

@@ -14,7 +14,7 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
       <article className="group flex flex-col justify-between">
         <Link
           href={`/case-studies/${project.slug}`}
-          className={`block relative overflow-hidden rounded-xl bg-neutral-100 ${
+          className={`block relative overflow-hidden rounded-xl bg-subtle ${
             isTall ? "aspect-[4/3] md:aspect-[4/3]" : "aspect-[16/11]"
           } shadow-sm`}
         >
@@ -34,32 +34,32 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
         {/* Metadata + Title */}
         <div className="mt-6 flex flex-col">
           <div className="flex items-center justify-between text-xs">
-            <span className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#240C0E] font-medium">
+            <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
               {project.category}
             </span>
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-neutral-400">
+            <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               {project.year}
             </span>
           </div>
 
           <div className="mt-3 flex items-start justify-between gap-4">
             <div>
-              <h3 className="text-2xl sm:text-3xl font-light tracking-[-0.02em] text-black">
+              <h3 className="text-2xl sm:text-3xl font-light tracking-heading text-black">
                 <Link
                   href={`/case-studies/${project.slug}`}
-                  className="hover:text-[#240C0E] transition-colors"
+                  className="hover:text-burgundy transition-colors"
                 >
                   {project.title}
                 </Link>
               </h3>
-              <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-neutral-400">
+              <p className="mt-1 font-mono text-xs uppercase tracking-eyebrow text-ink-3">
                 {project.clientType}
               </p>
             </div>
 
             <Link
               href={`/case-studies/${project.slug}`}
-              className="mt-1 h-9 w-9 shrink-0 rounded-full border border-black/10 flex items-center justify-center transition-all duration-300 group-hover:bg-[#240C0E] group-hover:text-white group-hover:border-[#240C0E]"
+              className="mt-1 h-9 w-9 shrink-0 rounded-full border border-black/10 flex items-center justify-center transition-all duration-300 group-hover:bg-burgundy group-hover:text-white group-hover:border-burgundy"
               aria-label={`View ${project.title} case study`}
             >
               <ArrowUpRight
@@ -71,7 +71,7 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
             </Link>
           </div>
 
-          <p className="mt-3 text-sm font-light leading-relaxed text-neutral-600 line-clamp-2">
+          <p className="mt-3 text-sm font-light leading-relaxed text-ink-2 line-clamp-2">
             {project.description}
           </p>
 
@@ -80,7 +80,7 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
             {project.deliverables.map((item) => (
               <span
                 key={item}
-                className="font-mono text-[10px] uppercase tracking-wider text-neutral-500 bg-neutral-100/70 px-2.5 py-0.5 rounded"
+                className="font-mono text-xs uppercase tracking-wider text-ink-3 bg-subtle px-2.5 py-0.5 rounded"
               >
                 {item}
               </span>
@@ -94,20 +94,20 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
 
 export default function ProjectsGrid() {
   return (
-    <section className="py-20 md:py-32 bg-neutral-50 border-t border-b border-black/10">
+    <section className="py-20 md:py-32 bg-subtle border-t border-b border-black/10">
       <Container>
         {/* Section Header */}
         <ScrollReveal>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-black/10">
             <div>
-              <span className="font-mono text-xs uppercase tracking-[0.25em] text-[#240C0E] font-medium">
+              <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                 [ 02 / ARCHIVE ]
               </span>
-              <h2 className="mt-4 text-3xl sm:text-5xl font-light tracking-[-0.02em] text-black">
+              <h2 className="mt-4 text-3xl sm:text-5xl font-light tracking-heading text-black">
                 Selected Engagements
               </h2>
             </div>
-            <p className="font-mono text-xs uppercase tracking-[0.2em] text-neutral-400">
+            <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               Showing 04 of 04 Published Works
             </p>
           </div>

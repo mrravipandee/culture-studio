@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import { RippleButton } from "@/registry/magicui/ripple-button";
+import { ArrowUpRight } from "@/components/ui/Arrow";
+import { Button } from "@/components/ui/site-button";
 import { selectedWork, type Project } from "@/lib/content/home";
 import Container from "../shared/Container";
 import ImageFrame from "../shared/ImageFrame";
 import SectionHeading from "../shared/SectionHeading";
-import ScrollReveal from "../shared/ScrollReveal";
+import { Reveal } from "@/components/motion";
 
 /**
  * Editorial rhythm: rows alternate 7+5 / 5+7 columns.
@@ -34,31 +34,24 @@ function ProjectCard({
     <>
       <ImageFrame
         image={project.image}
-        aspect={featured ? "aspect-[4/3] md:aspect-[16/10]" : "aspect-[4/3]"}
-        sizes={featured ? "(min-width: 768px) 60vw, 100vw" : "(min-width: 768px) 40vw, 100vw"}
-        className="rounded-lg shadow-sm"
+        aspect={featured ? "aspect-landscape" : "aspect-landscape md:aspect-portrait"}
+        sizes={featured ? "(min-width: 768px) 58vw, 100vw" : "(min-width: 768px) 40vw, 100vw"}
+        className="rounded-lg"
+        scrollScale
       />
-      <div className="mt-5 flex items-start justify-between gap-4">
+      <div className="mt-6 flex items-start justify-between gap-6">
         <div>
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[#240C0E] font-medium">
-            {project.category}
-          </p>
-          <h3 className="mt-2 text-2xl font-light tracking-[-0.02em] text-black">
-            {project.title}
-          </h3>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-neutral-600 font-light">
-            {project.description}
-          </p>
+          <p className="eyebrow text-burgundy">{project.category}</p>
+          <h3 className="heading-5 mt-3 text-ink">{project.title}</h3>
+          <p className="body-6 mt-2 max-w-md text-ink-2">{project.description}</p>
         </div>
         {project.href && (
-          <div className="mt-1 h-9 w-9 shrink-0 rounded-full border border-black/10 flex items-center justify-center transition-all group-hover:bg-[#240C0E] group-hover:text-white group-hover:border-[#240C0E]">
-            <ArrowUpRight
-              aria-hidden="true"
-              size={16}
-              strokeWidth={1.5}
-              className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            />
-          </div>
+          <span
+            aria-hidden="true"
+            className="mt-1 grid size-10 shrink-0 place-items-center rounded-full border border-line-strong text-ink transition-colors duration-300 ease-editorial group-hover:border-burgundy group-hover:bg-burgundy group-hover:text-paper"
+          >
+            <ArrowUpRight className="btn-arrow size-4" />
+          </span>
         )}
       </div>
     </>
@@ -66,37 +59,29 @@ function ProjectCard({
 
   return (
     <li className={span}>
-      <ScrollReveal delay={index * 0.15} distance={28}>
-        <article>
-          {project.href ? (
-            <Link href={project.href} className="group block">
-              {body}
-            </Link>
-          ) : (
-            body
-          )}
-        </article>
-      </ScrollReveal>
+      <Reveal as="article" delay={(index % 2) * 0.1}>
+        {project.href ? (
+          <Link href={project.href} className="group block rounded-lg">
+            {body}
+          </Link>
+        ) : (
+          body
+        )}
+      </Reveal>
     </li>
   );
 }
 
-/** 05 — Selected work. */
+/** 03 — Selected work: proof, placed right after what we do. */
 export default function SelectedWorkSection() {
   const { projects } = selectedWork;
 
   return (
-    <section
-      id="work"
-      aria-labelledby="work-title"
-      className="section-padding scroll-mt-24 bg-neutral-50"
-    >
+    <section id="work" aria-labelledby="work-title" className="section surface-subtle">
       <Container>
-        <ScrollReveal>
-          <SectionHeading intro={selectedWork.intro} titleId="work-title" />
-        </ScrollReveal>
+        <SectionHeading intro={selectedWork.intro} titleId="work-title" />
 
-        <ul className="mt-14 grid gap-14 md:grid-cols-12 md:gap-x-8 lg:mt-20">
+        <ul className="mt-16 grid items-start gap-16 md:grid-cols-12 md:gap-x-8 lg:mt-24">
           {projects.map((project, index) => (
             <ProjectCard
               key={project.id}
@@ -107,20 +92,10 @@ export default function SelectedWorkSection() {
           ))}
         </ul>
 
-        <div className="mt-14 flex justify-start border-t border-black/10 pt-8 md:justify-end">
-          <RippleButton
-            href={selectedWork.cta.href}
-            rippleColor="rgba(0, 0, 0, 0.15)"
-            className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-black px-7 text-xs uppercase tracking-[0.18em] text-black transition-colors hover:bg-black hover:text-white"
-          >
-            <span>{selectedWork.cta.label}</span>
-            <ArrowUpRight
-              aria-hidden="true"
-              size={14}
-              strokeWidth={1.5}
-              className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
-            />
-          </RippleButton>
+        <div className="mt-16 flex justify-start border-t border-line pt-8 md:justify-end">
+          <Button href={selectedWork.cta.href} variant="secondary" icon="arrow">
+            {selectedWork.cta.label}
+          </Button>
         </div>
       </Container>
     </section>

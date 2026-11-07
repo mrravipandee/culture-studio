@@ -5,11 +5,11 @@ export default function AboutApproach() {
   const { eyebrow, title, lead, steps } = aboutApproach;
 
   return (
-    <section className="py-24 sm:py-32 bg-neutral-900 text-white relative">
+    <section className="py-24 sm:py-32 bg-ink text-white relative">
       <Container>
         {/* Header */}
         <div className="border-b border-white/15 pb-8">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-[#a44b52]">
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-paper-3">
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
@@ -30,7 +30,7 @@ export default function AboutApproach() {
               className="border-t border-white/20 pt-8 flex flex-col justify-between group hover:border-white transition-colors"
             >
               <div>
-                <span className="font-mono text-xs text-white/40 tracking-[0.25em] uppercase block mb-4">
+                <span className="font-mono text-xs text-white/40 tracking-eyebrow uppercase block mb-4">
                   STAGE {step.step}
                 </span>
 
@@ -38,7 +38,7 @@ export default function AboutApproach() {
                   {step.name}
                 </h3>
 
-                <p className="mt-2 text-xs font-mono uppercase tracking-[0.15em] text-[#a44b52]">
+                <p className="mt-2 text-xs font-mono uppercase tracking-eyebrow text-paper-3">
                   {step.tagline}
                 </p>
 
@@ -48,7 +48,7 @@ export default function AboutApproach() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-white/10">
-                <h4 className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/40 mb-3">
+                <h4 className="font-mono text-xs uppercase tracking-eyebrow text-white/40 mb-3">
                   CORE DELIVERABLES
                 </h4>
                 <ul className="space-y-2">

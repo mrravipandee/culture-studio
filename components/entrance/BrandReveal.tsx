@@ -15,11 +15,11 @@ export default function BrandReveal({ visible }: BrandRevealProps) {
       aria-hidden={!visible}
     >
       {/* Brand Title */}
-      <h1 className="text-white text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-[0.22em] uppercase select-none transition-transform duration-1000 ease-out">
+      <p aria-hidden="true" className="text-white text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-light tracking-eyebrow uppercase select-none transition-transform duration-1000 ease-out">
         <span>CULT</span>
-        <span className="text-[#a44b52] font-serif">.</span>
+        <span className="text-paper-3">.</span>
         <span>URE</span>
-      </h1>
+      </p>
 
       {/* Thin Editorial Divider */}
       <div
