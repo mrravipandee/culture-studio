@@ -251,13 +251,13 @@ export default function ServicesStory({ services }: { services: StoryService[] }
                   {service.includes.map((item) => (
                     <li key={item.href} className="flex items-center gap-3">
                       <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-burgundy" />
-                      <Link href={item.href} className="link body-5 text-ink">
+                      <Link href={item.href} className="link body-5 min-h-6 py-0.5 text-ink">
                         {item.label}
                       </Link>
                     </li>
                   ))}
                 </ul>
-                <Link href={service.more.href} className="link title-4 mt-6 text-burgundy lg:mt-8">
+                <Link href={service.more.href} className="link title-4 mt-6 min-h-6 py-0.5 text-burgundy lg:mt-8">
                   {service.more.label}
                   <span aria-hidden="true" className="btn-arrow">↗</span>
                 </Link>

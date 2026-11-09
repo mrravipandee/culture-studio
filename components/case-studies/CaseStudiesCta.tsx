@@ -16,9 +16,7 @@ export default function CaseStudiesCta() {
 
             {/* Headline */}
             <h2 className="mt-8 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-[1.08] text-white">
-              Ready to define{" "}
-              <span className=" text-white/90">your category</span>
-              ?
+              {caseStudiesCta.headline}
             </h2>
 
             {/* Description */}

@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import HomeIntroShell from "@/components/home/HomeIntroShell";
 import HomeHero from "@/components/home/HomeHero";
 import ManifestoSection from "@/components/home/sections/ManifestoSection";
@@ -9,6 +11,14 @@ import WhyCultureSection from "@/components/home/sections/WhyCultureSection";
 import ClientVoicesSection from "@/components/home/sections/ClientVoicesSection";
 import TaglineReveal from "@/components/motion/TaglineReveal";
 import ContactSection from "@/components/home/sections/ContactSection";
+
+export const metadata: Metadata = pageMetadata({
+  title: "CULT.URE | Digital Growth, Marketing & Creative Agency",
+  absoluteTitle: true,
+  path: "/",
+  description:
+    "CULT.URE is a digital growth, marketing and creative agency. Brand, social, performance, e-commerce, SEO, GEO & AEO, email, websites and AI automation, planned as one.",
+});
 
 /**
  * Homepage — Server Component.

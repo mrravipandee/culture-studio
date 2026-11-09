@@ -1,7 +1,7 @@
 import Navbar from "@/components/navigation/Navbar";
 import { Button, TextLink } from "@/components/ui/site-button";
 
-export const metadata = { title: "Page not found" };
+export const metadata = { title: "Page not found", robots: { index: false, follow: true } };
 
 /** Branded 404 with a clear way back. */
 export default function NotFound() {

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/site-button";
 import { aboutCta } from "@/lib/content/about";
 
 export default function AboutCta() {
-  const { eyebrow, lead, primaryAction, secondaryAction } = aboutCta;
+  const { eyebrow, lead, primaryAction, secondaryAction, headline } = aboutCta;
 
   return (
     <section className="py-24 sm:py-36 bg-burgundy text-white relative overflow-hidden">
@@ -24,10 +24,7 @@ export default function AboutCta() {
 
           {/* Headline */}
           <h2 className="mt-8 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-[1.08] text-white">
-            Let&apos;s build{" "}
-            <span className=" font-normal text-white/95">
-              something that matters.
-            </span>
+            {headline}
           </h2>
 
           {/* Lead */}

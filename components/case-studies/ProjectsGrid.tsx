@@ -98,11 +98,13 @@ export default function ProjectsGrid() {
                 [ 02 / ARCHIVE ]
               </span>
               <h2 className="mt-4 text-3xl sm:text-5xl font-light tracking-heading text-black">
-                Selected Engagements
+                More projects
               </h2>
             </div>
             <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
-              Showing 04 of 04 Published Works
+              {caseStudiesList.every((p) => p.placeholder)
+                ? `${caseStudiesList.length} sample projects · details to be confirmed`
+                : `${caseStudiesList.length} projects`}
             </p>
           </div>
         </ScrollReveal>

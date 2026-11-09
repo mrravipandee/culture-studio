@@ -47,7 +47,8 @@ export default function AboutStory() {
               </div>
             </div>
 
-            {/* Editable Content Badge / Notice */}
+            {/* Editable notice: only rendered when content provides one */}
+            {editableNotice && (
             <div className="rounded-lg border border-line bg-subtle p-5">
               <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-black/60 uppercase">
                 <span className="inline-block w-2 h-2 rounded-full bg-burgundy" />
@@ -57,11 +58,12 @@ export default function AboutStory() {
                 {editableNotice}
               </p>
             </div>
+            )}
 
             {/* Evolution Phases */}
             <div className="border-t border-black/10 pt-8">
               <h4 className="font-mono text-xs uppercase tracking-eyebrow text-black/50 mb-6">
-                EVOLUTION PHASES
+                HOW IT CONNECTS
               </h4>
               <div className="space-y-6">
                 {milestones.map((milestone) => (
@@ -99,16 +101,16 @@ export default function AboutStory() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-5 left-5 right-5 text-white">
                 <p className="font-mono text-xs uppercase tracking-eyebrow text-white/70">
-                  THE HUMAN ELEMENT
+                  IN PRACTICE
                 </p>
                 <p className="text-sm font-light tracking-wide mt-1">
-                  &ldquo;A steady, recognizable voice outlasts any single algorithmic cycle.&rdquo;
+                  &ldquo;A steady, recognisable voice outlasts any single algorithm.&rdquo;
                 </p>
               </div>
             </div>
 
             <p className="font-mono text-xs uppercase tracking-eyebrow text-black/40 text-center">
-              CULT.URE STUDIO ARCHIVE &mdash; FIGURE 01
+              CULT.URE &mdash; Beyond the noise. Into the culture.
             </p>
           </div>
         </div>

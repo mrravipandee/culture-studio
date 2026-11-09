@@ -61,9 +61,9 @@ export const services: Record<ServiceId, Service> = {
     id: "personal-branding-linkedin-marketing",
     name: "Personal Branding & LinkedIn Marketing",
     category: "brand-presence",
-    summary: "A clear public position for founders and leaders, expressed consistently on LinkedIn and beyond.",
-    what: "Defining how a founder, executive or expert is seen in public, then building that presence on LinkedIn and the other platforms where their audience pays attention.",
-    problem: "Expertise often stays invisible. Profiles are incomplete, posting is irregular and the message changes from one week to the next, so the right people never form a clear picture.",
+    summary: "A clear public position for founders and leaders, built consistently on LinkedIn and beyond.",
+    what: "Defining how a founder, executive or expert is seen in public, then building that presence on LinkedIn and the other platforms their audience uses.",
+    problem: "Expertise often stays invisible. Profiles are incomplete, posting is irregular and the message changes from week to week, so the right people never form a clear picture.",
     provides: [
       "Positioning and narrative for the individual",
       "Voice and tone guidance",
@@ -81,7 +81,7 @@ export const services: Record<ServiceId, Service> = {
     id: "pr-event-marketing",
     name: "PR & Event Marketing",
     category: "brand-presence",
-    summary: "Earned attention and real-world moments that put the brand in front of the right rooms.",
+    summary: "Media coverage and events that put the brand in front of the right people.",
     what: "Shaping the stories a brand tells to media and the experiences it creates in person, so that coverage and events reinforce the same position.",
     problem: "Announcements go unnoticed and events are planned in isolation, so the attention they create fades without building lasting recognition.",
     provides: [
@@ -101,7 +101,7 @@ export const services: Record<ServiceId, Service> = {
     id: "social-media-marketing",
     name: "Social Media Marketing",
     category: "digital-marketing-growth",
-    summary: "Platform-native content and community management with a strategy behind every post.",
+    summary: "Social media strategy, content and community management, with a clear purpose behind every post.",
     what: "Planning, creating and managing social media for a brand, with each platform used for what it does best.",
     problem: "Posting without a plan produces activity rather than results: inconsistent visuals, unclear messaging and no link between content and business goals.",
     provides: [
@@ -121,7 +121,7 @@ export const services: Record<ServiceId, Service> = {
     id: "performance-growth-marketing",
     name: "Performance & Growth Marketing",
     category: "digital-marketing-growth",
-    summary: "Paid media and growth experiments planned and measured against clear objectives.",
+    summary: "Paid campaigns and growth experiments, planned and measured against clear objectives.",
     what: "Running paid campaigns and structured growth experiments across channels, with spend and creative decisions guided by measurement.",
     problem: "Ad budgets get spent without clear tracking or testing, so it is hard to tell what is working and where the next unit of growth should come from.",
     provides: [
@@ -141,7 +141,7 @@ export const services: Record<ServiceId, Service> = {
     id: "ecommerce-marketing-growth",
     name: "E-commerce Marketing & Growth",
     category: "digital-marketing-growth",
-    summary: "Marketing built around the store: acquisition, conversion and repeat purchase.",
+    summary: "Marketing for online stores, covering acquisition, conversion and repeat purchase.",
     what: "Growing online stores by connecting traffic, product presentation, conversion and retention into one plan.",
     problem: "Stores often bring in visitors without converting them, or win first orders without earning repeat customers.",
     provides: [
@@ -161,7 +161,7 @@ export const services: Record<ServiceId, Service> = {
     id: "seo-geo-aeo",
     name: "SEO, GEO & AEO",
     category: "search-customer-engagement",
-    summary: "Visibility in traditional search, AI-generated answers and answer engines.",
+    summary: "Visibility in search engines, AI-generated answers and answer engines.",
     what: "Search Engine Optimisation, Generative Engine Optimisation and Answer Engine Optimisation: making a brand discoverable on search engines and in the answers produced by AI assistants.",
     problem: "Customers now search in more places than one results page. Brands that are hard to crawl, unclear in their content or absent from trusted sources are left out of both search results and AI answers.",
     provides: [
@@ -181,7 +181,7 @@ export const services: Record<ServiceId, Service> = {
     id: "email-lifecycle-marketing",
     name: "Email & Lifecycle Marketing",
     category: "search-customer-engagement",
-    summary: "Owned communication that guides people from first sign-up to loyal customer.",
+    summary: "Email and automated messages that take people from first sign-up to loyal customer.",
     what: "Designing email and lifecycle communication that reaches people at the right moment: welcome, nurture, purchase, re-engagement and beyond.",
     problem: "Lists grow but sit idle, or receive generic blasts that are ignored, so an owned channel never contributes what it could.",
     provides: [
@@ -201,7 +201,7 @@ export const services: Record<ServiceId, Service> = {
     id: "website-design-development",
     name: "Website Design & Development",
     category: "technology-experience",
-    summary: "Websites designed around the brand and built to perform.",
+    summary: "Fast, accessible websites designed around the brand and built to convert.",
     what: "Designing and building websites that express the brand clearly and are fast, accessible and easy to manage.",
     problem: "An outdated or slow website undermines everything else: it weakens first impressions, loses visitors and makes campaigns harder to convert.",
     provides: [
@@ -221,7 +221,7 @@ export const services: Record<ServiceId, Service> = {
     id: "ai-business-automation",
     name: "AI & Business Automation",
     category: "technology-experience",
-    summary: "AI tools and automated workflows that remove repetitive work.",
+    summary: "AI tools and automated workflows that take repetitive work off your team.",
     what: "Identifying repetitive processes in marketing and operations and replacing them with AI-assisted tools and automated workflows.",
     problem: "Teams lose hours to manual, repetitive tasks, which slows delivery and leaves less time for strategic and creative work.",
     provides: [
@@ -244,7 +244,7 @@ export const serviceCategories: ServiceCategory[] = [
     id: "brand-presence",
     name: "Brand & Presence",
     summary: "How a brand and its people are seen, talked about and remembered.",
-    intro: "Reputation is built in public. These services shape how a brand and the people behind it show up in feeds, in the press and in the rooms that matter.",
+    intro: "Reputation is built in public. These services shape how a brand, and the people who lead it, are seen on LinkedIn, in the press and at events.",
     image: {
       src: "/images/services/personal-branding.jpg",
       alt: "Portrait lit in blue light against a violet background",
@@ -256,7 +256,7 @@ export const serviceCategories: ServiceCategory[] = [
     id: "digital-marketing-growth",
     name: "Digital Marketing & Growth",
     summary: "Content, campaigns and commerce working towards measurable growth.",
-    intro: "Attention only matters when it moves people to act. These services connect content, paid media and commerce to clear objectives.",
+    intro: "Attention only matters when it leads to action. These services connect social media, paid campaigns and online stores to clear commercial goals.",
     image: {
       src: "/images/work/project-03.jpg",
       alt: "Glass office towers seen from street level",
@@ -268,7 +268,7 @@ export const serviceCategories: ServiceCategory[] = [
     id: "search-customer-engagement",
     name: "Search & Customer Engagement",
     summary: "Being found when people search, and staying in touch once they arrive.",
-    intro: "Discovery and loyalty are two halves of the same relationship. These services make a brand easy to find and worth hearing from again.",
+    intro: "Customers search, compare and come back. These services make a brand easy to find in search engines and AI answers, and worth hearing from in the inbox.",
     image: {
       src: "/images/work/project-04.jpg",
       alt: "Bright workspace with a laptop beside floor-to-ceiling windows",
@@ -280,7 +280,7 @@ export const serviceCategories: ServiceCategory[] = [
     id: "technology-experience",
     name: "Technology & Experience",
     summary: "The websites and systems that everything else runs on.",
-    intro: "Strong marketing needs strong foundations. These services build the digital experiences and automated systems behind the brand.",
+    intro: "Every campaign lands somewhere. These services build the websites and automated systems that the rest of your marketing depends on.",
     image: {
       src: "/images/services/ai-automation.jpg",
       alt: "Abstract layered gradient shapes",

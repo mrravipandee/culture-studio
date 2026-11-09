@@ -15,6 +15,8 @@ import PinnedDemo from "./PinnedDemo";
 export const metadata: Metadata = {
   title: "Motion lab",
   robots: { index: false, follow: false },
+  description: "Internal QA page for CULT.URE motion patterns.",
+  alternates: { canonical: null },
 };
 
 const label = (n: string, t: string) => <p className="eyebrow mb-8 text-burgundy">{n} · {t}</p>;
@@ -23,6 +25,7 @@ const label = (n: string, t: string) => <p className="eyebrow mb-8 text-burgundy
 export default function MotionLab() {
   return (
     <main className="pt-24">
+      <h1 className="sr-only">Motion lab</h1>
       <section className="section container-content">
         {label("01", "Reveal + RevealGroup")}
         <Reveal className="heading-2 max-w-narrow">A block rises 32px and fades in, once.</Reveal>

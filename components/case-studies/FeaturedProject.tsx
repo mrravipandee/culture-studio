@@ -15,7 +15,7 @@ export default function FeaturedProject() {
           {/* Header Tag */}
           <div className="flex items-center justify-between border-b border-black/10 pb-4 mb-10">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
-              [ 01 / FEATURED ENGAGEMENT ]
+              [ 01 / FEATURED PROJECT ]
             </span>
             <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               {featuredProject.year}
@@ -77,7 +77,7 @@ export default function FeaturedProject() {
               {/* Action Button */}
               <div className="mt-10">
                 <Button href={`/case-studies/${featuredProject.slug}`} variant="burgundy" icon="arrow">
-                  Explore case study
+                  View project
                 </Button>
               </div>
             </div>

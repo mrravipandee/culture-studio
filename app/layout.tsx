@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Manrope, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { defaultDescription, isIndexable, metadataBase, siteName } from "@/lib/site";
 
 // One typeface across the site; Geist Mono only for indices and numeric labels.
 const manrope = Manrope({
@@ -16,13 +17,26 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase,
   title: {
-    default: "CULT.URE | Beyond the Noise",
-    template: "%s | CULT.URE",
+    default: `${siteName} | Digital Growth, Marketing & Creative Agency`,
+    template: `%s | ${siteName}`,
   },
-  description:
-    "CULT.URE is a digital growth, marketing and creative agency combining strategy, creative and technology.",
-  applicationName: "CULT.URE",
+  description: defaultDescription,
+  applicationName: siteName,
+  robots: isIndexable ? { index: true, follow: true } : { index: false, follow: true },
+  openGraph: {
+    type: "website",
+    siteName,
+    title: `${siteName} | Digital Growth, Marketing & Creative Agency`,
+    description: defaultDescription,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteName} | Digital Growth, Marketing & Creative Agency`,
+    description: defaultDescription,
+  },
+  formatDetection: { email: false, address: false, telephone: false },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -31,7 +45,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${manrope.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* Inline margin reset: no layout shift even if the stylesheet arrives after first paint. */}
+      <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
+        {children}
+      </body>
     </html>
   );
 }

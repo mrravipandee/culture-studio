@@ -21,9 +21,9 @@ export interface FaqItem {
 
 export const servicesHero = {
   eyebrow: "SERVICES",
-  headline: "Strategy, creative and technology.\nBuilt to move brands forward.",
+  headline: "Marketing, brand and technology services.\nPlanned to work as one.",
   supportingCopy:
-    "CULT.URE is a digital growth, marketing and creative agency. Nine services across four disciplines, planned together so every channel works in the same direction.",
+    "From personal branding and social media marketing to SEO, GEO & AEO, websites and AI automation: nine services in four disciplines, available individually or as one integrated plan.",
   meta: [
     { label: "DISCIPLINES", value: "Brand · Growth · Search · Technology" },
     { label: "SERVICES", value: "Nine, delivered individually or together" },
@@ -90,6 +90,16 @@ export const servicesFaq: FaqItem[] = [
     question: "What if I am not sure which service I need?",
     answer:
       "Choose \"Not sure yet\" in the inquiry form and tell us what you are trying to achieve. We will suggest where to start.",
+  },
+  {
+    question: "What are GEO and AEO?",
+    answer:
+      "Generative Engine Optimisation (GEO) and Answer Engine Optimisation (AEO) help a brand appear in the answers produced by AI assistants and answer engines, as well as in traditional search results. We offer them together with SEO because all three rely on the same foundations: clear content, structured data and trusted sources.",
+  },
+  {
+    question: "Do you work with businesses or individuals?",
+    answer:
+      "Both. Personal Branding & LinkedIn Marketing is designed for founders, executives and experts. The other services are designed for businesses and brands.",
   },
   {
     question: "Are deliverables fixed?",

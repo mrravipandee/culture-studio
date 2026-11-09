@@ -93,7 +93,7 @@ function ProjectCard({
       <div className="mt-5 flex flex-col justify-between gap-4">
         <div>
           {project.scope && (
-            <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-black/50">
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-black/50">
               {project.scope}
             </p>
           )}
@@ -201,11 +201,11 @@ export default function SelectedWorkSection() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-wider">
+          <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wider">
             <span className="inline-block h-2 w-2 rounded-full bg-burgundy animate-pulse" />
-            <span className="text-burgundy font-medium">CURATED REPUTATIONS</span>
+            <span className="text-burgundy font-medium">SAMPLE PROJECTS</span>
             <span className="text-black/30">/</span>
-            <span>2024 — 2026</span>
+            <span>DETAILS TO BE CONFIRMED</span>
           </div>
         </div>
 
@@ -225,11 +225,11 @@ export default function SelectedWorkSection() {
         <div className="mt-16 flex flex-col items-start justify-between gap-6 rounded-xl border border-black/10 bg-white/70 p-8 backdrop-blur-sm sm:flex-row sm:items-center lg:mt-24">
           <div className="max-w-xl">
             <p className="font-mono text-xs uppercase tracking-[0.2em] text-burgundy font-semibold">
-              CURATORIAL STATEMENT
+              About these projects
             </p>
             <p className="mt-2 text-sm sm:text-base font-light text-ink-2 leading-relaxed">
-              Every monograph represents proprietary narrative architecture,
-              cinematic visual craft, and sovereign cultural authority.
+              These are sample entries that show how our case studies are
+              structured. Confirmed client work will replace them.
             </p>
           </div>
 

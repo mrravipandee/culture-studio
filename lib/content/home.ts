@@ -36,7 +36,7 @@ export const manifesto = {
     title: "Attention is rented. Culture is owned.",
   } satisfies SectionIntro,
   lead:
-    "Most brands are built for the feed — loud, frequent and easy to forget. We believe a brand earns its place differently: by standing for something clear, expressed with consistency, on the channels and in the moments that matter.",
+    "Most brands are built for the feed: loud, frequent and easy to forget. A brand earns its place differently, by standing for something clear and saying it consistently, on the channels and in the moments that matter.",
   beliefs: [
     {
       title: "Clarity before content",
@@ -48,12 +48,12 @@ export const manifesto = {
     },
     {
       title: "Substance over spectacle",
-      body: "The strongest brands are earned by real expertise, presented well — not by noise, volume or borrowed trends.",
+      body: "The strongest brands are built on real expertise, presented well, rather than on volume or borrowed trends.",
     },
   ],
   value: {
     title: "Why it has to work as one",
-    body: "People choose brands they recognise and trust. When strategy, creative and technology point in the same direction, every channel — from search and social to the inbox and the website — reinforces the same idea instead of competing for attention.",
+    body: "People choose brands they recognise and trust. When strategy, creative and technology point in the same direction, every channel (search, social, email and the website) reinforces the same idea instead of competing for attention.",
   },
 };
 
@@ -82,12 +82,12 @@ export const expertise = {
   intro: {
     index: "02",
     eyebrow: "Services",
-    title: "Strategy, creative and technology. One direction.",
+    title: "Marketing, brand and technology services that work as one.",
     description:
-      "Nine services across four disciplines, planned together so every channel points the same way.",
+      "Nine services in four disciplines, from personal branding and social media marketing to SEO, websites and AI automation. Use one, or combine them in a single plan.",
   } satisfies SectionIntro,
   /** Services themselves live in lib/content/service-catalog.ts. */
-  cta: { label: "Explore all services", href: "/services" },
+  cta: { label: "Explore all nine services", href: "/services" },
 };
 
 /* ---------------------------------------------------------------
@@ -112,9 +112,9 @@ export const selectedWork = {
   intro: {
     index: "03",
     eyebrow: "Selected work",
-    title: "Selected work.",
+    title: "Selected work",
     description:
-      "A curated archive of strategic positioning, bespoke editorial media, and cultural influence across industries.",
+      "Sample projects that show how our services combine. Confirmed client case studies will replace them as they are published.",
   } satisfies SectionIntro,
   cta: { label: "View all case studies", href: "/case-studies" },
   projects: [
@@ -122,15 +122,15 @@ export const selectedWork = {
       id: "sample-01",
       title: "Aura & Influence",
       description:
-        "Comprehensive public identity and strategic media positioning for a pioneering frontier technology founder.",
+        "Public positioning and media narrative for a technology founder.",
       href: "/case-studies/aura-and-influence",
       placeholder: true,
       services: ["personal-branding-linkedin-marketing"],
       year: "2026",
-      scope: "Frontier AI Pioneer",
+      scope: "Technology founder",
       image: {
         src: "/images/work/featured.jpg",
-        alt: "Aura & Influence Case Study",
+        alt: "Man in a dark suit fastening his jacket button",
         placeholderLabel: "Project image — Aura & Influence",
       },
     },
@@ -138,15 +138,15 @@ export const selectedWork = {
       id: "sample-02",
       title: "Vanguard Monograph",
       description:
-        "An executive thought-leadership publication and cinematic visual production.",
+        "An editorial publication and visual content series for an investor audience.",
       href: "/case-studies/vanguard-monograph",
       placeholder: true,
       services: ["social-media-marketing"],
       year: "2025",
-      scope: "Venture Capital Partner",
+      scope: "Venture capital partner",
       image: {
         src: "/images/work/project-02.jpg",
-        alt: "Vanguard Monograph Case Study",
+        alt: "Smiling woman wearing a crown of red and pink flowers",
         placeholderLabel: "Project image — Vanguard Monograph",
       },
     },
@@ -154,15 +154,15 @@ export const selectedWork = {
       id: "sample-03",
       title: "Cognition Capital",
       description:
-        "Monolithic visual identity, digital architecture, and private editorial channel for a Tier-1 venture partner.",
+        "Visual identity, website and a private editorial channel for a venture investor.",
       href: "/case-studies/cognition-capital",
       placeholder: true,
       services: ["personal-branding-linkedin-marketing", "website-design-development"],
       year: "2025",
-      scope: "Deep Tech Syndicate",
+      scope: "Venture investor",
       image: {
         src: "/images/work/project-03.jpg",
-        alt: "Cognition Capital Case Study",
+        alt: "Glass office towers seen from street level",
         placeholderLabel: "Project image — Cognition Capital",
       },
     },
@@ -170,15 +170,15 @@ export const selectedWork = {
       id: "sample-04",
       title: "The Synthesist",
       description:
-        "Multi-platform presence architecture utilizing proprietary cognitive workflows to transform breakthroughs into cultural narrative.",
+        "A multi-platform presence supported by AI-assisted research and publishing workflows.",
       href: "/case-studies/the-synthesist",
       placeholder: true,
       services: ["personal-branding-linkedin-marketing", "ai-business-automation"],
       year: "2026",
-      scope: "Biotech & Longevity Chair",
+      scope: "Life sciences leader",
       image: {
         src: "/images/work/project-04.jpg",
-        alt: "The Synthesist Case Study",
+        alt: "Bright workspace with a laptop beside tall windows",
         placeholderLabel: "Project image — The Synthesist",
       },
     },
@@ -193,7 +193,7 @@ export const thinking = {
   intro: {
     index: "05",
     eyebrow: "Thinking",
-    title: "How we see branding, content and culture.",
+    title: "How we think about brands, marketing and technology.",
   } satisfies SectionIntro,
   statements: [
     {
@@ -203,8 +203,8 @@ export const thinking = {
     },
     {
       topic: "On content",
-      statement: "Your audience doesn't need more content. It needs a clearer you.",
-      body: "Volume is easy. Meaning is rare. We publish less noise and more conviction — fewer pieces, each with a reason to exist.",
+      statement: "Your audience doesn't need more content. It needs a clearer message.",
+      body: "Volume is easy; meaning is rare. We would rather publish fewer pieces, each with a clear reason to exist.",
     },
     {
       topic: "On culture",
@@ -214,7 +214,7 @@ export const thinking = {
     {
       topic: "On AI",
       statement: "Automate the process. Never the perspective.",
-      body: "AI should buy back time for original thought — handling the repetitive work so the voice stays unmistakably human.",
+      body: "AI should give time back for original thinking by handling repetitive work, so the voice stays human.",
     },
   ],
 };
@@ -227,37 +227,38 @@ export const processSteps = {
   intro: {
     index: "04",
     eyebrow: "Process",
-    title: "A clear path from noise to culture.",
+    title: "From first conversation to measurable progress.",
     description:
-      "A structured 4-phase continuum translating raw leadership conviction into permanent cultural resonance.",
+      "The same four stages apply whether you work with us on one service or several.",
   } satisfies SectionIntro,
   steps: [
     {
       title: "Discover",
-      tagline: "Excavation & Diagnostic",
-      body: "We listen first — your story, goals, audience and the landscape you operate in — to identify what is unrepeatable, distinctive and true.",
-      deliverables: ["Narrative Audit", "Archetype Mapping", "Ecosystem Whitespace"],
+      tagline: "Understand the starting point",
+      body: "We learn about your business, audience, channels and competitors, and agree what success should look like.",
+      deliverables: ["Discovery conversation", "Channel review", "Agreed objectives"],
     },
     {
       title: "Define",
-      tagline: "Positioning & Category Thesis",
-      body: "We turn those insights into a clear intellectual platform and identity: what you stand for, who it influences, and how it sounds.",
-      deliverables: ["Proprietary Framework", "Voice & Tone Blueprint", "Channel Architecture"],
+      tagline: "Decide the plan",
+      body: "We recommend the services, priorities and measures that fit your goals, and leave out what does not.",
+      deliverables: ["Recommended scope", "Channel priorities", "Measurement plan"],
     },
     {
       title: "Create",
-      tagline: "Publication & Media Craft",
-      body: "We bring the narrative to life through monographs, cinematic video, essays and systems — produced with editorial precision.",
-      deliverables: ["Monograph Essays", "Cinematic Film", "Keynote Positioning"],
+      tagline: "Design, build and launch",
+      body: "Creative, content, campaigns and technology are produced together, so each part supports the others.",
+      deliverables: ["Creative and content", "Campaigns and websites", "Automations"],
     },
     {
       title: "Evolve",
-      tagline: "Compounding & Cultural Iteration",
-      body: "We review resonance, refine positioning and deploy autonomous distribution workflows as your authority compounds.",
-      deliverables: ["Cognitive Distribution", "Sentiment Tracking", "Authority Compounding"],
+      tagline: "Measure and improve",
+      body: "We report clearly, learn from the results and refine the plan as the work continues.",
+      deliverables: ["Reporting", "Optimisation", "Next steps"],
     },
   ],
 };
+
 
 /* ---------------------------------------------------------------
    08 — Why CULT.URE
@@ -267,7 +268,7 @@ export const whyCulture = {
   intro: {
     index: "06",
     eyebrow: "Why CULT.URE",
-    title: "Strategy, creativity and cultural relevance — in one practice.",
+    title: "Strategy, creative and technology in one team.",
     description:
       "We work at the intersection of three things most agencies keep separate. That is what lets a brand feel coherent instead of assembled.",
   } satisfies SectionIntro,
@@ -278,7 +279,7 @@ export const whyCulture = {
     },
     {
       title: "Creativity",
-      body: "Editorial standards for every piece — considered writing, intentional visuals and a recognisable aesthetic.",
+      body: "Editorial standards for every piece: considered writing, intentional visuals and a recognisable aesthetic.",
     },
     {
       title: "Cultural relevance",
@@ -353,7 +354,7 @@ export const contact = {
     eyebrow: "Contact",
     title: "Let's build something that outlasts the noise.",
     description:
-      "Whether you are starting from scratch or refining an existing presence, we would like to hear what you are building. Tell us where you are today and where you want your brand to go.",
+      "Tell us where your brand is today, what you want to achieve and which services interest you. If you are not sure yet, choose \"Not sure yet\" and we will help you decide where to start.",
   } satisfies SectionIntro,
   /** Set to the real inbox, e.g. "hello@yourdomain.com". */
   email: null as string | null,

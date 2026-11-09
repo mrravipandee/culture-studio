@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/site";
 import Navbar from "@/components/navigation/Navbar";
 import AboutHero from "@/components/about/AboutHero";
 import AboutPhilosophy from "@/components/about/AboutPhilosophy";
@@ -8,16 +9,20 @@ import AboutApproach from "@/components/about/AboutApproach";
 import AboutPrinciples from "@/components/about/AboutPrinciples";
 import AboutCta from "@/components/about/AboutCta";
 import ContactSection from "@/components/home/sections/ContactSection";
+import JsonLd from "@/components/seo/JsonLd";
+import { breadcrumbSchema } from "@/lib/schema";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "About",
+  path: "/about",
   description:
-    "CULT.URE is a digital growth, marketing and creative agency bringing strategy, creative and technology together across brand, marketing, search and technology.",
-};
+    "Why CULT.URE brings strategy, creative and technology together, and the philosophy behind how we build brands, marketing and growth.",
+});
 
 export default function AboutPage() {
   return (
     <div className="relative min-h-screen bg-white selection:bg-burgundy selection:text-white">
+      <JsonLd data={breadcrumbSchema([["About", "/about"]])} />
       {/* Navigation */}
       <Navbar />
 

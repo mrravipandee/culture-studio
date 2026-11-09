@@ -49,7 +49,7 @@ export default function AboutApproach() {
 
               <div className="mt-8 pt-6 border-t border-white/10">
                 <h4 className="font-mono text-xs uppercase tracking-eyebrow text-white/40 mb-3">
-                  CORE DELIVERABLES
+                  TYPICAL OUTPUTS
                 </h4>
                 <ul className="space-y-2">
                   {step.deliverables.map((item) => (

@@ -24,7 +24,7 @@ export interface CaseStudy {
 
 export const caseStudiesHero = {
   eyebrow: "SELECTED WORK",
-  headline: "Ideas built to shape perception.",
+  headline: "Case studies across brand, marketing and technology.",
   description:
     "Selected projects across brand, marketing, search and technology. Each entry lists the services involved.",
   meta: [
@@ -42,16 +42,16 @@ export const featuredProject: CaseStudy = {
   clientType: "Frontier AI & Robotics Founder",
   year: "2026",
   description:
-    "Engineered the public intellectual identity and keynote narrative for a technology founder. Positioned the founder at the center of the global conversation around human-machine cognition and future governance.",
+    "Public positioning and keynote narrative for a technology founder.",
   deliverables: [
-    "Executive Narrative Architecture",
-    "Keynote Positioning & Speechwriting",
-    "Cinematic Video Monograph",
-    "Bespoke Digital Aesthetic System",
+    "Positioning and narrative",
+    "Keynote and speech writing",
+    "Video content",
+    "Visual identity system",
   ],
   image: {
     src: "/images/work/featured.jpg",
-    alt: "Aura & Influence — Frontier AI Founder Personal Brand",
+    alt: "Man in a dark suit fastening his jacket button",
   },
   featured: true,
 };
@@ -66,15 +66,15 @@ export const caseStudiesList: CaseStudy[] = [
     clientType: "Venture Capital Managing Partner",
     year: "2025",
     description:
-      "A bi-monthly publication framework and long-form essay series for investors and operators.",
+      "A bi-monthly publication and long-form essay series for investors and operators.",
     deliverables: [
-      "Editorial Publication Strategy",
-      "Long-Form Essay Production",
-      "Private Distribution Engine",
+      "Editorial strategy",
+      "Long-form essay production",
+      "Distribution plan",
     ],
     image: {
       src: "/images/work/project-02.jpg",
-      alt: "Vanguard Monograph — Thought Leadership Publication",
+      alt: "Smiling woman wearing a crown of red and pink flowers",
     },
   },
   {
@@ -86,15 +86,15 @@ export const caseStudiesList: CaseStudy[] = [
     clientType: "Deep Tech Syndicate Leader",
     year: "2025",
     description:
-      "Sculpted a monolithic digital presence and visual language communicating quiet authority, timeless typography, and sharp intellectual clarity.",
+      "A digital presence and visual language built on clarity, considered typography and restraint.",
     deliverables: [
-      "Visual Identity System",
-      "Custom Digital Experience",
-      "Executive Brand Guidelines",
+      "Visual identity",
+      "Website design and development",
+      "Brand guidelines",
     ],
     image: {
       src: "/images/work/project-03.jpg",
-      alt: "Cognition Capital — Identity & Positioning",
+      alt: "Glass office towers seen from street level",
     },
   },
   {
@@ -106,15 +106,15 @@ export const caseStudiesList: CaseStudy[] = [
     clientType: "Biotech & Longevity Chair",
     year: "2026",
     description:
-      "Multi-platform presence architecture utilizing proprietary AI research workflows to transform complex clinical breakthroughs into compelling cultural narrative.",
+      "A multi-platform presence supported by AI-assisted research workflows that turn complex clinical work into clear stories.",
     deliverables: [
-      "AI-Augmented Research Workflows",
-      "Omnichannel Distribution",
-      "Media Presence Direction",
+      "AI-assisted research workflows",
+      "Multi-platform distribution",
+      "Content direction",
     ],
     image: {
       src: "/images/work/project-01.jpg",
-      alt: "The Synthesist — Executive Presence & AI",
+      alt: "Portrait of a man in a grey sweater against a blue-grey backdrop",
     },
   },
   {
@@ -126,22 +126,22 @@ export const caseStudiesList: CaseStudy[] = [
     clientType: "Luxury Design & Architecture Director",
     year: "2024",
     description:
-      "Crafted an uncompromising, high-editorial visual monograph and exclusive press positioning celebrating architectural minimalism and material mastery.",
+      "A visual monograph and press positioning for an architecture and design practice.",
     deliverables: [
-      "Monograph Publication",
-      "Private Salon Series",
-      "Press & Cultural Dialogue",
+      "Visual monograph",
+      "Event series",
+      "Press materials and outreach",
     ],
     image: {
       src: "/images/work/project-04.jpg",
-      alt: "Atelier Noir — Founder Identity",
+      alt: "Bright workspace with a laptop beside tall windows",
     },
   },
 ];
 
 export const behindTheWork = {
   eyebrow: "BEHIND THE WORK",
-  title: "The CULT.URE Methodology.",
+  title: "How we approach every project.",
   description:
     "How we approach strategy, creative, growth and technology on every project.",
   pillars: [
@@ -177,7 +177,7 @@ export const caseStudiesCta = {
   headline: "Ready to grow beyond the noise?",
   description:
     "Tell us where your brand is today and which services interest you. If you are not sure yet, we will help you decide where to start.",
-  ctaText: "Initiate Inquiry",
+  ctaText: "Start an inquiry",
   ctaHref: "/#contact",
 };
 

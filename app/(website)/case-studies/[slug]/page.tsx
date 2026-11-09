@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
+import { pageMetadata } from "@/lib/site";
 import { ServiceTags, SampleBadge } from "@/components/case-studies/ServiceTags";
 import { categoryOf } from "@/lib/content/service-catalog";
 import Image from "next/image";
@@ -6,6 +8,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import Navbar from "@/components/navigation/Navbar";
+import JsonLd from "@/components/seo/JsonLd";
+import { breadcrumbSchema } from "@/lib/schema";
 import Container from "@/components/home/shared/Container";
 import {
   featuredProject,
@@ -28,19 +32,33 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const project = allProjects.find((p) => p.slug === slug);
-  if (!project) return { title: "Case Study Not Found" };
+  if (!project) return { title: "Case study not found", robots: { index: false } };
 
-  return {
+  return pageMetadata({
     title: `${project.title} — Case Study`,
+    path: `/case-studies/${project.slug}`,
     description: project.description,
-  };
+    type: "article",
+    // Sample entries stay out of search until real project details are confirmed.
+    noindex: project.placeholder,
+  });
 }
 
-export default async function CaseStudyDetailPage({
+export default function CaseStudyDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
+  // Route params are read inside Suspense so navigation can show the shell instantly.
+  // Every slug is prerendered via generateStaticParams, so the HTML is still complete.
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-white" aria-hidden="true" />}>
+      <CaseStudyDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function CaseStudyDetail({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const projectIndex = allProjects.findIndex((p) => p.slug === slug);
   if (projectIndex === -1) {
@@ -52,6 +70,14 @@ export default async function CaseStudyDetailPage({
 
   return (
     <div className="relative min-h-screen bg-white selection:bg-burgundy selection:text-white">
+      {!project.placeholder && (
+        <JsonLd
+          data={breadcrumbSchema([
+            ["Case Studies", "/case-studies"],
+            [project.title, `/case-studies/${project.slug}`],
+          ])}
+        />
+      )}
       <Navbar />
 
       <main className="pt-36 pb-24 md:pt-48 md:pb-36">
@@ -59,10 +85,10 @@ export default async function CaseStudyDetailPage({
           {/* Back Navigation */}
           <Link
             href="/case-studies"
-            className="group inline-flex items-center gap-2 font-mono text-xs uppercase tracking-eyebrow text-ink-3 hover:text-black transition-colors"
+            className="group inline-flex min-h-6 items-center gap-2 py-1 font-mono text-xs uppercase tracking-eyebrow text-ink-3 hover:text-black transition-colors"
           >
             <ArrowLeft size={14} className="transition-transform group-hover:-translate-x-1" />
-            <span>All Case Studies</span>
+            <span>All case studies</span>
           </Link>
 
           {/* Header */}
@@ -105,7 +131,7 @@ export default async function CaseStudyDetailPage({
             {/* Left: Deliverables & Specifications */}
             <div className="lg:col-span-4">
               <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
-                [ ENGAGEMENT SCOPE ]
+                [ SCOPE ]
               </span>
               <ul className="mt-6 space-y-3">
                 {project.deliverables.map((item) => (
@@ -123,7 +149,7 @@ export default async function CaseStudyDetailPage({
             {/* Right: Narrative & Impact */}
             <div className="lg:col-span-8 max-w-2xl">
               <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
-                [ EXECUTIVE SUMMARY ]
+                [ SUMMARY ]
               </span>
               <p className="mt-6 text-xl sm:text-2xl font-light leading-relaxed text-black">
                 {project.description}
@@ -140,7 +166,7 @@ export default async function CaseStudyDetailPage({
           {/* Next Project Nav */}
           <div className="mt-24 pt-12 border-t border-black/10 flex flex-col sm:flex-row items-center justify-between gap-6">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
-              Next Engagement
+              Next project
             </span>
 
             <Link

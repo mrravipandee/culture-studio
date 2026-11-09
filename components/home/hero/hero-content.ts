@@ -35,7 +35,7 @@ export const heroHeadline: HeadlineWord[][] = [
 ];
 
 export const heroDescription =
-  "CULT.URE is a digital growth, marketing and creative agency — combining strategy, creative and technology to build brands, audiences and systems that last beyond the noise.";
+  "CULT.URE is a digital growth, marketing and creative agency. We bring brand strategy, social and performance marketing, SEO, websites and automation together, so every channel works towards the same goal.";
 
 export const heroActions = {
   primary: { label: "Explore our services", href: "/services" },

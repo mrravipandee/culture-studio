@@ -102,7 +102,7 @@ export const aboutHero: AboutHeroData = {
   eyebrow: "ABOUT CULT.URE",
   headline: "We believe brands should mean something.",
   lead:
-    "CULT.URE is a digital growth, marketing and creative agency. We bring strategy, creative and technology together so that brands are clear about what they stand for, visible where their audience looks, and built on systems that let them grow.",
+    "CULT.URE is a digital growth, marketing and creative agency. We bring brand strategy, marketing, search and technology together, so brands are clear about what they stand for, visible where their audience looks, and built on systems that support growth.",
   metadata: [
     { label: "PRACTICE", value: "Digital growth, marketing & creative" },
     { label: "DISCIPLINES", value: "Brand · Growth · Search · Technology" },
@@ -159,8 +159,8 @@ export const aboutStory: AboutStoryData = {
     "To help brands and the people behind them become clear, visible and easy to choose, through strategy, creative and technology that work together.",
   vision:
     "Brands that stand for something, show up consistently, and grow without adding noise.",
-  editableNotice:
-    "[ EDITABLE: Company history, founder background, team and milestones can be added here once confirmed. Nothing in this section describes past events. ]",
+  /** Optional note shown in the story section. Add confirmed company history, founder or team details here. */
+  editableNotice: "",
   milestones: [
     {
       phase: "Strategy",

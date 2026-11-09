@@ -1,17 +1,12 @@
-"use client";
-
-import { useRef } from "react";
 import { serviceProcess } from "@/lib/content/services";
 import Container from "@/components/home/shared/Container";
 import { Reveal } from "@/components/motion";
 import { ProcessStepGlyph, GridCrosshairMarker } from "@/components/home/shared/WorkVectors";
 
 export default function ServicesProcess() {
-  const containerRef = useRef<HTMLDivElement>(null);
 
   return (
     <section
-      ref={containerRef}
       className="relative overflow-hidden py-24 sm:py-32 lg:py-40 bg-[#FCFBF9] text-ink border-b border-black/10"
     >
       <Container>
@@ -22,15 +17,12 @@ export default function ServicesProcess() {
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
             <h2 className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.08] text-ink">
-              From foundational conviction to{" "}
-              <span className="font-serif italic font-normal text-burgundy">
-                sovereign cultural authority.
-              </span>
+              How every engagement{" "}
+              <span className="text-burgundy">runs.</span>
             </h2>
             <p className="lg:col-span-4 text-sm sm:text-base font-light text-ink-2 leading-relaxed">
-              We operate across a disciplined four-stage timeline, ensuring every
-              strategic premise is validated before a single frame or essay is
-              released.
+              Four stages, from the first conversation to ongoing improvement.
+              Scope and timing are agreed for each project.
             </p>
           </div>
         </div>
@@ -62,7 +54,7 @@ export default function ServicesProcess() {
                       <span className="grid size-7 place-items-center rounded-full bg-black text-white font-mono text-xs font-bold transition-colors group-hover:bg-burgundy">
                         {stage.number}
                       </span>
-                      <span className="font-mono text-[10px] uppercase tracking-wider text-black/45">
+                      <span className="font-mono text-xs uppercase tracking-wider text-black/45">
                         {stage.timeline}
                       </span>
                     </div>
@@ -76,7 +68,7 @@ export default function ServicesProcess() {
                   <h3 className="mt-6 text-2xl font-light text-ink group-hover:text-burgundy transition-colors">
                     {stage.name}
                   </h3>
-                  <p className="mt-1 font-mono text-[11px] uppercase tracking-wider text-burgundy font-medium">
+                  <p className="mt-1 font-mono text-xs uppercase tracking-wider text-burgundy font-medium">
                     {stage.tagline}
                   </p>
 
@@ -88,8 +80,8 @@ export default function ServicesProcess() {
 
                 {/* Deliverables Mini-Pills */}
                 <div className="mt-6 pt-4 border-t border-black/6">
-                  <p className="font-mono text-[9px] uppercase tracking-wider text-black/40 mb-2">
-                    KEY MILESTONES
+                  <p className="font-mono text-xs uppercase tracking-wider text-black/40 mb-2">
+                    TYPICAL OUTPUTS
                   </p>
                   <ul className="space-y-1.5">
                     {stage.deliverables.map((item) => (

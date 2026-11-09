@@ -1009,11 +1009,6 @@
     pointer-events: auto;
 }
 
-.svc[data-mode="pinned"] .svc__text,
-.svc[data-mode="pinned"] .svc__media {
-    will-change: transform, opacity;
-}
-
 /* Compact pinned stage on phones so it fits the viewport with room for the navbar */
 @media (max-width: 767px) {
     .svc[data-mode="pinned"] .svc__progress { padding-bottom: 1rem; }

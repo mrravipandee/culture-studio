@@ -28,7 +28,7 @@ export default function ServiceIndex() {
               <ul className="mt-4 grid gap-2">
                 {category.services.map((id) => (
                   <li key={id}>
-                    <Link href={serviceHref(id)} className="link body-6 text-ink-2 hover:text-ink">
+                    <Link href={serviceHref(id)} className="link body-6 min-h-6 py-0.5 text-ink-2 hover:text-ink">
                       {services[id].name}
                     </Link>
                   </li>

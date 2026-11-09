@@ -41,7 +41,7 @@ export default function ProcessSection() {
             </span>
           </div>
 
-          <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-wider">
+          <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wider">
             <span className="inline-block h-2 w-2 rounded-full bg-burgundy animate-pulse" />
             <span className="text-burgundy font-medium">DISCOVER → EVOLVE</span>
             <span className="text-black/30">/</span>
@@ -97,7 +97,7 @@ export default function ProcessSection() {
                       {step.title}
                     </h3>
                     {stepData.tagline && (
-                      <p className="mt-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-burgundy font-medium">
+                      <p className="mt-1.5 font-mono text-xs uppercase tracking-[0.18em] text-burgundy font-medium">
                         {stepData.tagline}
                       </p>
                     )}
@@ -112,14 +112,14 @@ export default function ProcessSection() {
                 {/* Deliverables / Outputs Pills */}
                 {stepData.deliverables && stepData.deliverables.length > 0 && (
                   <div className="mt-8 pt-5 border-t border-black/6">
-                    <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-black/40 mb-2.5">
-                      CORE OUTPUTS
+                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-black/40 mb-2.5">
+                      Typical outputs
                     </p>
                     <ul className="flex flex-col gap-1.5">
                       {stepData.deliverables.map((item) => (
                         <li
                           key={item}
-                          className="flex items-center gap-2 text-[11px] font-mono text-black/70"
+                          className="flex items-center gap-2 text-xs font-mono text-black/70"
                         >
                           <span className="h-1 w-1 rounded-full bg-burgundy/60" />
                           <span>{item}</span>
@@ -139,7 +139,7 @@ export default function ProcessSection() {
             CULT.URE METHODOLOGY &mdash; BEYOND THE NOISE
           </span>
           <span className="font-mono tracking-wider">
-            ITERATIVE · STRATEGIC · COMPOUNDING
+            DISCOVER · DEFINE · CREATE · EVOLVE
           </span>
         </div>
       </Container>

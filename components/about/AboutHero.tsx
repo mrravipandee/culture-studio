@@ -15,7 +15,7 @@ export default function AboutHero() {
           </span>
           <div className="flex items-center gap-6">
             <span className="hidden sm:inline font-mono">
-              EST. 2026 — GLOBAL PRACTICE
+              DIGITAL GROWTH, MARKETING &amp; CREATIVE
             </span>
             <span className="font-mono text-brand-burgundy font-semibold">
               CONTENT × CULTURE × COGNITION
@@ -64,10 +64,10 @@ export default function AboutHero() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4 text-white">
                 <p className="font-mono text-xs uppercase tracking-eyebrow text-white/70">
-                  ARCHIVAL NOTE
+                  OUR APPROACH
                 </p>
                 <p className="text-xs font-light tracking-wide mt-1">
-                  Crafting enduring resonance beyond fleeting digital cycles.
+                  Strategy, creative and technology, planned as one.
                 </p>
               </div>
             </div>

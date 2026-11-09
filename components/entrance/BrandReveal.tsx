@@ -9,8 +9,8 @@ export default function BrandReveal({ visible }: BrandRevealProps) {
     <div
       className={`pointer-events-none absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         visible
-          ? "opacity-100 translate-y-0 filter blur-0"
-          : "opacity-0 translate-y-6 filter blur-sm"
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-6"
       }`}
       aria-hidden={!visible}
     >

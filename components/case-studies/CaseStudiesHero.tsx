@@ -17,9 +17,9 @@ export default function CaseStudiesHero() {
 
           {/* Headline */}
           <h1 className="mt-8 max-w-5xl font-light text-4xl sm:text-6xl md:text-7xl lg:text-8xl tracking-heading leading-[1.05] text-black">
-            Ideas built to{" "}
+            Case studies across brand,{" "}
             <span className=" font-normal text-burgundy">
-              shape perception
+              marketing and technology
             </span>
             .
           </h1>

@@ -79,7 +79,6 @@ export default function HeroMedia() {
           {hasPrimary ? (
             <FramedImage
               image={primary}
-              priority
               sizes="(min-width: 1280px) 600px, (min-width: 1024px) 42vw, (min-width: 768px) 45vw, 90vw"
             />
           ) : (
