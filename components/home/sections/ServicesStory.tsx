@@ -1,14 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef } from "react";
 import type { ContentImage } from "@/lib/content/home";
-import { useLenis } from "@/components/motion/MotionProvider";
+import { GSAP_EASE } from "@/lib/motion";
+import { useScrollTimeline } from "@/hooks/useScrollTimeline";
 import ImageFrame from "../shared/ImageFrame";
 
-gsap.registerPlugin(ScrollTrigger);
 
 export type StoryService = {
   id: string;
@@ -26,7 +24,6 @@ const VIEWPORT_MARGIN = 160;
 /** Scroll distance per service transition, as a fraction of the viewport height. */
 const STAGE_SCROLL = 1.1;
 
-const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
 const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
@@ -43,33 +40,17 @@ const pad = (n: number) => String(n).padStart(2, "0");
  */
 export default function ServicesStory({ services }: { services: StoryService[] }) {
   const rootRef = useRef<HTMLDivElement>(null);
-  const lenis = useLenis();
+  /** Scroll position for each stage while pinned; used to bring a focused stage into view. */
+  const stageScrollRef = useRef<((i: number) => number) | null>(null);
   const total = pad(services.length);
 
-  // Keep ScrollTrigger in sync with Lenis smooth scrolling.
-  useEffect(() => {
-    if (!lenis) return;
-    return lenis.on("scroll", ScrollTrigger.update);
-  }, [lenis]);
-
-  useIsoLayoutEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-    let ctx: gsap.Context | null = null;
-    let lastWidth = window.innerWidth;
-    /** Scroll position for each stage while pinned; used to bring a focused stage into view. */
-    let stageScroll: ((i: number) => number) | null = null;
-
-    const q = <T extends Element>(sel: string, el: ParentNode = root) => Array.from(el.querySelectorAll<T>(sel));
-
-    const build = () => {
-      ctx?.revert();
-      ctx = null;
-      stageScroll = null;
+  // Pinned / flow timelines via the shared GSAP helper (lazy GSAP, Lenis sync,
+  // reduced-motion skip, rebuild on width change, cleanup on unmount).
+  useScrollTimeline(
+    rootRef,
+    (gsap, ScrollTrigger, root) => {
+      const q = <T extends Element>(sel: string, el: ParentNode = root) => Array.from(el.querySelectorAll<T>(sel));
       root.dataset.mode = "static";
-      if (reduce.matches) return;
 
       const pin = root.querySelector<HTMLElement>("[data-svc-pin]")!;
       const panels = q<HTMLElement>("[data-svc-panel]");
@@ -87,7 +68,6 @@ export default function ServicesStory({ services }: { services: StoryService[] }
       const fits = pin.offsetHeight + VIEWPORT_MARGIN <= window.innerHeight;
       if (!fits) root.dataset.mode = "flow";
 
-      ctx = gsap.context(() => {
         const parts = (p: HTMLElement) => ({
           text: p.querySelector<HTMLElement>("[data-svc-text]")!,
           media: p.querySelector<HTMLElement>("[data-svc-media]")!,
@@ -105,7 +85,7 @@ export default function ServicesStory({ services }: { services: StoryService[] }
 
           const labels: number[] = [];
           const tl = gsap.timeline({
-            defaults: { ease: "power2.inOut" },
+            defaults: { ease: GSAP_EASE.scrub },
             // Driven by the timeline itself (not scroll events), so the counter stays
             // correct while the scrub catches up after a fast scroll.
             onUpdate: () => syncTo(tl.time()),
@@ -140,11 +120,11 @@ export default function ServicesStory({ services }: { services: StoryService[] }
               .to(prev.media, { x: -96, scale: 0.96, opacity: 0, duration: 0.8 }, at)
               .to(next.media, { x: 0, scale: 1, opacity: 1, duration: 1 }, at + 0.15)
               .to(next.text, { x: 0, opacity: 1, duration: 0.9 }, at + 0.3)
-              .to(bars[i], { scaleX: 1, duration: 1, ease: "none" }, at)
+              .to(bars[i], { scaleX: 1, duration: 1, ease: GSAP_EASE.linear }, at)
               .to({}, { duration: 0.9 }); // reading hold
             stageTimes.push(tl.duration() - 0.45);
           }
-          stageScroll = (i: number) => {
+          stageScrollRef.current = (i: number) => {
             const st = tl.scrollTrigger!;
             return st.start + (stageTimes[i] / tl.duration()) * (st.end - st.start);
           };
@@ -156,12 +136,12 @@ export default function ServicesStory({ services }: { services: StoryService[] }
             gsap.fromTo(
               media,
               { x: 48, scale: 1.04, opacity: 0.2 },
-              { x: 0, scale: 1, opacity: 1, ease: "none", scrollTrigger: { trigger: p, start: "top 95%", end: "top 55%", scrub: 0.5 } },
+              { x: 0, scale: 1, opacity: 1, ease: GSAP_EASE.linear, scrollTrigger: { trigger: p, start: "top 95%", end: "top 55%", scrub: 0.5 } },
             );
             gsap.fromTo(
               text,
               { x: 32, opacity: 0.2 },
-              { x: 0, opacity: 1, ease: "none", scrollTrigger: { trigger: p, start: "top 85%", end: "top 45%", scrub: 0.5 } },
+              { x: 0, opacity: 1, ease: GSAP_EASE.linear, scrollTrigger: { trigger: p, start: "top 85%", end: "top 45%", scrub: 0.5 } },
             );
             ScrollTrigger.create({
               trigger: p,
@@ -172,28 +152,23 @@ export default function ServicesStory({ services }: { services: StoryService[] }
             gsap.set(bars[i], { scaleX: 1 });
           });
         }
-      }, root);
 
-      ScrollTrigger.refresh();
-    };
+      // Runs on rebuild/unmount (gsap.context revert): back to the readable stacked layout.
+      return () => {
+        stageScrollRef.current = null;
+        root.dataset.mode = "static";
+      };
+    },
+    [],
+    { rebuildOnResize: true },
+  );
 
-    build();
-
-    // Rebuild on width changes (not on mobile URL-bar height jitter) and on reduced-motion changes.
-    let timer = 0;
-    const onResize = () => {
-      if (window.innerWidth === lastWidth) return;
-      lastWidth = window.innerWidth;
-      window.clearTimeout(timer);
-      timer = window.setTimeout(build, 200);
-    };
-    window.addEventListener("resize", onResize);
-    reduce.addEventListener("change", build);
-    // Web fonts can change text height after first measure.
-    document.fonts?.ready.then(() => ScrollTrigger.refresh());
-
-    // Keyboard: tabbing into a stage that is not on screen scrolls the story to it.
+  // Keyboard: tabbing into a stage that is not on screen scrolls the story to it.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
     const onFocusIn = (e: FocusEvent) => {
+      const stageScroll = stageScrollRef.current;
       if (!stageScroll) return;
       const panel = (e.target as HTMLElement).closest<HTMLElement>("[data-svc-panel]");
       if (!panel || panel.hasAttribute("data-current")) return;
@@ -201,15 +176,7 @@ export default function ServicesStory({ services }: { services: StoryService[] }
       window.scrollTo({ top: stageScroll(i), behavior: "instant" as ScrollBehavior });
     };
     root.addEventListener("focusin", onFocusIn);
-
-    return () => {
-      window.clearTimeout(timer);
-      window.removeEventListener("resize", onResize);
-      reduce.removeEventListener("change", build);
-      root.removeEventListener("focusin", onFocusIn);
-      ctx?.revert();
-      root.dataset.mode = "static";
-    };
+    return () => root.removeEventListener("focusin", onFocusIn);
   }, []);
 
   return (

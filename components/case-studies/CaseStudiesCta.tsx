@@ -1,13 +1,13 @@
 import { caseStudiesCta } from "@/lib/content/case-studies";
 import { Button } from "@/components/ui/site-button";
-import ScrollReveal from "@/components/home/shared/ScrollReveal";
+import { Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 export default function CaseStudiesCta() {
   return (
     <section className="py-24 md:py-36 bg-burgundy text-white overflow-hidden relative">
       <Container>
-        <ScrollReveal>
+        <Reveal>
           <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
             {/* Eyebrow */}
             <span className="font-mono text-xs uppercase tracking-eyebrow text-white/50">
@@ -36,7 +36,7 @@ export default function CaseStudiesCta() {
               CULT.URE &mdash; Beyond the noise. Into the culture.
             </p>
           </div>
-        </ScrollReveal>
+        </Reveal>
       </Container>
     </section>
   );

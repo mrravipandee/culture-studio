@@ -61,7 +61,7 @@ function Logo({ logo, i, hidden }: { logo: MarqueeLogo; i: number; hidden: boole
   return (
     <li
       aria-hidden={hidden}
-      className="flex h-12 shrink-0 items-center gap-3 text-black opacity-40 grayscale transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 hover:opacity-100 hover:grayscale-0"
+      className="flex h-12 shrink-0 items-center gap-3 text-black opacity-40 grayscale transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-[1.03] hover:opacity-100 hover:grayscale-0"
     >
       {logo.src ? (
         <Image src={logo.src} alt={logo.name} width={160} height={48} className="h-9 w-auto object-contain" />

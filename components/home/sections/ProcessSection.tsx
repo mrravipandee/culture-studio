@@ -42,7 +42,7 @@ export default function ProcessSection() {
           </div>
 
           <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wider">
-            <span className="inline-block h-2 w-2 rounded-full bg-burgundy animate-pulse" />
+            <span className="inline-block h-2 w-2 rounded-full bg-burgundy" />
             <span className="text-burgundy font-medium">DISCOVER → EVOLVE</span>
             <span className="text-black/30">/</span>
             <span>SYSTEMATIC IMPACT</span>
@@ -68,7 +68,7 @@ export default function ProcessSection() {
               <RevealItem
                 as="li"
                 key={step.title}
-                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-black/10 bg-white/85 p-7 shadow-[0_4px_24px_rgba(0,0,0,0.02)] backdrop-blur-sm transition-all duration-500 hover:border-black/30 hover:bg-white hover:shadow-[0_16px_36px_rgba(36,12,14,0.06)] hover:-translate-y-1"
+                className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-black/10 bg-white/85 p-7 backdrop-blur-sm transition-[transform,border-color,background-color] duration-500 ease-editorial hover:border-black/30 hover:bg-white hover:-translate-y-1"
               >
                 {/* Subtle top accent line draw on hover */}
                 <span
@@ -86,7 +86,7 @@ export default function ProcessSection() {
                       STEP {stepNumber}
                     </span>
 
-                    <div className="h-8 w-8 text-black/60 transition-all duration-300 group-hover:text-burgundy group-hover:scale-110">
+                    <div className="h-8 w-8 text-black/60 transition-colors duration-300 ease-editorial group-hover:text-burgundy">
                       <ProcessStepGlyph step={index + 1} className="h-full w-full" />
                     </div>
                   </div>

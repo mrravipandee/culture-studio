@@ -80,9 +80,36 @@
 
     /* Motion */
     --ease: cubic-bezier(0.22, 1, 0.36, 1);
-    --duration-fast: 300ms;
-    --duration-base: 500ms;
-    --duration-slow: 800ms;
+    /* Durations: colour/opacity · interface · fade-up · text · image */
+    --duration-color: 300ms;
+    --duration-ui: 500ms;
+    --duration-reveal: 800ms;
+    --duration-text: 900ms;
+    --duration-image: 1100ms;
+    --duration-image-settle: 1400ms;
+    /* Stagger steps */
+    --stagger-item: 60ms;
+    --stagger-word: 50ms;
+
+    /* Homepage hero sequence (components/home/HomeHero.tsx). Mirrored in lib/motion.ts → HERO. */
+    --hero-word-duration: var(--duration-image);      /* 1100ms */
+    --hero-word-delay: 150ms;
+    --hero-word-stagger: 70ms;
+    --hero-fade-duration: var(--duration-text);       /* 900ms opacity */
+    --hero-rise-duration: var(--duration-image);      /* 1100ms transform */
+    --hero-rule-duration: 1200ms;
+    --hero-rule-top-delay: 700ms;
+    --hero-frame-duration: var(--duration-image-settle); /* 1400ms clip */
+    --hero-frame-delay: 250ms;
+    --hero-photo-settle: 1800ms;
+    --hero-block-duration: var(--duration-image);     /* 1100ms */
+    --hero-block-delay: 550ms;
+    --hero-card-delay: 900ms;
+
+    /* Legacy aliases */
+    --duration-fast: var(--duration-color);
+    --duration-base: var(--duration-ui);
+    --duration-slow: var(--duration-reveal);
     --transition-fast: var(--duration-fast) var(--ease);   /* legacy alias */
     --transition-normal: var(--duration-base) var(--ease); /* legacy alias */
 
@@ -204,6 +231,11 @@
 
     /* Motion */
     --ease-editorial: var(--ease);
+    /* Every plain `transition*` class, and Tailwind's ease-out / ease-in-out, use the house curve */
+    --default-transition-timing-function: var(--ease);
+    --default-transition-duration: var(--duration-color);
+    --ease-out: var(--ease);
+    --ease-in-out: var(--ease);
 
     /* Extra small breakpoint for 390px phones */
     --breakpoint-xs: 24.375rem;

@@ -35,7 +35,7 @@ export default function ImageFrame({
       fill
       sizes={sizes}
       priority={priority}
-      className="object-cover transition-transform duration-700 ease-editorial group-hover:scale-[1.03]"
+      className="object-cover transition-transform duration-1100 ease-editorial group-hover:scale-[1.03]"
     />
   ) : null;
 

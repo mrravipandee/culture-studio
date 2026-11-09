@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import ScrollCue from "@/components/motion/ScrollCue";
 import { preload } from "react-dom";
 import BrandReveal from "./BrandReveal";
 
@@ -118,15 +119,7 @@ export default function CinematicIntro({
 
       {/* Scroll Indicator */}
       <div className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2">
-        <div className="flex flex-col items-center gap-3 text-white/70">
-          <span className="text-xs uppercase tracking-eyebrow">
-            Scroll to explore
-          </span>
-
-          <div className="h-10 w-px overflow-hidden bg-white/20">
-            <div className="h-1/2 w-full animate-pulse bg-white" />
-          </div>
-        </div>
+        <ScrollCue label="Scroll to explore" layout="column" tone="dark" style={{ ["--cue-delay" as string]: "1400ms" }} />
       </div>
     </section>
   );

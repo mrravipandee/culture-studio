@@ -62,7 +62,7 @@ export default function ServicesFaq() {
 
                   {/* Plus / Minus indicator button */}
                   <span
-                    className={`grid size-9 shrink-0 place-items-center rounded-full border border-black/15 text-black transition-all duration-300 ${
+                    className={`grid size-9 shrink-0 place-items-center rounded-full border border-black/15 text-black transition-[transform,background-color,border-color,color] duration-500 ease-editorial ${
                       isOpen
                         ? "bg-black text-white rotate-45 border-black"
                         : "group-hover:border-burgundy group-hover:text-burgundy"
@@ -78,7 +78,7 @@ export default function ServicesFaq() {
                   id={id}
                   role="region"
                   aria-labelledby={headerId}
-                  className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+                  className={`grid transition-[grid-template-rows,opacity] duration-500 ease-editorial ${
                     isOpen
                       ? "grid-rows-[1fr] opacity-100 pt-5"
                       : "grid-rows-[0fr] opacity-0"

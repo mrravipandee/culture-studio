@@ -1,7 +1,7 @@
 import { servicesHero } from "@/lib/content/services";
+import ScrollCue from "@/components/motion/ScrollCue";
 import Container from "@/components/home/shared/Container";
 import { ArchitecturalDialVector, GridCrosshairMarker } from "@/components/home/shared/WorkVectors";
-import { ArrowDown } from "lucide-react";
 
 export default function ServicesHero() {
   const { eyebrow, headline, supportingCopy, meta } = servicesHero;
@@ -71,11 +71,8 @@ export default function ServicesHero() {
             </dl>
 
             {/* Scroll Indicator */}
-            <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-[0.2em] text-black/50">
-              <span className="grid size-8 place-items-center rounded-full border border-black/15 text-burgundy animate-bounce">
-                <ArrowDown size={14} />
-              </span>
-              <span>SCROLL TO EXPLORE THE SERVICES</span>
+            <div>
+              <ScrollCue label="Scroll to explore the services" />
             </div>
           </div>
         </div>

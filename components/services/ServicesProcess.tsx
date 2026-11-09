@@ -42,7 +42,7 @@ export default function ServicesProcess() {
                 as="div"
                 delay={idx * 0.12}
                 distance={20}
-                className="group relative flex flex-col justify-between rounded-xl border border-black/10 bg-white/90 p-6 sm:p-7 shadow-xs backdrop-blur-sm transition-all duration-300 hover:border-black/30 hover:shadow-md hover:-translate-y-1"
+                className="group relative flex flex-col justify-between rounded-xl border border-black/10 bg-white/90 p-6 sm:p-7 backdrop-blur-sm transition-[transform,border-color] duration-500 ease-editorial hover:border-black/30 hover:-translate-y-1"
               >
                 {/* Precision Corner Crosshair */}
                 <GridCrosshairMarker className="absolute top-2.5 right-2.5 text-black/30 group-hover:text-burgundy transition-colors" />
@@ -59,7 +59,7 @@ export default function ServicesProcess() {
                       </span>
                     </div>
 
-                    <div className="h-6 w-6 text-black/50 transition-transform group-hover:scale-110 group-hover:text-burgundy">
+                    <div className="h-6 w-6 text-black/50 transition-colors duration-300 ease-editorial group-hover:text-burgundy">
                       <ProcessStepGlyph step={idx + 1} className="h-full w-full" />
                     </div>
                   </div>

@@ -4,7 +4,7 @@ import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { caseStudiesList, type CaseStudy } from "@/lib/content/case-studies";
-import ScrollReveal from "@/components/home/shared/ScrollReveal";
+import { Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 function GridCard({ project, index }: { project: CaseStudy; index: number }) {
@@ -12,7 +12,7 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
   const isTall = index % 3 === 0;
 
   return (
-    <ScrollReveal delay={index * 0.12} distance={30}>
+    <Reveal delay={index * 0.12} distance={30}>
       <article className="group flex flex-col justify-between">
         <Link
           href={`/case-studies/${project.slug}`}
@@ -25,7 +25,7 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
             alt={project.image.alt}
             fill
             sizes="(min-width: 1024px) 50vw, 100vw"
-            className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+            className="object-cover transition-transform duration-1100 ease-editorial group-hover:scale-[1.03]"
           />
           <div
             className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
@@ -82,7 +82,7 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
           {project.placeholder && <SampleBadge className="mt-4 self-start" />}
         </div>
       </article>
-    </ScrollReveal>
+    </Reveal>
   );
 }
 
@@ -91,7 +91,7 @@ export default function ProjectsGrid() {
     <section className="py-20 md:py-32 bg-subtle border-t border-b border-black/10">
       <Container>
         {/* Section Header */}
-        <ScrollReveal>
+        <Reveal>
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-black/10">
             <div>
               <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
@@ -107,7 +107,7 @@ export default function ProjectsGrid() {
                 : `${caseStudiesList.length} projects`}
             </p>
           </div>
-        </ScrollReveal>
+        </Reveal>
 
         {/* 2-Column Asymmetric Grid */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">

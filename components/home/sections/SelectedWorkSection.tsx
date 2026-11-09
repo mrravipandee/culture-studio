@@ -43,7 +43,7 @@ function ProjectCard({
   const indexFormatted = String(index + 1).padStart(2, "0");
 
   const cardContent = (
-    <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-black/10 bg-white/80 p-5 shadow-[0_4px_30px_rgba(0,0,0,0.03)] backdrop-blur-sm transition-all duration-500 hover:border-black/30 hover:bg-white hover:shadow-[0_20px_40px_rgba(36,12,14,0.08)]">
+    <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-black/10 bg-white/80 p-5 backdrop-blur-sm transition-[transform,border-color,background-color] duration-500 ease-editorial hover:-translate-y-1 hover:border-black/30 hover:bg-white">
       {/* Precision corner crosshairs */}
       <GridCrosshairMarker className="absolute top-2 left-2 text-black/40" />
       <GridCrosshairMarker className="absolute top-2 right-2 text-black/40" />
@@ -76,7 +76,7 @@ function ProjectCard({
               ? "(min-width: 768px) 58vw, 100vw"
               : "(min-width: 768px) 40vw, 100vw"
           }
-          className="rounded-lg transition-transform duration-700 ease-editorial group-hover:scale-[1.02]"
+          className="rounded-lg"
           scrollScale
         />
 
@@ -202,7 +202,7 @@ export default function SelectedWorkSection() {
           </div>
 
           <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wider">
-            <span className="inline-block h-2 w-2 rounded-full bg-burgundy animate-pulse" />
+            <span className="inline-block h-2 w-2 rounded-full bg-burgundy" />
             <span className="text-burgundy font-medium">SAMPLE PROJECTS</span>
             <span className="text-black/30">/</span>
             <span>DETAILS TO BE CONFIRMED</span>

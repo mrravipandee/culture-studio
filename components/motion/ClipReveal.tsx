@@ -1,8 +1,7 @@
 "use client";
 
-import type { ReactNode } from "react";
-import { motion, useReducedMotion } from "motion/react";
-import { EASE, VIEWPORT } from "@/lib/motion";
+import { useRef, type CSSProperties, type ReactNode } from "react";
+import { useRevealOnce } from "./useRevealOnce";
 
 const FROM = {
   up: "inset(100% 0% 0% 0%)",
@@ -16,43 +15,29 @@ interface ClipRevealProps {
   className?: string;
   /** Edge the image grows from. */
   from?: keyof typeof FROM;
+  /** Seconds. */
   delay?: number;
-  /** Starting scale of the inner media (4. subtle image scale). 1 disables it. */
+  /** Starting scale of the inner media. 1 disables the settle. */
   scale?: number;
 }
 
 /**
- * 3. Image clip-path reveal + 4. subtle image scale.
- * The frame unclips while the media settles from a slight zoom.
- * Reduced motion: plain fade.
+ * 3. Image clip-path reveal (1100ms) with inner scale settle (1400ms), house curve.
+ * Server HTML shows the image uncropped; the clipped start state applies only once
+ * the page is armed. Styles: `.cr` in app/globals.css.
  */
 export function ClipReveal({ children, className = "", from = "up", delay = 0, scale = 1.12 }: ClipRevealProps) {
-  const reduce = useReducedMotion();
+  const ref = useRef<HTMLDivElement>(null);
+  useRevealOnce(ref);
+  const vars = {
+    "--cr-from": FROM[from],
+    "--cr-scale": scale,
+    ...(delay ? { "--cr-delay": `${Math.round(delay * 1000)}ms` } : {}),
+  } as CSSProperties;
 
   return (
-    <motion.div
-      className={`relative overflow-hidden ${className}`}
-      initial="hidden"
-      whileInView="show"
-      viewport={VIEWPORT}
-      variants={
-        reduce
-          ? { hidden: { opacity: 0 }, show: { opacity: 1, transition: { duration: 0.6, delay } } }
-          : {
-              hidden: { clipPath: FROM[from] },
-              show: { clipPath: "inset(0% 0% 0% 0%)", transition: { duration: 1.1, ease: EASE, delay } },
-            }
-      }
-    >
-      <motion.div
-        className="h-full w-full"
-        variants={{
-          hidden: { scale: reduce ? 1 : scale },
-          show: { scale: 1, transition: { duration: 1.4, ease: EASE, delay } },
-        }}
-      >
-        {children}
-      </motion.div>
-    </motion.div>
+    <div ref={ref} className={`cr relative overflow-hidden ${className}`} style={vars}>
+      <div className="cr-inner h-full w-full">{children}</div>
+    </div>
   );
 }

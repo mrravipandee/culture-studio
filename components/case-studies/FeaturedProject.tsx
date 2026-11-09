@@ -4,14 +4,14 @@ import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
 import { featuredProject } from "@/lib/content/case-studies";
 import { Button } from "@/components/ui/site-button";
-import ScrollReveal from "@/components/home/shared/ScrollReveal";
+import { Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 export default function FeaturedProject() {
   return (
     <section className="py-20 md:py-32 bg-white">
       <Container>
-        <ScrollReveal>
+        <Reveal>
           {/* Header Tag */}
           <div className="flex items-center justify-between border-b border-black/10 pb-4 mb-10">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
@@ -35,7 +35,7 @@ export default function FeaturedProject() {
                   alt={featuredProject.image.alt}
                   fill
                   sizes="(min-width: 1024px) 60vw, 100vw"
-                  className="object-cover transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+                  className="object-cover transition-transform duration-1100 ease-editorial group-hover:scale-[1.03]"
                   priority
                 />
                 <div
@@ -82,7 +82,7 @@ export default function FeaturedProject() {
               </div>
             </div>
           </article>
-        </ScrollReveal>
+        </Reveal>
       </Container>
     </section>
   );

@@ -1,4 +1,6 @@
 import { Fragment, type CSSProperties } from "react";
+import ScrollCue from "@/components/motion/ScrollCue";
+import { HERO } from "@/lib/motion";
 import { Button, TextLink } from "@/components/ui/site-button";
 import HeroReveal from "./hero/HeroReveal";
 import HeroMedia from "./hero/HeroMedia";
@@ -82,11 +84,11 @@ export default function HomeHero() {
 
         {/* Supporting copy + actions */}
         <div className="hero__body">
-          <p className="hero-reveal hero-description" style={motion({ "--d": "650ms" })}>
+          <p className="hero-reveal hero-description" style={motion({ "--d": `${HERO.delay.description}ms` })}>
             {heroDescription}
           </p>
 
-          <div className="hero-reveal hero-actions" style={motion({ "--d": "800ms" })}>
+          <div className="hero-reveal hero-actions" style={motion({ "--d": `${HERO.delay.actions}ms` })}>
             <Button href={heroActions.primary.href} variant="primary" size="lg" icon="arrow">
               {heroActions.primary.label}
             </Button>
@@ -106,12 +108,9 @@ export default function HomeHero() {
         <div className="hero__footer">
           <span className="hero-rule hero-rule--top" aria-hidden="true" />
 
-          <div className="hero-reveal hero-scroll" aria-hidden="true" style={motion({ "--d": "1000ms" })}>
-            <span className="hero-scroll__line" />
-            <span className="hero-mono">Scroll</span>
-          </div>
+          <ScrollCue label="Scroll" className="hero-reveal" style={motion({ "--d": `${HERO.delay.scrollCue}ms`, "--cue-delay": `${HERO.delay.scrollCueDraw}ms` })} />
 
-          <ol className="hero-reveal hero-pillars" aria-label="Practice areas" style={motion({ "--d": "1100ms" })}>
+          <ol className="hero-reveal hero-pillars" aria-label="Practice areas" style={motion({ "--d": `${HERO.delay.pillars}ms` })}>
             {heroPillars.map((pillar, index) => (
               <li key={pillar}>
                 <span className="hero-pillars__index">

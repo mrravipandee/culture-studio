@@ -96,7 +96,7 @@ export default function AboutStory() {
                 alt="Editorial portrait representing leadership craft"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover grayscale contrast-105 transition-transform duration-700 hover:scale-105"
+                className="object-cover grayscale contrast-105 transition-transform duration-1100 ease-editorial hover:scale-[1.03]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-5 left-5 right-5 text-white">

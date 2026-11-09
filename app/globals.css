@@ -300,177 +300,7 @@
     }
 }
 
-.hero-cta {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
-    display: inline-flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.25rem;
-    min-height: 3.25rem;
-    padding: 0.35rem 0.35rem 0.35rem 1.5rem;
-    border-radius: 999px;
-    background: var(--black);
-    color: #ffffff !important;
-    font-size: 0.75rem;
-    font-weight: 500;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-.hero-cta > span:first-child {
-    color: #ffffff !important;
-}
-
-.hero-cta::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--burgundy);
-    transform: translateY(101%);
-    transition: transform 600ms var(--hero-ease);
-}
-
-.hero-cta__icon {
-    position: relative;
-    display: grid;
-    place-items: center;
-    flex: none;
-    width: 2.5rem;
-    height: 2.5rem;
-    overflow: hidden;
-    border-radius: 999px;
-    background: var(--white);
-    color: var(--black);
-}
-
-.hero-cta__icon svg {
-    grid-area: 1 / 1;
-    transition: transform 500ms var(--hero-ease);
-}
-
-.hero-cta__icon svg:last-child {
-    transform: translateX(-180%);
-}
-
-.hero-cta:hover::before,
-.hero-cta:focus-visible::before {
-    transform: translateY(0);
-}
-
-.hero-cta:hover .hero-cta__icon svg:first-child,
-.hero-cta:focus-visible .hero-cta__icon svg:first-child {
-    transform: translateX(180%);
-}
-
-.hero-cta:hover .hero-cta__icon svg:last-child,
-.hero-cta:focus-visible .hero-cta__icon svg:last-child {
-    transform: translateX(0);
-}
-
-.hero-cta:active {
-    transform: scale(0.98);
-}
-
-.hero-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-height: 3rem;
-    padding-inline: 0.25rem;
-    font-size: 0.75rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--black);
-    transition: color 300ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.hero-link__label {
-    padding-bottom: 0.3rem;
-    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
-}
-
-.hero-link__icon {
-    transition: transform 400ms var(--hero-ease);
-}
-
-.hero-link:hover,
-.hero-link:focus-visible {
-    color: var(--burgundy);
-}
-
-.hero-link:hover .hero-link__label,
-.hero-link:focus-visible .hero-link__label {
-    animation: hero-underline 800ms var(--hero-ease);
-}
-
-.hero-link:hover .hero-link__icon,
-.hero-link:focus-visible .hero-link__icon {
-    transform: translate(2px, -2px);
-}
-
-@keyframes hero-underline {
-    0% {
-        background-size: 100% 1px;
-        background-position: 100% 100%;
-    }
-
-    45% {
-        background-size: 0% 1px;
-        background-position: 100% 100%;
-    }
-
-    46% {
-        background-size: 0% 1px;
-        background-position: 0 100%;
-    }
-
-    100% {
-        background-size: 100% 1px;
-        background-position: 0 100%;
-    }
-}
-
 /* ---------- Footer ---------- */
-
-.hero-scroll {
-    display: flex;
-    align-items: flex-end;
-    gap: 0.875rem;
-}
-
-.hero-scroll__line {
-    position: relative;
-    display: block;
-    width: 1px;
-    height: 2.75rem;
-    overflow: hidden;
-    background: var(--hero-line);
-}
-
-.hero-scroll__line::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: var(--burgundy);
-    transform: translateY(-100%);
-    animation: hero-scroll 2.4s var(--hero-ease) infinite;
-}
-
-@keyframes hero-scroll {
-    0% {
-        transform: translateY(-100%);
-    }
-
-    60%,
-    100% {
-        transform: translateY(100%);
-    }
-}
 
 .hero-pillars {
     display: grid;
@@ -609,7 +439,7 @@
 
 /* Restrained hover: the photograph leans in 3% over a long, soft curve */
 .hero-media__img {
-    transition: transform 1400ms var(--ease);
+    transition: transform var(--duration-image) var(--ease);
 }
 
 @media (hover: hover) {
@@ -773,34 +603,6 @@
     color: #a44b52;
 }
 
-.hero-card-plate {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    padding: 0.75rem;
-    background: var(--white);
-    outline: 1px solid var(--hero-line);
-    outline-offset: -1px;
-}
-
-.hero-card-plate__index {
-    font-family: var(--font-geist-mono), ui-monospace, monospace;
-    font-size: 0.5625rem;
-    letter-spacing: 0.22em;
-    color: var(--hero-muted);
-}
-
-.hero-card-plate__line {
-    font-family: var(--font-display);
-    font-style: normal;
-    font-size: clamp(1rem, 1.6vw, 1.5rem);
-    line-height: 1.05;
-    letter-spacing: -0.02em;
-    color: var(--burgundy);
-}
-
 /* ---------- Scroll-linked image drift (progressive) ---------- */
 
 @media (prefers-reduced-motion: no-preference) {
@@ -858,47 +660,47 @@
     opacity: 1;
     transform: none;
     transition:
-        opacity 900ms var(--hero-ease),
-        transform 1100ms var(--hero-ease);
+        opacity var(--hero-fade-duration) var(--hero-ease),
+        transform var(--hero-rise-duration) var(--hero-ease);
     transition-delay: var(--d, 0ms);
 }
 
 .hero[data-state="in"] .hero-word__inner {
     transform: none;
-    transition: transform 1100ms var(--hero-ease);
-    transition-delay: calc(150ms + var(--i, 0) * 70ms);
+    transition: transform var(--hero-word-duration) var(--hero-ease);
+    transition-delay: calc(var(--hero-word-delay) + var(--i, 0) * var(--hero-word-stagger));
 }
 
 .hero[data-state="in"] .hero-rule {
     transform: none;
-    transition: transform 1200ms var(--hero-ease);
+    transition: transform var(--hero-rule-duration) var(--hero-ease);
 }
 
 .hero[data-state="in"] .hero-rule--top {
-    transition-delay: 700ms;
+    transition-delay: var(--hero-rule-top-delay);
 }
 
 .hero[data-state="in"] .hero-media__frame {
     clip-path: inset(0 0 0 0);
-    transition: clip-path 1400ms var(--hero-ease) 250ms;
+    transition: clip-path var(--hero-frame-duration) var(--hero-ease) var(--hero-frame-delay);
 }
 
 .hero[data-state="in"] .hero-media__parallax > * {
     scale: 1;
-    transition: scale 1800ms var(--hero-ease) 250ms;
+    transition: scale var(--hero-photo-settle) var(--hero-ease) var(--hero-frame-delay);
 }
 
 .hero[data-state="in"] .hero-media__block {
     transform: none;
-    transition: transform 1100ms var(--hero-ease) 550ms;
+    transition: transform var(--hero-block-duration) var(--hero-ease) var(--hero-block-delay);
 }
 
 .hero[data-state="in"] .hero-media__card {
     opacity: 1;
     translate: 0 0;
     transition:
-        opacity 900ms var(--hero-ease) 900ms,
-        translate 1100ms var(--hero-ease) 900ms;
+        opacity var(--hero-fade-duration) var(--hero-ease) var(--hero-card-delay),
+        translate var(--hero-rise-duration) var(--hero-ease) var(--hero-card-delay);
 }
 
 /* Belt and braces: never hide anything for reduced-motion users */
@@ -919,11 +721,7 @@
         clip-path: none !important;
     }
 
-    .hero-scroll__line::after {
-        animation: none;
-        transform: none;
-        height: 40%;
-    }
+    
 }
 @media (min-width: 1280px) {
     .hero-title { font-size: 6rem; }
@@ -1093,6 +891,89 @@
 
 .footer-mark[data-active] .footer-mark__spot {
     opacity: 1;
+}
+
+/* ========================================
+   NAVBAR FALLBACK  (components/navigation/Navbar.tsx)
+   The scroll show/hide only runs when the page is armed for motion
+   (html[data-motion-armed], lib/motion-arm.ts). Without it — JavaScript
+   disabled, reduced motion, or the 4s failsafe — the bar stays visible and
+   usable, overriding the inline hidden state Motion renders on the server.
+======================================== */
+
+html:not([data-motion-armed]) .site-nav {
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+}
+
+/* ========================================
+   REVEAL SYSTEM  (components/motion/Reveal.tsx, TextMask.tsx, ClipReveal.tsx)
+   Start states apply ONLY under html[data-motion-armed] (set before paint by
+   lib/motion-arm.ts). Server HTML and no-JS visitors always see the content.
+   Elements animate to their resting state when JS adds [data-in].
+======================================== */
+
+/* Fade-up block */
+.rv {
+    transition:
+        opacity var(--rv-dur, var(--duration-reveal)) var(--ease) var(--rv-delay, 0ms),
+        transform var(--rv-dur, var(--duration-reveal)) var(--ease) var(--rv-delay, 0ms);
+}
+html[data-motion-armed] .rv:not([data-in]) {
+    opacity: 0;
+    transform: translate3d(var(--rv-x, 0px), var(--rv-y, 32px), 0);
+}
+
+/* Staggered items */
+.rv-item {
+    transition:
+        opacity var(--duration-reveal) var(--ease),
+        transform var(--duration-reveal) var(--ease);
+    transition-delay: calc(var(--rv-group-delay, 0ms) + var(--rv-i, 0) * var(--rv-step, var(--stagger-item)));
+}
+html[data-motion-armed] .rv-group:not([data-in]) .rv-item {
+    opacity: 0;
+    transform: translate3d(0, var(--rv-y, 16px), 0);
+}
+
+/* Masked text */
+.tm-inner {
+    display: inline-block;
+    transition: transform var(--duration-text) var(--ease);
+    transition-delay: calc(var(--tm-delay, 0ms) + var(--tm-i, 0) * var(--tm-step, var(--stagger-word)));
+}
+html[data-motion-armed] .tm:not([data-in]) .tm-inner {
+    transform: translate3d(0, 110%, 0);
+}
+
+/* Image clip reveal + inner settle */
+.cr {
+    transition: clip-path var(--duration-image) var(--ease) var(--cr-delay, 0ms);
+}
+.cr > .cr-inner {
+    transition: transform var(--duration-image-settle) var(--ease) var(--cr-delay, 0ms);
+}
+html[data-motion-armed] .cr:not([data-in]) {
+    clip-path: var(--cr-from, inset(100% 0% 0% 0%));
+}
+html[data-motion-armed] .cr:not([data-in]) > .cr-inner {
+    transform: scale(var(--cr-scale, 1.12));
+}
+
+/* ========================================
+   SCROLL CUE  (components/motion/ScrollCue.tsx)
+   One indicator site-wide: the line draws once, then rests. No loops.
+======================================== */
+
+.scroll-cue__fill {
+    transform-origin: top;
+    animation: scroll-cue-draw var(--duration-image) var(--ease) var(--cue-delay, 600ms) both;
+}
+
+@keyframes scroll-cue-draw {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
 }
 
 /* ========================================

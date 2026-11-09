@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/site-button";
-import { EASE } from "@/lib/motion";
+import { DURATION, EASE } from "@/lib/motion";
 import { brand, contactCta, isActivePath, primaryNav } from "@/lib/navigation";
 import Wordmark from "./Wordmark";
 
@@ -28,7 +28,8 @@ export default function Navbar({ introActive = false }: NavbarProps) {
   const reduce = useReducedMotion();
   const menuId = useId();
 
-  const [visible, setVisible] = useState(false);
+  // Sub-pages render the bar visible in server HTML; "/" starts hidden for the intro.
+  const [visible, setVisible] = useState(() => pathname !== "/");
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -140,10 +141,10 @@ export default function Navbar({ introActive = false }: NavbarProps) {
   return (
     <>
       <motion.header
-        className="fixed inset-x-0 top-0 z-50 pt-4"
+        className="site-nav fixed inset-x-0 top-0 z-50 pt-4"
         initial={false}
         animate={shown ? { y: 0, opacity: 1 } : { y: "-110%", opacity: 0 }}
-        transition={{ duration: shown ? 0.6 : 0.4, ease: EASE }}
+        transition={{ duration: DURATION.ui, ease: EASE }}
         onFocusCapture={() => !introRef.current && setVisible(true)}
         style={{ pointerEvents: shown ? "auto" : "none" }}
       >
@@ -192,14 +193,14 @@ export default function Navbar({ introActive = false }: NavbarProps) {
                 className="absolute h-px w-5 bg-ink"
                 initial={false}
                 animate={menuOpen ? { y: 0, rotate: 45 } : { y: -4, rotate: 0 }}
-                transition={{ duration: 0.5, ease: EASE }}
+                transition={{ duration: DURATION.ui, ease: EASE }}
               />
               <motion.span
                 aria-hidden="true"
                 className="absolute h-px w-5 origin-center bg-ink"
                 initial={false}
                 animate={menuOpen ? { y: 0, rotate: -45, scaleX: 1 } : { y: 4, rotate: 0, scaleX: 0.6 }}
-                transition={{ duration: 0.5, ease: EASE }}
+                transition={{ duration: DURATION.ui, ease: EASE }}
               />
             </button>
           </nav>
@@ -218,8 +219,8 @@ export default function Navbar({ introActive = false }: NavbarProps) {
             className="fixed inset-0 z-40 flex flex-col overflow-y-auto bg-paper/95 backdrop-blur-2xl md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0, transition: { duration: 0.3, ease: EASE } }}
-            transition={{ duration: 0.4, ease: EASE }}
+            exit={{ opacity: 0, transition: { duration: DURATION.color, ease: EASE } }}
+            transition={{ duration: DURATION.ui, ease: EASE }}
           >
             <div className="container-content flex min-h-full flex-col justify-between gap-12 pt-28 pb-10">
               <nav aria-label="Mobile">
@@ -232,7 +233,7 @@ export default function Navbar({ introActive = false }: NavbarProps) {
                         key={link.href}
                         initial={{ opacity: 0, y: reduce ? 0 : 24 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, ease: EASE, delay: 0.08 + i * step }}
+                        transition={{ duration: DURATION.reveal, ease: EASE, delay: 0.08 + i * step }}
                         className="border-b border-line"
                       >
                         <Link
@@ -253,7 +254,7 @@ export default function Navbar({ introActive = false }: NavbarProps) {
               <motion.div
                 initial={{ opacity: 0, y: reduce ? 0 : 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: EASE, delay: 0.08 + primaryNav.length * step }}
+                transition={{ duration: DURATION.reveal, ease: EASE, delay: 0.08 + primaryNav.length * step }}
                 className="grid gap-6"
               >
                 <p className="body-6 max-w-xs text-ink-2">{brand.tagline}</p>

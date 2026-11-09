@@ -22,6 +22,11 @@ export default function MotionProvider({ children }: { children: ReactNode }) {
   const reduce = useReducedMotion();
   const [lenis, setLenis] = useState<Lenis | null>(null);
 
+  // Confirms hydration so the arming failsafe (lib/motion-arm.ts) never disarms a working page.
+  useEffect(() => {
+    document.documentElement.setAttribute("data-motion-live", "");
+  }, []);
+
   useEffect(() => {
     if (reduce) return;
 

@@ -1,12 +1,12 @@
 import { behindTheWork } from "@/lib/content/case-studies";
-import ScrollReveal from "@/components/home/shared/ScrollReveal";
+import { Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 export default function BehindTheWork() {
   return (
     <section className="py-24 md:py-36 bg-white">
       <Container>
-        <ScrollReveal>
+        <Reveal>
           {/* Eyebrow & Title */}
           <div className="max-w-3xl">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
@@ -19,12 +19,12 @@ export default function BehindTheWork() {
               {behindTheWork.description}
             </p>
           </div>
-        </ScrollReveal>
+        </Reveal>
 
         {/* 4 Pillars Grid */}
         <div className="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {behindTheWork.pillars.map((pillar, index) => (
-            <ScrollReveal
+            <Reveal
               key={pillar.name}
               delay={index * 0.1}
               distance={24}
@@ -44,7 +44,7 @@ export default function BehindTheWork() {
                   {pillar.body}
                 </p>
               </div>
-            </ScrollReveal>
+            </Reveal>
           ))}
         </div>
       </Container>

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
-import { EASE, VIEWPORT } from "@/lib/motion";
+import { DURATION, EASE, VIEWPORT } from "@/lib/motion";
 
 /** Hairline that draws left to right once in view (scaleX only). */
 export function LineDraw({ className = "bg-line" }: { className?: string }) {
@@ -12,7 +12,7 @@ export function LineDraw({ className = "bg-line" }: { className?: string }) {
       initial={{ scaleX: 0 }}
       whileInView={{ scaleX: 1 }}
       viewport={VIEWPORT}
-      transition={{ duration: 1.2, ease: EASE }}
+      transition={{ duration: DURATION.image, ease: EASE }}
     />
   );
 }
