@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ServiceTags, SampleBadge } from "@/components/case-studies/ServiceTags";
+import { categoryOf } from "@/lib/content/service-catalog";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -29,7 +31,7 @@ export async function generateMetadata({
   if (!project) return { title: "Case Study Not Found" };
 
   return {
-    title: `${project.title} | Case Study`,
+    title: `${project.title} — Case Study`,
     description: project.description,
   };
 }
@@ -67,7 +69,7 @@ export default async function CaseStudyDetailPage({
           <div className="mt-10 max-w-4xl">
             <div className="flex items-center gap-3">
               <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
-                {project.category}
+                {categoryOf(project.services[0]).name}
               </span>
               <span className="text-ink-4">•</span>
               <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
@@ -82,6 +84,8 @@ export default async function CaseStudyDetailPage({
             <p className="mt-4 font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               Client: {project.clientType}
             </p>
+            <ServiceTags ids={project.services} className="mt-6" />
+            {project.placeholder && <SampleBadge className="mt-6" />}
           </div>
 
           {/* Hero Image */}
@@ -125,30 +129,11 @@ export default async function CaseStudyDetailPage({
                 {project.description}
               </p>
 
-              <div className="mt-12 space-y-8 text-ink-2 font-light leading-relaxed">
-                <div>
-                  <h2 className="eyebrow mb-3 text-ink">
-                    The Strategic Imperative
-                  </h2>
-                  <p>
-                    In noisy categories governed by superficial vanity metrics, genuine
-                    authority stems from clarity and conviction. We worked directly with leadership
-                    to extract their core point of view, distilling months of breakthrough insights
-                    into a signature intellectual framework.
-                  </p>
-                </div>
-
-                <div>
-                  <h2 className="eyebrow mb-3 text-ink">
-                    Cultural Resonance & Distribution
-                  </h2>
-                  <p>
-                    Rather than relying on uncalibrated volume, we created museum-grade editorial
-                    artifacts: precision essays, keynote scripts, and cinematic digital monograph
-                    pieces crafted to be quoted by peers and referenced by institutional capital.
-                  </p>
-                </div>
-              </div>
+              {project.placeholder ? (
+                <p className="caption-2 mt-12 rounded-lg border border-dashed border-line-strong p-6 text-ink-3">
+                  The full project narrative, approach and outcomes will be added once the project details are confirmed.
+                </p>
+              ) : null}
             </div>
           </div>
 

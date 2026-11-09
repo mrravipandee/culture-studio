@@ -102,237 +102,212 @@ export const aboutHero: AboutHeroData = {
   eyebrow: "ABOUT CULT.URE",
   headline: "We believe brands should mean something.",
   lead:
-    "CULT.URE is a personal branding and cultural positioning agency for founders, executives, and innovators. We sit at the intersection of strategic narrative, high-craft editorial design, and cognitive automation — shaping reputations that outlive algorithms.",
+    "CULT.URE is a digital growth, marketing and creative agency. We bring strategy, creative and technology together so that brands are clear about what they stand for, visible where their audience looks, and built on systems that let them grow.",
   metadata: [
-    { label: "PRACTICE", value: "Executive Branding & Cultural Positioning" },
-    { label: "FOUNDED", value: "2026 — London / Global" },
-    { label: "APPROACH", value: "Editorial Rigor × Cognitive AI" },
-    { label: "MANDATE", value: "BEYOND THE NOISE. INTO THE CULTURE." },
+    { label: "PRACTICE", value: "Digital growth, marketing & creative" },
+    { label: "DISCIPLINES", value: "Brand · Growth · Search · Technology" },
+    { label: "SERVICES", value: "Nine, delivered individually or together" },
+    { label: "TAGLINE", value: "BEYOND THE NOISE. INTO THE CULTURE." },
   ],
   disciplines: [
-    "Narrative Strategy",
-    "Editorial Craft",
-    "Cultural Resonance",
-    "Cognitive Systems",
+    "Brand & Presence",
+    "Digital Marketing & Growth",
+    "Search & Customer Engagement",
+    "Technology & Experience",
   ],
 };
 
 export const aboutPhilosophy: AboutPhilosophyData = {
   eyebrow: "OUR PHILOSOPHY",
-  title: "A point of view is the only defensible asset in an age of automated noise.",
+  title: "Attention is easy to buy. Recognition has to be built.",
   intro:
-    "When generative models can replicate endless volume, mere attention becomes a commodity. We construct brands anchored in deep conviction, timeless design, and cultural staying power.",
+    "Any brand can be loud for a moment. The ones people remember are clear about who they are, consistent in how they show up, and supported by systems that keep the work moving.",
   statements: [
     {
-      domain: "BRANDING",
-      statement: "Reputation is not declared. It is earned through sustained coherence.",
+      domain: "BRAND BUILDING",
+      statement: "A brand is what people repeat, not what it says.",
       elaboration:
-        "A leader’s brand is not a logo or a weekly LinkedIn post. It is the composite intellectual footprint left in every room, article, broadcast, and conversation.",
+        "We start with positioning and voice, so every campaign, page and post adds to the same idea instead of starting from zero.",
     },
     {
-      domain: "CONTENT",
-      statement: "Content without conviction is digital debris.",
+      domain: "MARKETING & GROWTH",
+      statement: "Growth comes from the right message in the right channel.",
       elaboration:
-        "We reject algorithmic mimicry. We craft monographs, essays, and cinematic media designed to be cited by peers and preserved in archives.",
+        "Social, paid, search, email and commerce each play a different role. We plan them together and measure them against clear goals.",
     },
     {
-      domain: "CULTURE",
-      statement: "Culture is the ultimate multiplier of enterprise value.",
+      domain: "CREATIVE COMMUNICATION",
+      statement: "Craft is how a brand earns attention it did not pay for.",
       elaboration:
-        "Markets follow cultural momentum. When a founder’s personal ethos enters the broader zeitgeist, organizational recruitment, investor appetite, and customer loyalty accelerate exponentially.",
+        "Considered writing, design and visual direction make communication worth noticing and easier to trust.",
     },
     {
-      domain: "TECHNOLOGY & AI",
-      statement: "Automate friction. Never automate human taste.",
+      domain: "TECHNOLOGY",
+      statement: "Automate the process. Never the perspective.",
       elaboration:
-        "We utilize state-of-the-art cognitive workflows to scale distribution and eliminate operational bottlenecks, preserving raw discernment, emotion, and aesthetic taste.",
+        "Websites, automation and AI tools should remove friction and repetitive work, so people can spend their time on strategy and creativity.",
     },
   ],
 };
 
 export const aboutStory: AboutStoryData = {
-  eyebrow: "OUR STORY",
-  title: "Built to counter the homogenization of digital leadership.",
+  eyebrow: "WHY CULT.URE",
+  title: "One agency for the brand, the growth and the systems behind them.",
   lead:
-    "CULT.URE was conceived as a deliberate alternative to conventional PR firms and formulaic social media agencies. We recognized that the world’s most formidable minds were being framed with cookie-cutter carousels and ghostwritten banalities.",
+    "Brand, marketing and technology are often handled by separate teams that rarely talk to each other. CULT.URE brings them into one plan, so positioning, campaigns, search, websites and automation support the same goals.",
   purpose:
-    "To transition high-conviction founders, operators, and thinkers from industry participants into respected cultural authorities who command category leadership.",
+    "To help brands and the people behind them become clear, visible and easy to choose, through strategy, creative and technology that work together.",
   vision:
-    "A world where leadership discourse is elevated to an art form — combining rigorous substance with editorial gravitas.",
+    "Brands that stand for something, show up consistently, and grow without adding noise.",
   editableNotice:
-    "[ EDITABLE PRACTICE NOTE: Company origin narrative, specific founder background, and studio milestones can be tailored here without modifying design components. ]",
+    "[ EDITABLE: Company history, founder background, team and milestones can be added here once confirmed. Nothing in this section describes past events. ]",
   milestones: [
     {
-      phase: "Phase I",
-      label: "The Diagnosis",
+      phase: "Strategy",
+      label: "Clarity first",
       description:
-        "Observing the collapse of generic social marketing and the rise of personal authority as the primary driver of institutional trust.",
+        "Positioning, audience and objectives are defined before any channel or tool is chosen.",
     },
     {
-      phase: "Phase II",
-      label: "The Methodology",
+      phase: "Creative",
+      label: "Communication with craft",
       description:
-        "Synthesizing publishing house editorial standards with venture-scale narrative architecture and modern distribution mechanics.",
+        "Content, design, campaigns and PR express that position consistently across every touchpoint.",
     },
     {
-      phase: "Phase III",
-      label: "The Studio Today",
+      phase: "Technology",
+      label: "Systems that scale",
       description:
-        "Partnering with a selective roster of leaders across venture capital, deep tech, luxury, and philosophy to sculpt definitive global voices.",
+        "Websites, search, lifecycle communication and automation turn attention into lasting growth.",
     },
   ],
 };
 
 export const aboutPerspective: AboutPerspectiveData = {
-  eyebrow: "OUR PERSPECTIVE",
-  title: "How we navigate the modern landscape of public perception.",
+  eyebrow: "WHAT WE DO",
+  title: "Four disciplines, connected by one approach.",
   lead:
-    "Modern influence requires an acute understanding of how human psychology, platform algorithms, and artistic expression converge.",
+    "Our nine services are organised into four disciplines. Each one solves a different part of the same problem: helping a brand be understood, found and chosen.",
   pillars: [
     {
       number: "01",
-      title: "Personal Branding",
-      subtitle: "Intellectual Equity over Vanity Metrics",
+      title: "Brand & Presence",
+      subtitle: "Personal Branding & LinkedIn Marketing · PR & Event Marketing",
       description:
-        "Follower counts are volatile; intellectual authority is permanent. We establish proprietary frameworks and concepts that your industry associates indelibly with your name.",
-      takeaway: "Authority generates inbound opportunity without cold pursuit.",
+        "Shaping how a brand and the people behind it are seen: in feeds, in the press and in person.",
+      takeaway: "Recognition starts with a clear position.",
     },
     {
       number: "02",
-      title: "Digital Culture",
-      subtitle: "Navigating Algorithmic Tribalism",
+      title: "Digital Marketing & Growth",
+      subtitle: "Social Media Marketing · Performance & Growth Marketing · E-commerce Marketing & Growth",
       description:
-        "Digital feeds reward polarized superficiality unless an identity is anchored in authentic cultural resonance. We position leaders above trend cycles so their perspective shapes the room.",
-      takeaway: "Set the conversation instead of reacting to it.",
+        "Content, paid media and commerce connected to clear objectives and measured honestly.",
+      takeaway: "Attention only matters when it moves people to act.",
     },
     {
       number: "03",
-      title: "Creative Communication",
-      subtitle: "Editorial Rigor as a Differentiator",
+      title: "Search & Customer Engagement",
+      subtitle: "SEO, GEO & AEO · Email & Lifecycle Marketing",
       description:
-        "Every touchpoint must reflect uncompromising craftsmanship. From typography and color temperature to syntactic cadence, we apply the standards of premier art publications.",
-      takeaway: "Taste cannot be simulated; it must be practiced.",
+        "Being found in search and AI answers, then staying relevant through owned communication.",
+      takeaway: "Discovery and loyalty are one relationship.",
     },
     {
       number: "04",
-      title: "AI & Automation",
-      subtitle: "Amplifying Reach While Preserving Nuance",
+      title: "Technology & Experience",
+      subtitle: "Website Design & Development · AI & Business Automation",
       description:
-        "We harness generative AI and bespoke automation pipelines as leverage engines. They liberate leaders from production drudgery while keeping the central vision purely human.",
-      takeaway: "Scale distribution to infinity without sacrificing depth.",
+        "The websites and automated systems that every other discipline depends on.",
+      takeaway: "Strong marketing needs strong foundations.",
     },
   ],
 };
 
 export const aboutApproach: AboutApproachData = {
   eyebrow: "OUR APPROACH",
-  title: "A four-stage continuum from hidden brilliance to category authority.",
+  title: "How the disciplines come together.",
   lead:
-    "We don’t begin with content creation; we begin with cognitive clarity. Every engagement follows a disciplined architectural progression.",
+    "Whether a project uses one service or several, it follows the same sequence.",
   steps: [
     {
       step: "01",
       name: "Understand",
-      tagline: "Excavating the core ethos",
+      tagline: "Where the brand stands today",
       description:
-        "We conduct comprehensive narrative audits, worldview interviews, and audience ecosystem mapping to identify your unrepeatable perspective and natural leadership archetype.",
-      deliverables: [
-        "Executive narrative audit",
-        "Worldview & thesis extraction",
-        "Audience & whitespace analysis",
-        "Platform equity benchmark",
-      ],
+        "We learn about the business, audience, channels and competitors, and agree what success should look like.",
+      deliverables: ["Discovery conversation", "Channel review", "Agreed objectives"],
     },
     {
       step: "02",
       name: "Strategize",
-      tagline: "Architecting the intellectual platform",
+      tagline: "What to do, and in what order",
       description:
-        "We define the core theses, editorial pillars, and publication rhythms that will anchor your public presence across digital, print, and speaking mediums.",
-      deliverables: [
-        "Proprietary framework design",
-        "Editorial positioning playbook",
-        "Multi-channel distribution architecture",
-        "Network amplification blueprint",
-      ],
+        "We recommend the services, priorities and measures that fit the objectives, and nothing that does not.",
+      deliverables: ["Recommended scope", "Channel priorities", "Measurement plan"],
     },
     {
       step: "03",
       name: "Create",
-      tagline: "Execution with editorial precision",
+      tagline: "Design, build and launch",
       description:
-        "Our studio directs and produces bespoke essays, video monographs, visual identities, and monograph publications designed to rival premier publications.",
-      deliverables: [
-        "Monograph-grade articles & essays",
-        "Cinematic video & keynotes",
-        "Visual identity & typestyles",
-        "Bespoke digital presence assets",
-      ],
+        "Creative, campaigns, content and technology are produced together so each part supports the others.",
+      deliverables: ["Creative and content", "Campaigns and websites", "Automations"],
     },
     {
       step: "04",
       name: "Evolve",
-      tagline: "Sustained compounding & cultural iteration",
+      tagline: "Measure and improve",
       description:
-        "We install autonomous listening and scheduling systems to analyze resonance, refine positioning, and compound your reputation across quarters and years.",
-      deliverables: [
-        "Cognitive distribution automation",
-        "Cultural sentiment tracking",
-        "Iterative positioning refinement",
-        "Category authority compounding",
-      ],
+        "We report clearly, learn from the results and refine the plan over time.",
+      deliverables: ["Reporting", "Optimisation", "Next steps"],
     },
   ],
 };
 
 export const aboutPrinciples: AboutPrinciplesData = {
   eyebrow: "OUR PRINCIPLES",
-  title: "The standards that govern every word, frame, and engagement.",
-  lead:
-    "These four convictions dictate how we select partners, craft narratives, and judge the enduring value of our work.",
+  title: "The standards behind every engagement.",
+  lead: "Four convictions guide how we plan, create and judge our work.",
   items: [
     {
       number: "I",
       title: "Clarity over noise.",
-      summary: "In a world of endless broadcasting, precise thinking is the ultimate magnet.",
-      detail:
-        "We strip away jargon, filler, and performative posturing. We say what is true, in the fewest and most incisive words possible.",
+      summary: "Clear thinking travels further than volume.",
+      detail: "We remove jargon and filler and say what is true in as few words as possible.",
     },
     {
       number: "II",
       title: "Meaning over attention.",
-      summary: "Virality is transient; intellectual respect is enduring.",
-      detail:
-        "We do not optimize for cheap clicks that evaporate tomorrow. We optimize for the deep respect of peers, institutional investors, and discerning clients.",
+      summary: "Short-term clicks are not the goal; lasting recognition is.",
+      detail: "We judge work by whether it builds trust and moves the business forward, not by vanity metrics.",
     },
     {
       number: "III",
       title: "Strategy before execution.",
-      summary: "Publishing without strategy is just expensive noise.",
-      detail:
-        "We never produce a video, draft an essay, or publish an opinion until the foundational strategic outcome and positioning thesis are airtight.",
+      summary: "Publishing without a plan is expensive noise.",
+      detail: "Every channel, campaign and tool is chosen for a reason that traces back to the objectives.",
     },
     {
       number: "IV",
       title: "Creativity with purpose.",
-      summary: "Aesthetic excellence in service of undeniable influence.",
-      detail:
-        "Every typographic selection, layout choice, and cinematic cut exists to elevate the authority of your ideas, not to display design self-indulgence.",
+      summary: "Craft that serves the message.",
+      detail: "Design, writing and technology are held to a high standard because they shape how a brand is perceived.",
     },
   ],
 };
 
 export const aboutCta: AboutCtaData = {
-  eyebrow: "INITIATE A CONVERSATION",
-  headline: "Let's build something that matters.",
+  eyebrow: "START AN INQUIRY",
+  headline: "Tell us what you want to build.",
   lead:
-    "We partner with a limited cohort of founders, executives, and pioneers each quarter. If you are ready to define your category and lead the cultural conversation, we welcome your inquiry.",
+    "Share where your brand is today and which services interest you. If you are not sure yet, we will help you decide where to start.",
   primaryAction: {
-    label: "Start an Inquiry",
-    href: "#contact",
+    label: "Start an inquiry",
+    href: "/#contact",
   },
   secondaryAction: {
-    label: "Explore Selected Work",
-    href: "/case-studies",
+    label: "Explore our services",
+    href: "/services",
   },
 };

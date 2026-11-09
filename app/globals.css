@@ -1001,6 +1001,12 @@
     grid-area: 1 / 1;
     border-top: 0;
     padding-block: 0;
+    pointer-events: none;
+}
+
+/* Only the visible stage takes clicks (stages share one position) */
+.svc[data-mode="pinned"] .svc__panel[data-current] {
+    pointer-events: auto;
 }
 
 .svc[data-mode="pinned"] .svc__text,

@@ -1,10 +1,22 @@
 import { expertise, trustedBy } from "@/lib/content/home";
+import { serviceCategories, serviceHref, services } from "@/lib/content/service-catalog";
+import { Button } from "@/components/ui/site-button";
 import LogoMarquee from "@/components/motion/LogoMarquee";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
-import ServicesStory from "./ServicesStory";
+import ServicesStory, { type StoryService } from "./ServicesStory";
 
-/** 02 — Expertise: pinned scroll story through the four services (ServicesStory). */
+/** Curated view: one pinned stage per category, linking to each service on /services. */
+const stages: StoryService[] = serviceCategories.map((category) => ({
+  id: `home-${category.id}`,
+  title: category.name,
+  description: category.intro,
+  includes: category.services.map((id) => ({ label: services[id].name, href: serviceHref(id) })),
+  more: { label: `Explore ${category.name}`, href: serviceHref(category.id) },
+  image: category.image,
+}));
+
+/** 02 — Services: pinned scroll story through the four service categories. */
 export default function ExpertiseSection() {
   return (
     <section id="expertise" aria-labelledby="expertise-title" className="section surface-paper">
@@ -18,8 +30,14 @@ export default function ExpertiseSection() {
       </Container>
 
       <div className="mt-16 lg:mt-24">
-        <ServicesStory services={expertise.services} />
+        <ServicesStory services={stages} />
       </div>
+
+      <Container className="mt-12 flex justify-start md:justify-end">
+        <Button href={expertise.cta.href} variant="secondary" icon="arrow">
+          {expertise.cta.label}
+        </Button>
+      </Container>
     </section>
   );
 }

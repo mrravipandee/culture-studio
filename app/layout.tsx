@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: "%s | CULT.URE",
   },
   description:
-    "CULT.URE is a personal branding agency focused on content, culture, cognition and AI automation.",
+    "CULT.URE is a digital growth, marketing and creative agency combining strategy, creative and technology.",
   applicationName: "CULT.URE",
 };
 

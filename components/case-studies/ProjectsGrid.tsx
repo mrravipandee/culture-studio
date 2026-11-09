@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { ServiceTags, SampleBadge } from "@/components/case-studies/ServiceTags";
+import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { caseStudiesList, type CaseStudy } from "@/lib/content/case-studies";
@@ -35,7 +37,7 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
         <div className="mt-6 flex flex-col">
           <div className="flex items-center justify-between text-xs">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
-              {project.category}
+              {categoryOf(project.services[0]).name}
             </span>
             <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               {project.year}
@@ -75,17 +77,9 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
             {project.description}
           </p>
 
-          {/* Tags */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            {project.deliverables.map((item) => (
-              <span
-                key={item}
-                className="font-mono text-xs uppercase tracking-wider text-ink-3 bg-subtle px-2.5 py-0.5 rounded"
-              >
-                {item}
-              </span>
-            ))}
-          </div>
+          {/* Official services involved */}
+          <ServiceTags ids={project.services} className="mt-4" />
+          {project.placeholder && <SampleBadge className="mt-4 self-start" />}
         </div>
       </article>
     </ScrollReveal>

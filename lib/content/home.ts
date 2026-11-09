@@ -8,6 +8,8 @@
  * placeholder frame with an optimised next/image.
  */
 
+import type { ServiceId } from "./service-catalog";
+
 export type ContentImage = {
   /** Path under /public, e.g. "/images/work/project-01.jpg". */
   src: string | null;
@@ -34,7 +36,7 @@ export const manifesto = {
     title: "Attention is rented. Culture is owned.",
   } satisfies SectionIntro,
   lead:
-    "Most personal brands are built for the feed — loud, frequent and easy to forget. We believe a name earns its place differently: by standing for something clear, expressed with consistency, in the rooms and on the platforms that matter.",
+    "Most brands are built for the feed — loud, frequent and easy to forget. We believe a brand earns its place differently: by standing for something clear, expressed with consistency, on the channels and in the moments that matter.",
   beliefs: [
     {
       title: "Clarity before content",
@@ -50,22 +52,14 @@ export const manifesto = {
     },
   ],
   value: {
-    title: "Why personal branding matters",
-    body: "People trust people. A considered personal brand turns your expertise into recognition, and recognition into opportunity — whether you are a founder building a company, a creator building an audience or an executive leading an industry conversation.",
+    title: "Why it has to work as one",
+    body: "People choose brands they recognise and trust. When strategy, creative and technology point in the same direction, every channel — from search and social to the inbox and the website — reinforces the same idea instead of competing for attention.",
   },
 };
 
 /* ---------------------------------------------------------------
    04 — Expertise (proposed service categories — edit freely)
 ---------------------------------------------------------------- */
-
-export type Service = {
-  id: string;
-  title: string;
-  description: string;
-  includes: string[];
-  image: ContentImage;
-};
 
 /**
  * Logo marquee. PLACEHOLDER names: replace with real, approved client logos
@@ -87,81 +81,13 @@ export const trustedBy = {
 export const expertise = {
   intro: {
     index: "02",
-    eyebrow: "Expertise",
-    title: "Four disciplines. One coherent presence.",
+    eyebrow: "Services",
+    title: "Strategy, creative and technology. One direction.",
     description:
-      "Strategy, story, identity and systems — working together so every part of your public presence points in the same direction.",
+      "Nine services across four disciplines, planned together so every channel points the same way.",
   } satisfies SectionIntro,
-  services: [
-    {
-      id: "personal-branding",
-      title: "Personal Branding",
-      description:
-        "Defining who you are in public: the narrative, voice and point of view that make your name recognisable for the right reasons.",
-      includes: [
-        "Narrative & positioning",
-        "Voice & tone",
-        "Presence audit",
-        "Platform strategy",
-      ],
-      image: {
-        src: "/images/services/personal-branding.jpg",
-        alt: "Personal Branding — CULT.URE Practice",
-        placeholderLabel: "Visual — Personal Branding",
-      },
-    },
-    {
-      id: "content-strategy",
-      title: "Content Strategy & Creation",
-      description:
-        "Turning expertise into a consistent body of work — planned around your goals, produced with editorial care and shaped for each platform.",
-      includes: [
-        "Content pillars",
-        "Editorial planning",
-        "Writing & scripting",
-        "Video & visual production",
-      ],
-      image: {
-        src: "/images/services/content-strategy.jpg",
-        alt: "Content Strategy & Creation — CULT.URE Practice",
-        placeholderLabel: "Visual — Content Strategy & Creation",
-      },
-    },
-    {
-      id: "brand-identity",
-      title: "Brand Identity & Positioning",
-      description:
-        "A visual and verbal identity that matches the substance behind it, so every touchpoint looks and sounds unmistakably like you.",
-      includes: [
-        "Visual identity",
-        "Messaging framework",
-        "Photography direction",
-        "Brand guidelines",
-      ],
-      image: {
-        src: "/images/services/brand-identity.jpg",
-        alt: "Brand Identity & Positioning — CULT.URE Practice",
-        placeholderLabel: "Visual — Brand Identity & Positioning",
-      },
-    },
-    {
-      id: "ai-automation",
-      title: "AI Automation",
-      description:
-        "Systems that take repetitive work out of research, publishing and repurposing — so more of your time goes to thinking, and less to process.",
-      includes: [
-        "Content workflows",
-        "Research & repurposing",
-        "Scheduling & distribution",
-        "Custom AI assistants",
-      ],
-      image: {
-        src: "/images/services/ai-automation.jpg",
-        alt: "AI Automation & Future Systems — CULT.URE Practice",
-        placeholderLabel: "Visual — AI Automation",
-      },
-    },
-  ] satisfies Service[],
+  /** Services themselves live in lib/content/service-catalog.ts. */
+  cta: { label: "Explore all services", href: "/services" },
 };
 
 /* ---------------------------------------------------------------
@@ -171,23 +97,22 @@ export const expertise = {
 export type Project = {
   id: string;
   title: string;
-  category: string;
   description: string;
   /** Link to the full case study once it exists. */
   href: string | null;
   placeholder: boolean;
   image: ContentImage;
   year?: string;
-  tags?: string[];
+  /** Official services involved (lib/content/service-catalog.ts). */
+  services: ServiceId[];
   scope?: string;
-  stat?: string;
 };
 
 export const selectedWork = {
   intro: {
     index: "03",
     eyebrow: "Selected work",
-    title: "Defining personal brands.",
+    title: "Selected work.",
     description:
       "A curated archive of strategic positioning, bespoke editorial media, and cultural influence across industries.",
   } satisfies SectionIntro,
@@ -196,15 +121,13 @@ export const selectedWork = {
     {
       id: "sample-01",
       title: "Aura & Influence",
-      category: "Personal Branding",
       description:
         "Comprehensive public identity and strategic media positioning for a pioneering frontier technology founder.",
       href: "/case-studies/aura-and-influence",
-      placeholder: false,
+      placeholder: true,
+      services: ["personal-branding-linkedin-marketing"],
       year: "2026",
       scope: "Frontier AI Pioneer",
-      stat: "Keynote & Global Narrative",
-      tags: ["Personal Branding", "Executive Narrative", "Film"],
       image: {
         src: "/images/work/featured.jpg",
         alt: "Aura & Influence Case Study",
@@ -214,15 +137,13 @@ export const selectedWork = {
     {
       id: "sample-02",
       title: "Vanguard Monograph",
-      category: "Content Strategy & Creation",
       description:
-        "An executive thought-leadership publication and cinematic visual production reaching 4.5M+ category leaders.",
+        "An executive thought-leadership publication and cinematic visual production.",
       href: "/case-studies/vanguard-monograph",
-      placeholder: false,
+      placeholder: true,
+      services: ["social-media-marketing"],
       year: "2025",
       scope: "Venture Capital Partner",
-      stat: "4.5M+ Global Readers",
-      tags: ["Content Strategy", "Monograph Publication", "Essays"],
       image: {
         src: "/images/work/project-02.jpg",
         alt: "Vanguard Monograph Case Study",
@@ -232,15 +153,13 @@ export const selectedWork = {
     {
       id: "sample-03",
       title: "Cognition Capital",
-      category: "Brand Identity & Positioning",
       description:
         "Monolithic visual identity, digital architecture, and private editorial channel for a Tier-1 venture partner.",
       href: "/case-studies/cognition-capital",
-      placeholder: false,
+      placeholder: true,
+      services: ["personal-branding-linkedin-marketing", "website-design-development"],
       year: "2025",
       scope: "Deep Tech Syndicate",
-      stat: "Private Syndicate Access",
-      tags: ["Brand Identity", "Digital Flagship", "Typography"],
       image: {
         src: "/images/work/project-03.jpg",
         alt: "Cognition Capital Case Study",
@@ -250,15 +169,13 @@ export const selectedWork = {
     {
       id: "sample-04",
       title: "The Synthesist",
-      category: "Executive Presence & AI",
       description:
         "Multi-platform presence architecture utilizing proprietary cognitive workflows to transform breakthroughs into cultural narrative.",
       href: "/case-studies/the-synthesist",
-      placeholder: false,
+      placeholder: true,
+      services: ["personal-branding-linkedin-marketing", "ai-business-automation"],
       year: "2026",
       scope: "Biotech & Longevity Chair",
-      stat: "Cognitive AI Systems",
-      tags: ["Executive Presence", "AI Workflows", "Monograph"],
       image: {
         src: "/images/work/project-04.jpg",
         alt: "The Synthesist Case Study",
@@ -352,7 +269,7 @@ export const whyCulture = {
     eyebrow: "Why CULT.URE",
     title: "Strategy, creativity and cultural relevance — in one practice.",
     description:
-      "We work at the intersection of three things most agencies keep separate. That is what lets a personal brand feel coherent instead of assembled.",
+      "We work at the intersection of three things most agencies keep separate. That is what lets a brand feel coherent instead of assembled.",
   } satisfies SectionIntro,
   pillars: [
     {
@@ -370,7 +287,7 @@ export const whyCulture = {
   ],
   commitments: [
     "Strategy before a single post",
-    "One team across story, content, identity and automation",
+    "One team across brand, marketing, search and technology",
     "Work built around you — not a template",
     "Honest conversations about what is and isn't working",
   ],
@@ -434,9 +351,9 @@ export const contact = {
   intro: {
     index: hasClientVoices ? "08" : "07",
     eyebrow: "Contact",
-    title: "Let's build a name that outlasts the noise.",
+    title: "Let's build something that outlasts the noise.",
     description:
-      "Whether you are starting from scratch or refining an existing presence, we would like to hear what you are building. Tell us where you are today and where you want your name to go.",
+      "Whether you are starting from scratch or refining an existing presence, we would like to hear what you are building. Tell us where you are today and where you want your brand to go.",
   } satisfies SectionIntro,
   /** Set to the real inbox, e.g. "hello@yourdomain.com". */
   email: null as string | null,

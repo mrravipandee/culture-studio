@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight } from "@/components/ui/Arrow";
 import { Button } from "@/components/ui/site-button";
 import { selectedWork, type Project } from "@/lib/content/home";
+import { categoryOf, services } from "@/lib/content/service-catalog";
 import Container from "../shared/Container";
 import ImageFrame from "../shared/ImageFrame";
 import SectionHeading from "../shared/SectionHeading";
@@ -55,7 +56,7 @@ function ProjectCard({
           </span>
           <span className="h-1 w-1 rounded-full bg-burgundy" />
           <span className="font-mono uppercase tracking-wider text-burgundy font-semibold">
-            {project.category}
+            {categoryOf(project.services[0]).name}
           </span>
         </div>
         {project.year && (
@@ -82,8 +83,8 @@ function ProjectCard({
         {/* Transparent Corner Seal Vector Badge */}
         <div className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3 py-1.5 backdrop-blur-md transition-opacity duration-300 group-hover:bg-black/60">
           <EditorialSealVector className="h-3.5 w-3.5 text-white/80" />
-          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/90">
-            VERIFIED
+          <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/90">
+            {project.placeholder ? "Sample project" : "Case study"}
           </span>
         </div>
       </div>
@@ -117,17 +118,17 @@ function ProjectCard({
         </div>
 
         {/* Deliverables / Tags Pills */}
-        {project.tags && project.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 pt-3 border-t border-black/5">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="rounded-full bg-neutral-100/90 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-black/65"
+        {project.services.length > 0 && (
+          <ul aria-label="Services" className="flex flex-wrap gap-1.5 pt-3 border-t border-black/5">
+            {project.services.map((id) => (
+              <li
+                key={id}
+                className="rounded-full bg-subtle px-2.5 py-0.5 font-mono text-xs uppercase tracking-wider text-ink-2"
               >
-                {tag}
-              </span>
+                {services[id].name}
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
     </article>

@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { ServiceTags, SampleBadge } from "@/components/case-studies/ServiceTags";
+import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
 import { featuredProject } from "@/lib/content/case-studies";
 import { Button } from "@/components/ui/site-button";
@@ -47,7 +49,7 @@ export default function FeaturedProject() {
             <div className="lg:col-span-5 flex flex-col justify-center">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
-                  {featuredProject.category}
+                  {categoryOf(featuredProject.services[0]).name}
                 </span>
                 <span className="text-ink-4">•</span>
                 <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
@@ -68,17 +70,9 @@ export default function FeaturedProject() {
                 {featuredProject.description}
               </p>
 
-              {/* Deliverables Pills */}
-              <div className="mt-8 flex flex-wrap gap-2">
-                {featuredProject.deliverables.map((item) => (
-                  <span
-                    key={item}
-                    className="inline-block rounded-full border border-black/10 bg-subtle px-3.5 py-1 text-xs uppercase tracking-eyebrow text-ink-2"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
+              {/* Official services involved */}
+              <ServiceTags ids={featuredProject.services} className="mt-8" />
+              {featuredProject.placeholder && <SampleBadge className="mt-6 self-start" />}
 
               {/* Action Button */}
               <div className="mt-10">

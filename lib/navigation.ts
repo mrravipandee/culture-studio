@@ -17,7 +17,7 @@ export const contactCta: NavLink = contact.email
 
 export const brand = {
   name: "CULT.URE",
-  tagline: "Personal branding for founders and leaders who would rather be remembered than seen.",
+  tagline: "A digital growth, marketing and creative agency. Beyond the noise. Into the culture.",
 };
 
 /** True for "/" only on the home page, prefix match elsewhere. */

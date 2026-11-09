@@ -20,33 +20,33 @@ export type HeroImage = {
   focus?: string;
 };
 
-export const heroLabel = "Personal Branding Agency";
+export const heroLabel = "Digital Growth & Creative Agency";
 export const heroTagline = "Beyond the noise. Into the culture.";
 
 /** Each inner array is one line on tablet+; words wrap naturally on mobile. */
 export const heroHeadline: HeadlineWord[][] = [
   [{ text: "We" }, { text: "build" }],
   [
-    { text: "personal", tone: "serif" },
     { text: "brands", tone: "serif" },
+    { text: "that", tone: "serif" },
   ],
-  [{ text: "that" }, { text: "become" }],
+  [{ text: "become" }],
   [{ text: "culture.", tone: "accent" }],
 ];
 
 export const heroDescription =
-  "CULT.URE is a personal branding agency for founders, creators and executives — working across content, culture, cognition and AI automation to carry your name beyond the noise.";
+  "CULT.URE is a digital growth, marketing and creative agency — combining strategy, creative and technology to build brands, audiences and systems that last beyond the noise.";
 
 export const heroActions = {
-  primary: { label: "Explore Case Studies", href: "/case-studies" },
-  secondary: { label: "Our Philosophy", href: "/about" },
+  primary: { label: "Explore our services", href: "/services" },
+  secondary: { label: "View case studies", href: "/case-studies" },
 } as const;
 
 export const heroPillars = [
-  "Content",
-  "Culture",
-  "Cognition",
-  "AI Automation",
+  "Brand & Presence",
+  "Marketing & Growth",
+  "Search & Engagement",
+  "Technology",
 ] as const;
 
 export const heroMedia: { primary: HeroImage; secondary: HeroImage } = {

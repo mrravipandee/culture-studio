@@ -10,9 +10,9 @@ import AboutCta from "@/components/about/AboutCta";
 import ContactSection from "@/components/home/sections/ContactSection";
 
 export const metadata: Metadata = {
-  title: "About | Philosophy, Story & Principles",
+  title: "About",
   description:
-    "We believe brands should mean something. CULT.URE is an executive personal branding agency shaping iconic reputations for leaders who define eras.",
+    "CULT.URE is a digital growth, marketing and creative agency bringing strategy, creative and technology together across brand, marketing, search and technology.",
 };
 
 export default function AboutPage() {

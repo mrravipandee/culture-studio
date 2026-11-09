@@ -4,11 +4,11 @@ import Footer from "@/components/navigation/Footer";
 
 export const metadata: Metadata = {
   title: {
-    default: "CULT.URE | Beyond the noise. Into the culture.",
+    absolute: "CULT.URE | Digital Growth, Marketing & Creative Agency",
     template: "%s | CULT.URE",
   },
   description:
-    "A premier personal branding and cultural positioning agency for visionary founders and leaders.",
+    "CULT.URE is a digital growth, marketing and creative agency: brand, social, performance, e-commerce, SEO, GEO & AEO, email, websites and AI automation. Beyond the noise. Into the culture.",
 };
 
 export default function WebsiteLayout({ children }: { children: React.ReactNode }) {

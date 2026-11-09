@@ -1,12 +1,13 @@
 import { contact } from "@/lib/content/home";
-import { Button, TextLink } from "@/components/ui/site-button";
+import { TextLink } from "@/components/ui/site-button";
 import { Reveal } from "@/components/motion";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
+import InquiryForm from "./InquiryForm";
 
 /**
- * Contact. No form: there is no submission endpoint, so the action is email.
- * Until `contact.email` is set, the section says so instead of linking to itself.
+ * Contact: inquiry form with service selection, plus direct details.
+ * See InquiryForm for how submission works (real endpoint or email only; never simulated).
  */
 export default function ContactSection() {
   const { email, socials } = contact;
@@ -17,19 +18,11 @@ export default function ContactSection() {
         <SectionHeading intro={contact.intro} titleId="contact-title" tone="dark" />
 
         <Reveal className="mt-16 grid gap-12 border-t border-line pt-10 lg:mt-24 lg:grid-cols-12 lg:gap-8">
-          <div className="lg:col-span-6">
-            {email ? (
-              <Button href={`mailto:${email}`} variant="inverse" size="lg" icon="badge">
-                Start a conversation
-              </Button>
-            ) : (
-              <p className="body-3 max-w-sm text-paper-3">
-                Our inbox is being set up. The contact address will appear here shortly.
-              </p>
-            )}
+          <div className="lg:col-span-7">
+            <InquiryForm email={email} />
           </div>
 
-          <dl className="grid gap-8 sm:grid-cols-2 lg:col-span-6">
+          <dl className="grid content-start gap-8 lg:col-span-4 lg:col-start-9">
             <div>
               <dt className="eyebrow text-paper-3">Email</dt>
               <dd className="title-1 mt-3 text-paper">

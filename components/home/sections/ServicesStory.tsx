@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useLayoutEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,7 +14,10 @@ export type StoryService = {
   id: string;
   title: string;
   description: string;
-  includes: string[];
+  /** Items shown as links (e.g. official service names to /services anchors). */
+  includes: { label: string; href: string }[];
+  /** Closing link for the stage. */
+  more: { label: string; href: string };
   image: ContentImage;
 };
 
@@ -55,12 +59,15 @@ export default function ServicesStory({ services }: { services: StoryService[] }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     let ctx: gsap.Context | null = null;
     let lastWidth = window.innerWidth;
+    /** Scroll position for each stage while pinned; used to bring a focused stage into view. */
+    let stageScroll: ((i: number) => number) | null = null;
 
     const q = <T extends Element>(sel: string, el: ParentNode = root) => Array.from(el.querySelectorAll<T>(sel));
 
     const build = () => {
       ctx?.revert();
       ctx = null;
+      stageScroll = null;
       root.dataset.mode = "static";
       if (reduce.matches) return;
 
@@ -72,6 +79,7 @@ export default function ServicesStory({ services }: { services: StoryService[] }
         const next = pad(i + 1);
         if (count.textContent !== next) count.textContent = next;
         root.dataset.active = String(i);
+        panels.forEach((p, k) => p.toggleAttribute("data-current", k === i));
       };
 
       // Measure the single-stage layout; fall back to flow mode if it cannot fit.
@@ -98,6 +106,9 @@ export default function ServicesStory({ services }: { services: StoryService[] }
           const labels: number[] = [];
           const tl = gsap.timeline({
             defaults: { ease: "power2.inOut" },
+            // Driven by the timeline itself (not scroll events), so the counter stays
+            // correct while the scrub catches up after a fast scroll.
+            onUpdate: () => syncTo(tl.time()),
             scrollTrigger: {
               trigger: pin,
               start: "center center",
@@ -106,17 +117,19 @@ export default function ServicesStory({ services }: { services: StoryService[] }
               scrub: 0.6,
               anticipatePin: 1,
               invalidateOnRefresh: true,
-              onUpdate: () => {
-                const t = tl.time();
-                let i = 0;
-                labels.forEach((at, k) => {
-                  if (t >= at) i = k + 1;
-                });
-                setCount(i);
-              },
+              // Restored scroll positions and refreshes jump the timeline without updates.
+              onRefresh: (self) => syncTo(self.progress * tl.duration()),
             },
           });
+          function syncTo(t: number) {
+            let i = 0;
+            labels.forEach((at, k) => {
+              if (t >= at) i = k + 1;
+            });
+            setCount(i);
+          }
 
+          const stageTimes = [0];
           tl.to({}, { duration: 0.4 }); // let the first service settle before moving on
           for (let i = 1; i < panels.length; i++) {
             const prev = parts(panels[i - 1]);
@@ -129,7 +142,12 @@ export default function ServicesStory({ services }: { services: StoryService[] }
               .to(next.text, { x: 0, opacity: 1, duration: 0.9 }, at + 0.3)
               .to(bars[i], { scaleX: 1, duration: 1, ease: "none" }, at)
               .to({}, { duration: 0.9 }); // reading hold
+            stageTimes.push(tl.duration() - 0.45);
           }
+          stageScroll = (i: number) => {
+            const st = tl.scrollTrigger!;
+            return st.start + (stageTimes[i] / tl.duration()) * (st.end - st.start);
+          };
         } else {
           // ---------- Flow fallback (no pinning) ----------
           setCount(0);
@@ -174,10 +192,21 @@ export default function ServicesStory({ services }: { services: StoryService[] }
     // Web fonts can change text height after first measure.
     document.fonts?.ready.then(() => ScrollTrigger.refresh());
 
+    // Keyboard: tabbing into a stage that is not on screen scrolls the story to it.
+    const onFocusIn = (e: FocusEvent) => {
+      if (!stageScroll) return;
+      const panel = (e.target as HTMLElement).closest<HTMLElement>("[data-svc-panel]");
+      if (!panel || panel.hasAttribute("data-current")) return;
+      const i = Array.from(root.querySelectorAll("[data-svc-panel]")).indexOf(panel);
+      window.scrollTo({ top: stageScroll(i), behavior: "instant" as ScrollBehavior });
+    };
+    root.addEventListener("focusin", onFocusIn);
+
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("resize", onResize);
       reduce.removeEventListener("change", build);
+      root.removeEventListener("focusin", onFocusIn);
       ctx?.revert();
       root.dataset.mode = "static";
     };
@@ -218,14 +247,20 @@ export default function ServicesStory({ services }: { services: StoryService[] }
                   {service.title}
                 </h3>
                 <p className="body-3 mt-4 max-w-lg text-ink-2">{service.description}</p>
-                <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2 lg:mt-8">
+                <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-3 lg:mt-8">
                   {service.includes.map((item) => (
-                    <li key={item} className="body-6 flex items-center gap-3 text-ink">
+                    <li key={item.href} className="flex items-center gap-3">
                       <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-burgundy" />
-                      {item}
+                      <Link href={item.href} className="link body-5 text-ink">
+                        {item.label}
+                      </Link>
                     </li>
                   ))}
                 </ul>
+                <Link href={service.more.href} className="link title-4 mt-6 text-burgundy lg:mt-8">
+                  {service.more.label}
+                  <span aria-hidden="true" className="btn-arrow">↗</span>
+                </Link>
               </div>
 
               <div data-svc-media className="svc__media">

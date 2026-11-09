@@ -1,41 +1,31 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/navigation/Navbar";
 import ServicesHero from "@/components/services/ServicesHero";
-import PinnedShowcase from "@/components/services/PinnedShowcase";
-import CapabilitiesSection from "@/components/services/CapabilitiesSection";
+import ServiceIndex from "@/components/services/ServiceIndex";
+import ServiceChapter from "@/components/services/ServiceChapter";
 import ServicesProcess from "@/components/services/ServicesProcess";
 import ServicesFaq from "@/components/services/ServicesFaq";
 import ServicesCta from "@/components/services/ServicesCta";
+import { serviceCategories } from "@/lib/content/service-catalog";
 
 export const metadata: Metadata = {
-  title: "Services & Capabilities | Executive Branding & Cultural Architecture",
+  title: "Services",
   description:
-    "Explore CULT.URE's four core disciplines: Personal Branding, Content Strategy & Creation, Brand Identity & Positioning, and AI Automation.",
+    "Nine services across brand, marketing, search and technology: Social Media Marketing, Email & Lifecycle Marketing, Personal Branding & LinkedIn Marketing, SEO, GEO & AEO, AI & Business Automation, Website Design & Development, Performance & Growth Marketing, E-commerce Marketing & Growth, and PR & Event Marketing.",
 };
 
 export default function ServicesPage() {
   return (
-    <div className="relative min-h-screen bg-[#FCFBF9] selection:bg-[#4A121A] selection:text-white">
-      {/* Navigation */}
+    <div className="relative min-h-screen bg-paper">
       <Navbar />
-
       <main className="relative z-0">
-        {/* Section 01 — Cinematic Hero */}
         <ServicesHero />
-
-        {/* Sections 02 & 03 — Service Navigation & Pinned Showcase */}
-        <PinnedShowcase />
-
-        {/* Section 04 — Deliverables & Capabilities */}
-        <CapabilitiesSection />
-
-        {/* Section 05 — Our Process */}
+        <ServiceIndex />
+        {serviceCategories.map((category, i) => (
+          <ServiceChapter key={category.id} category={category} index={i} />
+        ))}
         <ServicesProcess />
-
-        {/* Section 06 — Frequently Asked Questions */}
         <ServicesFaq />
-
-        {/* Section 07 — Closing CTA & Direct Contact */}
         <ServicesCta />
       </main>
     </div>

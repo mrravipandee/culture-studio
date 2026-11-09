@@ -7,9 +7,9 @@ import BehindTheWork from "@/components/case-studies/BehindTheWork";
 import CaseStudiesCta from "@/components/case-studies/CaseStudiesCta";
 
 export const metadata: Metadata = {
-  title: "Case Studies | Selected Work",
+  title: "Case Studies",
   description:
-    "Explore how CULT.URE crafts defining personal brands, executive publications, and cultural authority for category leaders.",
+    "Selected CULT.URE projects across brand, marketing, search and technology, each labelled with the services involved.",
 };
 
 export default function CaseStudiesPage() {
