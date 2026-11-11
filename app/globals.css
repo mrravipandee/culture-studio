@@ -967,21 +967,19 @@ html[data-motion-armed] .cr:not([data-in]) > .cr-inner {
 
 /* ========================================
    MOBILE MENU STAGE  (components/navigation/MenuStage.tsx)
-   Vector "film frame" filling the open mobile menu.
-   Ambient movement only while the menu is open; all of it is
-   switched off under prefers-reduced-motion.
+   Cinematic film inside the open mobile menu. The frame keeps the
+   menu's layout: it fills the space between the links and the CTA.
 ======================================== */
 
 .menu-stage {
     position: relative;
-    isolation: isolate;
     overflow: hidden;
     container-type: inline-size;
     flex: 1 1 auto;
     min-height: 7rem;
     border-radius: var(--radius-lg, 1rem);
-    background: var(--black);
-    color: var(--white);
+    /* Matches the film's backdrop while the poster loads: no flash of white. */
+    background: #240c0e;
 }
 
 /* Short screens (small phones, landscape): links and the CTA must stay above the fold. */
@@ -989,134 +987,56 @@ html[data-motion-armed] .cr:not([data-in]) > .cr-inner {
     .menu-stage { display: none; }
 }
 
-/* Burgundy light from the lower right, like the intro film overlay */
-.menu-stage__glow {
+/* Video sits over the poster and only shows once frames are actually playing. */
+.menu-stage__video {
     position: absolute;
     inset: 0;
-    background:
-        radial-gradient(110% 90% at 80% 115%, rgb(74 18 26) 0%, rgb(74 18 26 / 0.55) 40%, transparent 75%),
-        radial-gradient(60% 50% at 10% -10%, rgb(255 255 255 / 0.07), transparent 70%);
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity var(--duration-color, 300ms) var(--ease);
+}
+.menu-stage__video[data-playing] { opacity: 1; }
+
+/* Soft wine shade along the lower edge so the wordmark reads over the light fabric. */
+.menu-stage__scrim {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 55%;
+    background: linear-gradient(to top, rgb(36 12 14 / 0.55), rgb(36 12 14 / 0.2) 45%, transparent);
+    pointer-events: none;
 }
 
-/* Static film grain (SVG noise, no per-frame cost) */
-.menu-stage__grain {
+/* CULT.URE wordmark, same styling as the site logo (uppercase, wide tracking). */
+.menu-stage__brand {
     position: absolute;
-    inset: 0;
-    opacity: 0.12;
-    mix-blend-mode: overlay;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-
-/* Outlined wordmark, cropped by the frame's lower edge */
-.menu-stage__wordmark {
-    position: absolute;
-    left: -0.04em;
-    bottom: -0.2em;
-    font-size: 30cqi;
-    font-weight: 600;
+    left: clamp(1rem, 5cqi, 1.5rem);
+    bottom: clamp(0.875rem, 4cqi, 1.25rem);
+    display: flex;
+    margin: 0;
+    font-size: clamp(1.5rem, 9cqi, 2.25rem);
+    font-weight: 500;
     line-height: 1;
-    letter-spacing: -0.04em;
-    white-space: nowrap;
-    color: transparent;
-    -webkit-text-stroke: 1px rgb(255 255 255 / 0.32);
-    user-select: none;
-}
-.menu-stage__dot {
-    color: var(--burgundy);
-    -webkit-text-stroke: 0;
-}
-
-/* Typographic seal */
-.menu-stage__seal {
-    position: absolute;
-    top: 50%;
-    right: 8%;
-    height: clamp(5rem, 62%, 11rem);
-    max-width: 40cqi;
-    aspect-ratio: 1;
-    translate: 0 -62%;
-    overflow: visible;
+    letter-spacing: 0.18em;
     color: var(--white);
+    /* Layered shadow: tight edge for crispness, wide wine glow for depth */
+    text-shadow:
+        0 1px 2px rgb(0 0 0 / 0.35),
+        0 4px 18px rgb(36 12 14 / 0.65),
+        0 10px 40px rgb(36 12 14 / 0.45);
+    pointer-events: none;
 }
-.menu-stage__ring,
-.menu-stage__orbit {
-    transform-box: view-box;
-    transform-origin: 50% 50%;
+/* Each letter is clipped by its own mask so it can rise into view. */
+.menu-stage__char-mask {
+    display: inline-block;
+    /* Clip only the lower edge (letters rise through it); the shadow stays free on the other sides. */
+    clip-path: inset(-1em -1em 0 -1em);
+    padding-bottom: 0.6em;
+    margin-bottom: -0.6em;
 }
-.menu-stage__seal-text {
-    fill: rgb(255 255 255 / 0.8);
-    font-family: var(--font-geist-mono), ui-monospace, monospace;
-    font-size: 7.5px;
-    letter-spacing: 0.08em;
-}
-.menu-stage__seal-dot { fill: var(--burgundy); stroke: rgb(255 255 255 / 0.5); stroke-width: 0.5; }
-.menu-stage__orbit-dot { fill: var(--white); }
-
-/* Crop marks */
-.menu-stage__mark {
-    position: absolute;
-    width: 1.25rem;
-    height: 1.25rem;
-    color: rgb(255 255 255 / 0.45);
-}
-.menu-stage__mark--tl { top: 0.75rem; left: 0.75rem; }
-.menu-stage__mark--tr { top: 0.75rem; right: 0.75rem; scale: -1 1; }
-.menu-stage__mark--bl { bottom: 0.75rem; left: 0.75rem; scale: 1 -1; }
-.menu-stage__mark--br { bottom: 0.75rem; right: 0.75rem; scale: -1 -1; }
-
-/* Light sweep and playhead: hidden unless motion is allowed */
-.menu-stage__sweep,
-.menu-stage__playhead { display: none; }
-
-@media (prefers-reduced-motion: no-preference) {
-    /* Camera push: the wordmark settles once, slowly */
-    .menu-stage__wordmark {
-        animation: menu-stage-push 14s var(--ease) both;
-    }
-    /* Seal turns slowly; a point orbits the outer ring */
-    .menu-stage__ring { animation: menu-stage-turn 48s linear infinite; }
-    .menu-stage__orbit { animation: menu-stage-turn 12s linear infinite; }
-
-    /* One soft light pass across the frame after it opens */
-    .menu-stage__sweep {
-        display: block;
-        position: absolute;
-        inset: -10% auto -10% 0;
-        width: 45%;
-        background: linear-gradient(100deg, transparent, rgb(255 255 255 / 0.09) 50%, transparent);
-        translate: -120% 0;
-        animation: menu-stage-sweep 1.8s var(--ease) 0.9s both;
-        pointer-events: none;
-    }
-
-    /* Film playhead draws along the lower edge, once */
-    .menu-stage__playhead {
-        display: block;
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        height: 2px;
-        background: rgb(255 255 255 / 0.55);
-        transform-origin: 0 50%;
-        animation: menu-stage-play 14s linear 0.6s both;
-    }
-}
-
-@keyframes menu-stage-push {
-    from { transform: translate3d(6%, 4%, 0) scale(1.08); }
-    to   { transform: none; }
-}
-@keyframes menu-stage-turn {
-    to { transform: rotate(360deg); }
-}
-@keyframes menu-stage-sweep {
-    to { translate: 320% 0; }
-}
-@keyframes menu-stage-play {
-    from { transform: scaleX(0); }
-    to   { transform: scaleX(1); }
-}
+.menu-stage__char { display: inline-block; }
+.menu-stage__char--dot { color: rgb(255 255 255 / 0.6); }
 
 /* ========================================
    SCROLL CUE  (components/motion/ScrollCue.tsx)
