@@ -1,4 +1,5 @@
 import Container from "@/components/home/shared/Container";
+import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import { aboutPrinciples } from "@/lib/content/about";
 
 export default function AboutPrinciples() {
@@ -13,19 +14,18 @@ export default function AboutPrinciples() {
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <h2 className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]">
-              {title}
-            </h2>
-            <p className="lg:col-span-4 text-base font-light text-black/70 leading-relaxed">
+            <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
+            <Reveal as="p" delay={0.15} distance={16} className="lg:col-span-4 text-base font-light text-black/70 leading-relaxed">
               {lead}
-            </p>
+            </Reveal>
           </div>
         </div>
 
         {/* 4 Principles Editorial List */}
-        <div className="mt-16 sm:mt-24 divide-y divide-black/10 border-b border-black/10">
+        <RevealGroup count={items.length} className="mt-16 sm:mt-24 divide-y divide-black/10 border-b border-black/10">
           {items.map((principle) => (
-            <article
+            <RevealItem
+              as="article"
               key={principle.number}
               className="py-12 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-baseline group"
             >
@@ -50,9 +50,9 @@ export default function AboutPrinciples() {
                   {principle.detail}
                 </p>
               </div>
-            </article>
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
       </Container>
     </section>
   );

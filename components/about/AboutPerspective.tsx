@@ -1,4 +1,5 @@
 import Container from "@/components/home/shared/Container";
+import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import { aboutPerspective } from "@/lib/content/about";
 
 export default function AboutPerspective() {
@@ -13,19 +14,18 @@ export default function AboutPerspective() {
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <h2 className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]">
-              {title}
-            </h2>
-            <p className="lg:col-span-4 text-base font-light text-black/70 leading-relaxed">
+            <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
+            <Reveal as="p" delay={0.15} distance={16} className="lg:col-span-4 text-base font-light text-black/70 leading-relaxed">
               {lead}
-            </p>
+            </Reveal>
           </div>
         </div>
 
         {/* 4 Perspective Pillars */}
-        <div className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14">
+        <RevealGroup count={pillars.length} className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14">
           {pillars.map((pillar) => (
-            <article
+            <RevealItem
+              as="article"
               key={pillar.number}
               className="group border border-black/10 bg-subtle p-8 sm:p-10 rounded-sm hover:border-black/30 transition-all flex flex-col justify-between"
             >
@@ -57,9 +57,9 @@ export default function AboutPerspective() {
                   &ldquo;{pillar.takeaway}&rdquo;
                 </p>
               </div>
-            </article>
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
       </Container>
     </section>
   );

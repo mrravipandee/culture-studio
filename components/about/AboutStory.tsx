@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { ClipReveal, Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 import { aboutStory } from "@/lib/content/about";
 
@@ -14,18 +15,16 @@ export default function AboutStory() {
           <p className="font-mono text-xs uppercase tracking-eyebrow text-black/50">
             [ {eyebrow} ]
           </p>
-          <h2 className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1] max-w-4xl">
-            {title}
-          </h2>
+          <TextMask as="h2" text={title} className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1] max-w-4xl" />
         </div>
 
         {/* Story Content & Imagery */}
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Narrative, Purpose, Vision */}
           <div className="lg:col-span-7 space-y-10">
-            <p className="text-xl sm:text-2xl font-light leading-relaxed text-black/85">
+            <Reveal as="p" distance={16} className="text-xl sm:text-2xl font-light leading-relaxed text-black/85">
               {lead}
-            </p>
+            </Reveal>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 border-t border-black/10 pt-8">
               <div>
@@ -65,9 +64,9 @@ export default function AboutStory() {
               <h4 className="font-mono text-xs uppercase tracking-eyebrow text-black/50 mb-6">
                 HOW IT CONNECTS
               </h4>
-              <div className="space-y-6">
+              <RevealGroup count={milestones.length} className="space-y-6">
                 {milestones.map((milestone) => (
-                  <div
+                  <RevealItem
                     key={milestone.phase}
                     className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8 pb-5 border-b border-black/5 last:border-0"
                   >
@@ -82,21 +81,22 @@ export default function AboutStory() {
                         {milestone.description}
                       </p>
                     </div>
-                  </div>
+                  </RevealItem>
                 ))}
-              </div>
+              </RevealGroup>
             </div>
           </div>
 
           {/* Right Column: Editorial Framing */}
           <div className="lg:col-span-5 flex flex-col gap-6">
+            <ClipReveal className="rounded-sm">
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-subtle shadow-sm border border-black/5">
               <Image
                 src="/images/hero/portrait.jpg"
                 alt="Editorial portrait representing leadership craft"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover grayscale contrast-105 transition-transform duration-1100 ease-editorial hover:scale-[1.03]"
+                className="object-cover grayscale contrast-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-5 left-5 right-5 text-white">
@@ -108,6 +108,7 @@ export default function AboutStory() {
                 </p>
               </div>
             </div>
+            </ClipReveal>
 
             <p className="font-mono text-xs uppercase tracking-eyebrow text-black/40 text-center">
               CULT.URE &mdash; Beyond the noise. Into the culture.

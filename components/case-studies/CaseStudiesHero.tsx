@@ -1,12 +1,11 @@
 import { caseStudiesHero } from "@/lib/content/case-studies";
-import { Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 export default function CaseStudiesHero() {
   return (
     <section className="relative pt-36 pb-16 md:pt-48 md:pb-24 bg-white border-b border-black/10">
       <Container>
-        <Reveal>
+        <>
           {/* Eyebrow */}
           <div className="flex items-center gap-3">
             <span className="h-1.5 w-1.5 rounded-full bg-burgundy" aria-hidden="true" />
@@ -42,7 +41,7 @@ export default function CaseStudiesHero() {
               </div>
             ))}
           </div>
-        </Reveal>
+        </>
       </Container>
     </section>
   );

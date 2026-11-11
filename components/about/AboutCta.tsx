@@ -1,4 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
+import { Reveal, TextMask } from "@/components/motion";
 import Link from "next/link";
 import Container from "@/components/home/shared/Container";
 import { Button } from "@/components/ui/site-button";
@@ -23,14 +24,12 @@ export default function AboutCta() {
           </span>
 
           {/* Headline */}
-          <h2 className="mt-8 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-[1.08] text-white">
-            {headline}
-          </h2>
+          <TextMask as="h2" text={headline} className="mt-8 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-[1.08] text-white" />
 
           {/* Lead */}
-          <p className="mt-8 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-white/75">
+          <Reveal as="p" delay={0.15} distance={16} className="mt-8 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-white/75">
             {lead}
-          </p>
+          </Reveal>
 
           {/* Actions */}
           <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">

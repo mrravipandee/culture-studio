@@ -1,33 +1,27 @@
 import { behindTheWork } from "@/lib/content/case-studies";
-import { Reveal } from "@/components/motion";
+import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 export default function BehindTheWork() {
   return (
     <section className="py-24 md:py-36 bg-white">
       <Container>
-        <Reveal>
-          {/* Eyebrow & Title */}
+        {/* Eyebrow & Title */}
           <div className="max-w-3xl">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
               [ 03 / {behindTheWork.eyebrow} ]
             </span>
-            <h2 className="mt-6 text-3xl sm:text-5xl md:text-6xl font-light tracking-heading text-black">
-              {behindTheWork.title}
-            </h2>
-            <p className="mt-6 text-base sm:text-lg font-light leading-relaxed text-ink-2">
+            <TextMask as="h2" text={behindTheWork.title} className="mt-6 text-3xl sm:text-5xl md:text-6xl font-light tracking-heading text-black" />
+            <Reveal as="p" delay={0.15} distance={16} className="mt-6 text-base sm:text-lg font-light leading-relaxed text-ink-2">
               {behindTheWork.description}
-            </p>
+            </Reveal>
           </div>
-        </Reveal>
 
         {/* 4 Pillars Grid */}
-        <div className="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {behindTheWork.pillars.map((pillar, index) => (
-            <Reveal
+        <RevealGroup count={behindTheWork.pillars.length} className="mt-20 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {behindTheWork.pillars.map((pillar) => (
+            <RevealItem
               key={pillar.name}
-              delay={index * 0.1}
-              distance={24}
               className="flex flex-col justify-between border-t border-black/15 pt-8"
             >
               <div>
@@ -44,9 +38,9 @@ export default function BehindTheWork() {
                   {pillar.body}
                 </p>
               </div>
-            </Reveal>
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
       </Container>
     </section>
   );

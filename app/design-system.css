@@ -136,6 +136,23 @@
 }
 
 /* Breakpoint driven layout tokens (Tailwind defaults: sm 640 · md 768 · lg 1024 · xl 1280 · 2xl 1536) */
+/* Mobile motion (< 768px): entrances ~20% faster and 20px instead of 32px.
+   Interaction (300/500ms) and scroll-linked timings are unchanged. */
+:root {
+    --motion-distance-scale: 1;
+}
+@media (width < 48rem) {
+    :root {
+        --motion-distance-scale: 0.625;   /* 32px → 20px, 16px → 10px */
+        --duration-reveal: 640ms;         /* 800 */
+        --duration-text: 720ms;           /* 900 */
+        --duration-image: 880ms;          /* 1100 */
+        --duration-image-settle: 1120ms;  /* 1400 */
+        --hero-rule-duration: 960ms;      /* 1200 */
+        --hero-photo-settle: 1440ms;      /* 1800 */
+    }
+}
+
 @media (width >= 40rem) {
     :root { --gutter: 32px; --grid-gap: 24px; }
 }

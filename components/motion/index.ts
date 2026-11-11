@@ -13,6 +13,5 @@ export { Reveal, RevealGroup, RevealItem } from "./Reveal";
 export { TextMask } from "./TextMask";
 export { ClipReveal } from "./ClipReveal";
 export { ScrollScale } from "./ScrollScale";
-export { LineDraw } from "./LineDraw";
 // GSAP sequences: import { useScrollTimeline } from "@/hooks/useScrollTimeline" directly,
 // so pages that never use it never reference the GSAP chunk.

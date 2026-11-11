@@ -605,7 +605,7 @@
 
 /* ---------- Scroll-linked image drift (progressive) ---------- */
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (width >= 48rem) {
     @supports (animation-timeline: view()) {
         .hero-media__parallax {
             animation: hero-drift linear both;
@@ -922,7 +922,11 @@ html:not([data-motion-armed]) .site-nav {
 }
 html[data-motion-armed] .rv:not([data-in]) {
     opacity: 0;
-    transform: translate3d(var(--rv-x, 0px), var(--rv-y, 32px), 0);
+    transform: translate3d(
+        calc(var(--rv-x, 0px) * var(--motion-distance-scale, 1)),
+        calc(var(--rv-y, 32px) * var(--motion-distance-scale, 1)),
+        0
+    );
 }
 
 /* Staggered items */
@@ -934,7 +938,7 @@ html[data-motion-armed] .rv:not([data-in]) {
 }
 html[data-motion-armed] .rv-group:not([data-in]) .rv-item {
     opacity: 0;
-    transform: translate3d(0, var(--rv-y, 16px), 0);
+    transform: translate3d(0, calc(var(--rv-y, 16px) * var(--motion-distance-scale, 1)), 0);
 }
 
 /* Masked text */

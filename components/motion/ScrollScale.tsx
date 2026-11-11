@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useRef, useSyncExternalStore, type ReactNode } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 
 interface ScrollScaleProps {
@@ -17,7 +17,17 @@ interface ScrollScaleProps {
  * frame crosses the viewport, with optional parallax drift.
  * Uses Motion's scroll timeline (no scroll listeners per frame on supporting browsers).
  */
-export function ScrollScale({ children, className = "", from = 1.1, drift = 0 }: ScrollScaleProps) {
+const NARROW = "(max-width: 767px)";
+const subscribeNarrow = (cb: () => void) => {
+  const mq = window.matchMedia(NARROW);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
+
+export function ScrollScale({ children, className = "", from = 1.1, drift: driftProp = 0 }: ScrollScaleProps) {
+  // No parallax drift on narrow screens (phones): scale only.
+  const narrow = useSyncExternalStore(subscribeNarrow, () => window.matchMedia(NARROW).matches, () => false);
+  const drift = narrow ? 0 : driftProp;
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });

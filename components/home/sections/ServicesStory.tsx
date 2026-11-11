@@ -135,12 +135,12 @@ export default function ServicesStory({ services }: { services: StoryService[] }
             const { text, media } = parts(p);
             gsap.fromTo(
               media,
-              { x: 48, scale: 1.04, opacity: 0.2 },
+              { x: 20, scale: 1.04, opacity: 0.2 },
               { x: 0, scale: 1, opacity: 1, ease: GSAP_EASE.linear, scrollTrigger: { trigger: p, start: "top 95%", end: "top 55%", scrub: 0.5 } },
             );
             gsap.fromTo(
               text,
-              { x: 32, opacity: 0.2 },
+              { x: 20, opacity: 0.2 },
               { x: 0, opacity: 1, ease: GSAP_EASE.linear, scrollTrigger: { trigger: p, start: "top 85%", end: "top 45%", scrub: 0.5 } },
             );
             ScrollTrigger.create({

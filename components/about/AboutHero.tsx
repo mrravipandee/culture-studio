@@ -59,7 +59,7 @@ export default function AboutHero() {
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 33vw"
-                className="object-cover transition-transform duration-1100 ease-editorial hover:scale-[1.03]"
+                className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-4 left-4 right-4 text-white">

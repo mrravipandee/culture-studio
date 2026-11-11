@@ -115,7 +115,7 @@ async function CaseStudyDetail({ params }: { params: Promise<{ slug: string }> }
           </div>
 
           {/* Hero Image */}
-          <div className="mt-14 relative w-full overflow-hidden rounded-2xl bg-subtle aspect-[16/9] shadow-[0_12px_45px_rgba(0,0,0,0.06)]">
+          <div className="mt-14 relative w-full overflow-hidden rounded-2xl bg-subtle aspect-[16/9]">
             <Image
               src={project.image.src}
               alt={project.image.alt}

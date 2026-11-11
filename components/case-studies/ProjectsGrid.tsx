@@ -4,7 +4,7 @@ import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { caseStudiesList, type CaseStudy } from "@/lib/content/case-studies";
-import { Reveal } from "@/components/motion";
+import { ClipReveal, Reveal, TextMask } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 function GridCard({ project, index }: { project: CaseStudy; index: number }) {
@@ -12,14 +12,14 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
   const isTall = index % 3 === 0;
 
   return (
-    <Reveal delay={index * 0.12} distance={30}>
-      <article className="group flex flex-col justify-between">
+    <article className="group flex flex-col justify-between">
         <Link
           href={`/case-studies/${project.slug}`}
           className={`block relative overflow-hidden rounded-xl bg-subtle ${
             isTall ? "aspect-[4/3] md:aspect-[4/3]" : "aspect-[16/11]"
-          } shadow-sm`}
+          }`}
         >
+          <ClipReveal className="h-full w-full" delay={(index % 2) * 0.1}>
           <Image
             src={project.image.src}
             alt={project.image.alt}
@@ -27,14 +27,11 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
             sizes="(min-width: 1024px) 50vw, 100vw"
             className="object-cover transition-transform duration-1100 ease-editorial group-hover:scale-[1.03]"
           />
-          <div
-            className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-            aria-hidden="true"
-          />
+          </ClipReveal>
         </Link>
 
         {/* Metadata + Title */}
-        <div className="mt-6 flex flex-col">
+        <Reveal delay={(index % 2) * 0.1 + 0.15} className="mt-6 flex flex-col">
           <div className="flex items-center justify-between text-xs">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
               {categoryOf(project.services[0]).name}
@@ -80,9 +77,8 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
           {/* Official services involved */}
           <ServiceTags ids={project.services} className="mt-4" />
           {project.placeholder && <SampleBadge className="mt-4 self-start" />}
-        </div>
-      </article>
-    </Reveal>
+        </Reveal>
+    </article>
   );
 }
 
@@ -91,15 +87,12 @@ export default function ProjectsGrid() {
     <section className="py-20 md:py-32 bg-subtle border-t border-b border-black/10">
       <Container>
         {/* Section Header */}
-        <Reveal>
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-black/10">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 pb-8 border-b border-black/10">
             <div>
               <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                 [ 02 / ARCHIVE ]
               </span>
-              <h2 className="mt-4 text-3xl sm:text-5xl font-light tracking-heading text-black">
-                More projects
-              </h2>
+              <TextMask as="h2" text="More projects" className="mt-4 text-3xl sm:text-5xl font-light tracking-heading text-black" />
             </div>
             <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
               {caseStudiesList.every((p) => p.placeholder)
@@ -107,7 +100,6 @@ export default function ProjectsGrid() {
                 : `${caseStudiesList.length} projects`}
             </p>
           </div>
-        </Reveal>
 
         {/* 2-Column Asymmetric Grid */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-16">

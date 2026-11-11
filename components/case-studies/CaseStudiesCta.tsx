@@ -1,28 +1,25 @@
 import { caseStudiesCta } from "@/lib/content/case-studies";
 import { Button } from "@/components/ui/site-button";
-import { Reveal } from "@/components/motion";
+import { Reveal, TextMask } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 export default function CaseStudiesCta() {
   return (
     <section className="py-24 md:py-36 bg-burgundy text-white overflow-hidden relative">
       <Container>
-        <Reveal>
-          <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
+        <div className="max-w-4xl mx-auto text-center flex flex-col items-center">
             {/* Eyebrow */}
             <span className="font-mono text-xs uppercase tracking-eyebrow text-white/50">
               [ 04 / {caseStudiesCta.eyebrow} ]
             </span>
 
             {/* Headline */}
-            <h2 className="mt-8 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-[1.08] text-white">
-              {caseStudiesCta.headline}
-            </h2>
+            <TextMask as="h2" text={caseStudiesCta.headline} className="mt-8 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-[1.08] text-white" />
 
             {/* Description */}
-            <p className="mt-8 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-white/75">
+            <Reveal as="p" delay={0.15} distance={16} className="mt-8 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-white/75">
               {caseStudiesCta.description}
-            </p>
+            </Reveal>
 
             {/* CTA Button */}
             <div className="mt-12">
@@ -36,7 +33,6 @@ export default function CaseStudiesCta() {
               CULT.URE &mdash; Beyond the noise. Into the culture.
             </p>
           </div>
-        </Reveal>
       </Container>
     </section>
   );

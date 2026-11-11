@@ -1,4 +1,5 @@
 import Container from "@/components/home/shared/Container";
+import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import { aboutPhilosophy } from "@/lib/content/about";
 
 export default function AboutPhilosophy() {
@@ -19,19 +20,18 @@ export default function AboutPhilosophy() {
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <h2 className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]">
-              {title}
-            </h2>
-            <p className="lg:col-span-4 text-sm sm:text-base font-light text-white/70 leading-relaxed">
+            <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
+            <Reveal as="p" delay={0.15} distance={16} className="lg:col-span-4 text-sm sm:text-base font-light text-white/70 leading-relaxed">
               {intro}
-            </p>
+            </Reveal>
           </div>
         </div>
 
         {/* Philosophy Statements Grid */}
-        <div className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+        <RevealGroup count={statements.length} className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
           {statements.map((item, index) => (
-            <article
+            <RevealItem
+              as="article"
               key={item.domain}
               className="relative flex flex-col justify-between border-t border-white/20 pt-8 pb-4 group"
             >
@@ -49,9 +49,9 @@ export default function AboutPhilosophy() {
               <p className="mt-8 text-sm sm:text-base font-light leading-relaxed text-white/60">
                 {item.elaboration}
               </p>
-            </article>
+            </RevealItem>
           ))}
-        </div>
+        </RevealGroup>
       </Container>
     </section>
   );

@@ -4,14 +4,14 @@ import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
 import { featuredProject } from "@/lib/content/case-studies";
 import { Button } from "@/components/ui/site-button";
-import { Reveal } from "@/components/motion";
+import { ClipReveal, Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
 export default function FeaturedProject() {
   return (
     <section className="py-20 md:py-32 bg-white">
       <Container>
-        <Reveal>
+        <>
           {/* Header Tag */}
           <div className="flex items-center justify-between border-b border-black/10 pb-4 mb-10">
             <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
@@ -28,8 +28,9 @@ export default function FeaturedProject() {
             <div className="lg:col-span-7">
               <Link
                 href={`/case-studies/${featuredProject.slug}`}
-                className="block relative overflow-hidden rounded-xl bg-subtle aspect-[16/10] shadow-[0_12px_40px_rgba(0,0,0,0.06)]"
+                className="block relative overflow-hidden rounded-xl bg-subtle aspect-[16/10]"
               >
+                <ClipReveal className="h-full w-full">
                 <Image
                   src={featuredProject.image.src}
                   alt={featuredProject.image.alt}
@@ -38,15 +39,12 @@ export default function FeaturedProject() {
                   className="object-cover transition-transform duration-1100 ease-editorial group-hover:scale-[1.03]"
                   priority
                 />
-                <div
-                  className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                  aria-hidden="true"
-                />
+                </ClipReveal>
               </Link>
             </div>
 
             {/* Content Column */}
-            <div className="lg:col-span-5 flex flex-col justify-center">
+            <Reveal delay={0.15} className="lg:col-span-5 flex flex-col justify-center">
               <div className="flex items-center gap-3">
                 <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                   {categoryOf(featuredProject.services[0]).name}
@@ -80,9 +78,9 @@ export default function FeaturedProject() {
                   View project
                 </Button>
               </div>
-            </div>
+            </Reveal>
           </article>
-        </Reveal>
+        </>
       </Container>
     </section>
   );
