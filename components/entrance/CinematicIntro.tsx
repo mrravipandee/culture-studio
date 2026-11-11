@@ -1,12 +1,20 @@
 
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import ScrollCue from "@/components/motion/ScrollCue";
 import { preload } from "react-dom";
 import BrandReveal from "./BrandReveal";
 
 const POSTER = "/images/intro-poster.jpg";
+const REDUCED_MOTION = "(prefers-reduced-motion: reduce)";
+
+function subscribeReducedMotion(onChange: () => void) {
+  const mq = window.matchMedia(REDUCED_MOTION);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+const getReducedMotion = () => window.matchMedia(REDUCED_MOTION).matches;
 /** Hold on the moving image before the wordmark appears (ms). */
 const BRAND_DELAY = 1200;
 
@@ -24,27 +32,9 @@ export default function CinematicIntro({
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const [showBrand, setShowBrand] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    }
-    return false;
-  });
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const handleMotionChange = (event: MediaQueryListEvent) => {
-      setReducedMotion(event.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleMotionChange);
-
-    return () => {
-      mediaQuery.removeEventListener("change", handleMotionChange);
-    };
-  }, []);
+  // Server snapshot is false, so hydration always matches the server HTML;
+  // React then re-renders with the real preference (no hydration mismatch).
+  const reducedMotion = useSyncExternalStore(subscribeReducedMotion, getReducedMotion, () => false);
 
   useEffect(() => {
     if (reducedMotion) {

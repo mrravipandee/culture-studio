@@ -10,7 +10,7 @@ export default function AboutPerspective() {
       <Container>
         {/* Section Header */}
         <div className="border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-black/50">
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
@@ -30,7 +30,7 @@ export default function AboutPerspective() {
               className="group border border-black/10 bg-subtle p-8 sm:p-10 rounded-sm hover:border-black/30 transition-all flex flex-col justify-between"
             >
               <div>
-                <div className="flex items-center justify-between text-xs font-mono tracking-eyebrow text-black/40 pb-6 border-b border-black/10">
+                <div className="flex items-center justify-between text-xs font-mono tracking-eyebrow text-ink-3 pb-6 border-b border-black/10">
                   <span className="text-black font-semibold">PILLAR {pillar.number}</span>
                   <span className="text-burgundy font-medium uppercase">
                     CULT.URE THESIS
@@ -50,7 +50,7 @@ export default function AboutPerspective() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-black/10 flex items-start gap-3">
-                <span className="font-mono text-xs uppercase tracking-wider text-black/40 shrink-0">
+                <span className="font-mono text-xs uppercase tracking-wider text-ink-3 shrink-0">
                   IMPACT:
                 </span>
                 <p className=" text-sm text-black/90">

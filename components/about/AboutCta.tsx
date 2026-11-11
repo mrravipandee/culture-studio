@@ -47,7 +47,7 @@ export default function AboutCta() {
           </div>
 
           {/* Brand Tagline */}
-          <p className="mt-16 font-mono text-xs uppercase tracking-eyebrow text-white/40 border-t border-white/10 pt-8 w-full max-w-xl">
+          <p className="mt-16 font-mono text-xs uppercase tracking-eyebrow text-paper-3 border-t border-white/10 pt-8 w-full max-w-xl">
             CULT.URE &mdash; Beyond the noise. Into the culture.
           </p>
         </div>

@@ -12,7 +12,7 @@ export default function AboutStory() {
       <Container>
         {/* Section Header */}
         <div className="flex flex-col gap-4 border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-black/50">
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
             [ {eyebrow} ]
           </p>
           <TextMask as="h2" text={title} className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1] max-w-4xl" />
@@ -61,7 +61,7 @@ export default function AboutStory() {
 
             {/* Evolution Phases */}
             <div className="border-t border-black/10 pt-8">
-              <h4 className="font-mono text-xs uppercase tracking-eyebrow text-black/50 mb-6">
+              <h4 className="font-mono text-xs uppercase tracking-eyebrow text-ink-3 mb-6">
                 HOW IT CONNECTS
               </h4>
               <RevealGroup count={milestones.length} className="space-y-6">
@@ -70,7 +70,7 @@ export default function AboutStory() {
                     key={milestone.phase}
                     className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8 pb-5 border-b border-black/5 last:border-0"
                   >
-                    <span className="font-mono text-xs font-medium text-black/40 min-w-20">
+                    <span className="font-mono text-xs font-medium text-ink-3 min-w-20">
                       {milestone.phase}
                     </span>
                     <div>
@@ -110,7 +110,7 @@ export default function AboutStory() {
             </div>
             </ClipReveal>
 
-            <p className="font-mono text-xs uppercase tracking-eyebrow text-black/40 text-center">
+            <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3 text-center">
               CULT.URE &mdash; Beyond the noise. Into the culture.
             </p>
           </div>

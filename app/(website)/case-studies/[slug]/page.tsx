@@ -19,6 +19,7 @@ import {
 
 const allProjects: CaseStudy[] = [featuredProject, ...caseStudiesList];
 
+// Unknown slugs never reach this page: proxy.ts answers them with a real 404.
 export async function generateStaticParams() {
   return allProjects.map((project) => ({
     slug: project.slug,
@@ -32,7 +33,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const project = allProjects.find((p) => p.slug === slug);
-  if (!project) return { title: "Case study not found", robots: { index: false } };
+  // Unknown slug: the 404 page supplies the title; Next.js adds the single noindex tag.
+  if (!project) notFound();
 
   return pageMetadata({
     title: `${project.title} — Case Study`,
@@ -97,7 +99,7 @@ async function CaseStudyDetail({ params }: { params: Promise<{ slug: string }> }
               <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                 {categoryOf(project.services[0]).name}
               </span>
-              <span className="text-ink-4">•</span>
+              <span aria-hidden="true" className="text-ink-4">•</span>
               <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
                 {project.year}
               </span>

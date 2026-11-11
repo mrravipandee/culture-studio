@@ -49,10 +49,10 @@ export default function ServicesFaq() {
                   aria-expanded={isOpen}
                   aria-controls={id}
                   onClick={() => toggle(index)}
-                  className="flex w-full items-center justify-between text-left focus:outline-none"
+                  className="flex w-full items-center justify-between text-left"
                 >
                   <div className="flex items-baseline gap-4 sm:gap-8 pr-4">
-                    <span className="font-mono text-xs sm:text-sm text-black/40 group-hover:text-burgundy transition-colors shrink-0">
+                    <span className="font-mono text-xs sm:text-sm text-ink-3 group-hover:text-burgundy transition-colors shrink-0">
                       0{index + 1}
                     </span>
                     <h3 className="text-xl sm:text-2xl lg:text-3xl font-light tracking-tight text-ink group-hover:text-burgundy transition-colors">

@@ -10,7 +10,7 @@ export default function AboutPrinciples() {
       <Container>
         {/* Header */}
         <div className="border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-black/50">
+          <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
             [ {eyebrow} ]
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
@@ -30,7 +30,7 @@ export default function AboutPrinciples() {
               className="py-12 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-baseline group"
             >
               {/* Roman Numeral */}
-              <div className="md:col-span-2 font-mono text-xl sm:text-2xl font-light text-black/30 group-hover:text-black transition-colors">
+              <div className="md:col-span-2 font-mono text-xl sm:text-2xl font-light text-ink-3 group-hover:text-black transition-colors">
                 {principle.number}
               </div>
 

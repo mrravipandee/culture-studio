@@ -29,7 +29,7 @@ export default function ContactSection() {
                 {email ? (
                   <TextLink href={`mailto:${email}`}>{email}</TextLink>
                 ) : (
-                  <span className="text-paper-4">To be added</span>
+                  <span className="text-paper-3">To be added</span>
                 )}
               </dd>
             </div>
@@ -48,7 +48,7 @@ export default function ContactSection() {
                     ))}
                   </ul>
                 ) : (
-                  <span className="title-1 text-paper-4">To be added</span>
+                  <span className="title-1 text-paper-3">To be added</span>
                 )}
               </dd>
             </div>

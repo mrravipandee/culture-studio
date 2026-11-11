@@ -12,6 +12,42 @@ type Status = { kind: "idle" } | { kind: "sending" } | { kind: "sent"; via: "end
 type Errors = Partial<Record<"name" | "email" | "services", string>>;
 
 /**
+ * Selectable service pill. The native checkbox stays in the DOM (visually hidden),
+ * so keyboard, screen readers, FormData and the DOM preselect all work unchanged;
+ * the pill styles itself from the checkbox state with :has().
+ */
+function ServiceChip({
+  value,
+  label,
+  onChange,
+  dashed = false,
+}: {
+  value: string;
+  label: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  dashed?: boolean;
+}) {
+  return (
+    <label
+      className={`group body-6 inline-flex min-h-11 cursor-pointer select-none items-center gap-3 rounded-full border py-2 pr-5 pl-3 text-paper-2 transition-colors duration-300 ease-editorial hover:border-paper-3 hover:text-paper has-[:checked]:border-paper has-[:checked]:bg-paper has-[:checked]:text-ink has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-paper has-[:focus-visible]:outline-solid ${
+        dashed ? "border-dashed border-paper-4" : "border-line"
+      }`}
+    >
+      <input type="checkbox" name="services" value={value} onChange={onChange} className="sr-only" />
+      <span
+        aria-hidden="true"
+        className="grid size-5 shrink-0 place-items-center rounded-full border border-paper-4 transition-colors duration-300 ease-editorial group-hover:border-paper-3 group-has-[:checked]:border-ink group-has-[:checked]:bg-ink"
+      >
+        <svg viewBox="0 0 12 12" className="size-2.5 text-paper opacity-0 transition-opacity duration-300 ease-editorial group-has-[:checked]:opacity-100">
+          <path d="M2.5 6.2 5 8.5l4.5-5" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </span>
+      {label}
+    </label>
+  );
+}
+
+/**
  * Inquiry form with service selection (one, several, or "Not sure yet").
  * Submission is never simulated:
  *  1. NEXT_PUBLIC_INQUIRY_ENDPOINT set → POST JSON to it.
@@ -75,7 +111,8 @@ export default function InquiryForm({ email }: { email: string | null }) {
         });
         if (!res.ok) throw new Error(String(res.status));
         setStatus({ kind: "sent", via: "endpoint" });
-        e.currentTarget?.reset();
+        // e.currentTarget is null after the await; the ref stays valid.
+        formRef.current?.reset();
       } catch {
         setStatus({ kind: "error", message: "Your inquiry could not be sent. Please try again in a moment." });
       }
@@ -93,7 +130,7 @@ export default function InquiryForm({ email }: { email: string | null }) {
     }
   };
 
-  const field = "w-full rounded-lg border border-line bg-transparent px-4 py-3 body-3 text-paper placeholder:text-paper-4 transition-colors duration-300 ease-editorial focus:border-paper-3 focus:outline-none";
+  const field = "w-full rounded-lg border border-line bg-transparent px-4 py-3 body-3 text-paper placeholder:text-paper-4 transition-colors duration-300 ease-editorial focus:border-paper-3";
   const error = (id: keyof Errors) =>
     errors[id] ? (
       <p id={`inquiry-${id}-error`} className="caption-2 mt-2 text-paper">
@@ -123,28 +160,30 @@ export default function InquiryForm({ email }: { email: string | null }) {
 
       <fieldset aria-describedby={errors.services ? "inquiry-services-error" : undefined}>
         <legend className="eyebrow text-paper-3">Services you are interested in *</legend>
-        <p className="caption-5 mt-1 text-paper-4">Choose one or several.</p>
-        <div className="mt-4 grid gap-6 sm:grid-cols-2">
-          {serviceCategories.map((cat) => (
-            <div key={cat.id}>
-              <p className="caption-4 text-paper-3">{cat.name}</p>
-              <ul className="mt-2 grid gap-2">
+        <p className="caption-5 mt-1 text-paper-3">Choose one or several.</p>
+        <div className={`@container mt-6 border-b ${errors.services ? "border-paper-3" : "border-line"}`}>
+          {serviceCategories.map((cat, i) => (
+            <div key={cat.id} className="grid gap-3 border-t border-line py-5 @3xl:grid-cols-[11rem_1fr] @3xl:gap-8">
+              <p className="caption-4 flex gap-3 text-paper-3 @3xl:pt-2.5">
+                <span aria-hidden="true" className="font-mono text-paper-4">{String(i + 1).padStart(2, "0")}</span>
+                {cat.name}
+              </p>
+              <ul className="flex flex-wrap gap-2">
                 {cat.services.map((id) => (
                   <li key={id}>
-                    <label className="body-6 flex cursor-pointer items-start gap-3 text-paper-2 hover:text-paper">
-                      <input type="checkbox" name="services" value={id} onChange={onServiceChange} className="mt-1 size-4 shrink-0 accent-[#FFFFFF]" />
-                      {services[id].name}
-                    </label>
+                    <ServiceChip value={id} label={services[id].name} onChange={onServiceChange} />
                   </li>
                 ))}
               </ul>
             </div>
           ))}
+          <div className="grid gap-3 border-t border-line py-5 @3xl:grid-cols-[11rem_1fr] @3xl:gap-8">
+            <span aria-hidden="true" className="hidden @3xl:block" />
+            <div>
+              <ServiceChip value={NOT_SURE} label="Not sure yet" onChange={onServiceChange} dashed />
+            </div>
+          </div>
         </div>
-        <label className="body-6 mt-4 flex cursor-pointer items-center gap-3 border-t border-line pt-4 text-paper-2 hover:text-paper">
-          <input type="checkbox" name="services" value={NOT_SURE} onChange={onServiceChange} className="size-4 shrink-0 accent-[#FFFFFF]" />
-          Not sure yet
-        </label>
         {error("services")}
       </fieldset>
 

@@ -9,7 +9,7 @@ export default function AboutHero() {
     <section className="relative overflow-hidden pt-36 pb-20 sm:pt-44 sm:pb-28 lg:pt-48 lg:pb-32 bg-white">
       <Container>
         {/* Eyebrow & Meta bar */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-6 text-xs uppercase tracking-eyebrow text-black/50">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-6 text-xs uppercase tracking-eyebrow text-ink-3">
           <span className="font-mono text-black font-medium tracking-eyebrow">
             [ {eyebrow} ]
           </span>
@@ -79,7 +79,7 @@ export default function AboutHero() {
                   key={item.label}
                   className="py-2.5 flex items-baseline justify-between text-xs"
                 >
-                  <dt className="font-mono uppercase tracking-eyebrow text-black/45">
+                  <dt className="font-mono uppercase tracking-eyebrow text-ink-3">
                     {item.label}
                   </dt>
                   <dd className="font-medium text-black/90 text-right">

@@ -36,7 +36,7 @@ export default function ProcessSection() {
             <span className="font-mono uppercase tracking-[0.2em] font-medium text-black">
               [ METHODOLOGY: 04 STAGES ]
             </span>
-            <span className="hidden sm:inline font-mono tracking-wider text-black/45">
+            <span className="hidden sm:inline font-mono tracking-wider text-ink-3">
               THE ENDURING LEADERSHIP CONTINUUM
             </span>
           </div>
@@ -44,7 +44,7 @@ export default function ProcessSection() {
           <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wider">
             <span className="inline-block h-2 w-2 rounded-full bg-burgundy" />
             <span className="text-burgundy font-medium">DISCOVER → EVOLVE</span>
-            <span className="text-black/30">/</span>
+            <span aria-hidden="true" className="text-black/30">/</span>
             <span>SYSTEMATIC IMPACT</span>
           </div>
         </div>
@@ -82,7 +82,7 @@ export default function ProcessSection() {
                 <div>
                   {/* Step Header: Step Number & Vector Glyph */}
                   <div className="flex items-center justify-between pb-6 border-b border-black/8">
-                    <span className="font-mono text-xs uppercase tracking-[0.25em] text-black/50 group-hover:text-burgundy transition-colors font-medium">
+                    <span className="font-mono text-xs uppercase tracking-[0.25em] text-ink-3 group-hover:text-burgundy transition-colors font-medium">
                       STEP {stepNumber}
                     </span>
 
@@ -112,7 +112,7 @@ export default function ProcessSection() {
                 {/* Deliverables / Outputs Pills */}
                 {stepData.deliverables && stepData.deliverables.length > 0 && (
                   <div className="mt-8 pt-5 border-t border-black/6">
-                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-black/40 mb-2.5">
+                    <p className="font-mono text-xs uppercase tracking-[0.2em] text-ink-3 mb-2.5">
                       Typical outputs
                     </p>
                     <ul className="flex flex-col gap-1.5">
@@ -134,7 +134,7 @@ export default function ProcessSection() {
         </RevealGroup>
 
         {/* Section Bottom Footnote */}
-        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-black/10 pt-6 text-xs text-black/45 sm:flex-row">
+        <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-black/10 pt-6 text-xs text-ink-3 sm:flex-row">
           <span className="font-mono tracking-wider">
             CULT.URE METHODOLOGY &mdash; BEYOND THE NOISE
           </span>

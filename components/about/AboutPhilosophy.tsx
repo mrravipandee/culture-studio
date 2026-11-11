@@ -36,7 +36,7 @@ export default function AboutPhilosophy() {
               className="relative flex flex-col justify-between border-t border-white/20 pt-8 pb-4 group"
             >
               <div>
-                <div className="flex items-center justify-between text-xs font-mono tracking-eyebrow text-white/40 mb-6">
+                <div className="flex items-center justify-between text-xs font-mono tracking-eyebrow text-paper-3 mb-6">
                   <span>{item.domain}</span>
                   <span>0{index + 1}</span>
                 </div>

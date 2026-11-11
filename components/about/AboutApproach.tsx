@@ -30,7 +30,7 @@ export default function AboutApproach() {
               className="border-t border-white/20 pt-8 flex flex-col justify-between group hover:border-white transition-colors"
             >
               <div>
-                <span className="font-mono text-xs text-white/40 tracking-eyebrow uppercase block mb-4">
+                <span className="font-mono text-xs text-paper-3 tracking-eyebrow uppercase block mb-4">
                   STAGE {step.step}
                 </span>
 
@@ -48,7 +48,7 @@ export default function AboutApproach() {
               </div>
 
               <div className="mt-8 pt-6 border-t border-white/10">
-                <h4 className="font-mono text-xs uppercase tracking-eyebrow text-white/40 mb-3">
+                <h4 className="font-mono text-xs uppercase tracking-eyebrow text-paper-3 mb-3">
                   TYPICAL OUTPUTS
                 </h4>
                 <ul className="space-y-2">

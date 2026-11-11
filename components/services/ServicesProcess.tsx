@@ -54,7 +54,7 @@ export default function ServicesProcess() {
                       <span className="grid size-7 place-items-center rounded-full bg-black text-white font-mono text-xs font-bold transition-colors group-hover:bg-burgundy">
                         {stage.number}
                       </span>
-                      <span className="font-mono text-xs uppercase tracking-wider text-black/45">
+                      <span className="font-mono text-xs uppercase tracking-wider text-ink-3">
                         {stage.timeline}
                       </span>
                     </div>
@@ -80,7 +80,7 @@ export default function ServicesProcess() {
 
                 {/* Deliverables Mini-Pills */}
                 <div className="mt-6 pt-4 border-t border-black/6">
-                  <p className="font-mono text-xs uppercase tracking-wider text-black/40 mb-2">
+                  <p className="font-mono text-xs uppercase tracking-wider text-ink-3 mb-2">
                     TYPICAL OUTPUTS
                   </p>
                   <ul className="space-y-1.5">
@@ -101,7 +101,7 @@ export default function ServicesProcess() {
         </div>
 
         {/* Footnote */}
-        <div className="mt-12 flex items-center justify-between border-t border-black/10 pt-4 text-xs font-mono text-black/40">
+        <div className="mt-12 flex items-center justify-between border-t border-black/10 pt-4 text-xs font-mono text-ink-3">
           <span>FOUR-PHASE ENGAGEMENT LIFECYCLE</span>
           <span>DISCIPLINE &middot; DISCOVERY &middot; DOMINANCE</span>
         </div>

@@ -51,7 +51,7 @@ function ProjectCard({
       {/* Card Header Metadata */}
       <div className="mb-4 flex items-center justify-between border-b border-black/8 pb-3 text-xs">
         <div className="flex items-center gap-3">
-          <span className="font-mono font-medium text-black/50">
+          <span className="font-mono font-medium text-ink-3">
             [{indexFormatted}]
           </span>
           <span className="h-1 w-1 rounded-full bg-burgundy" />
@@ -60,7 +60,7 @@ function ProjectCard({
           </span>
         </div>
         {project.year && (
-          <span className="font-mono text-black/45 tracking-wider">
+          <span className="font-mono text-ink-3 tracking-wider">
             {project.year}
           </span>
         )}
@@ -81,7 +81,7 @@ function ProjectCard({
         />
 
         {/* Transparent Corner Seal Vector Badge */}
-        <div className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-2 rounded-full border border-white/25 bg-black/40 px-3 py-1.5 backdrop-blur-md transition-opacity duration-300 group-hover:bg-black/60">
+        <div className="pointer-events-none absolute bottom-3 right-3 flex items-center gap-2 rounded-full border border-white/25 bg-black/60 px-3 py-1.5 backdrop-blur-md transition-opacity duration-300 group-hover:bg-black/70">
           <EditorialSealVector className="h-3.5 w-3.5 text-white/80" />
           <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/90">
             {project.placeholder ? "Sample project" : "Case study"}
@@ -93,7 +93,7 @@ function ProjectCard({
       <div className="mt-5 flex flex-col justify-between gap-4">
         <div>
           {project.scope && (
-            <p className="font-mono text-xs uppercase tracking-[0.16em] text-black/50">
+            <p className="font-mono text-xs uppercase tracking-[0.16em] text-ink-3">
               {project.scope}
             </p>
           )}
@@ -143,7 +143,7 @@ function ProjectCard({
         viewport={{ once: true, margin: "120px 0px 0px 0px" }}
       >
         {project.href ? (
-          <Link href={project.href} className="group block focus:outline-none">
+          <Link href={project.href} className="group block">
             {cardContent}
           </Link>
         ) : (
@@ -204,7 +204,7 @@ export default function SelectedWorkSection() {
           <div className="flex items-center gap-3 font-mono text-xs uppercase tracking-wider">
             <span className="inline-block h-2 w-2 rounded-full bg-burgundy" />
             <span className="text-burgundy font-medium">SAMPLE PROJECTS</span>
-            <span className="text-black/30">/</span>
+            <span aria-hidden="true" className="text-black/30">/</span>
             <span>DETAILS TO BE CONFIRMED</span>
           </div>
         </div>

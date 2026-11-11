@@ -49,7 +49,7 @@ export default function FeaturedProject() {
                 <span className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                   {categoryOf(featuredProject.services[0]).name}
                 </span>
-                <span className="text-ink-4">•</span>
+                <span aria-hidden="true" className="text-ink-4">•</span>
                 <span className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
                   {featuredProject.clientType}
                 </span>

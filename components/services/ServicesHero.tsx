@@ -19,7 +19,7 @@ export default function ServicesHero() {
 
       <Container className="relative z-10">
         {/* Top Eyebrow & Archival Practice Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-6 text-xs uppercase tracking-[0.25em] text-black/50">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-6 text-xs uppercase tracking-[0.25em] text-ink-3">
           <div className="flex items-center gap-3">
             <span className="font-mono text-black font-semibold">
               [ {eyebrow} ]
@@ -32,7 +32,7 @@ export default function ServicesHero() {
 
           <div className="flex items-center gap-4 font-mono text-xs">
             <span>DIGITAL GROWTH</span>
-            <span className="text-black/30">/</span>
+            <span aria-hidden="true" className="text-black/30">/</span>
             <span className="text-burgundy font-semibold">MARKETING &amp; CREATIVE</span>
           </div>
         </div>
@@ -60,7 +60,7 @@ export default function ServicesHero() {
                   key={item.label}
                   className="py-3 flex items-baseline justify-between text-xs font-mono"
                 >
-                  <dt className="uppercase tracking-[0.2em] text-black/45">
+                  <dt className="uppercase tracking-[0.2em] text-ink-3">
                     {item.label}
                   </dt>
                   <dd className="font-medium text-ink text-right">

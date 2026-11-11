@@ -1,7 +1,10 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/navigation/Navbar";
 import { Button, TextLink } from "@/components/ui/site-button";
 
-export const metadata = { title: "Page not found", robots: { index: false, follow: true } };
+// robots: null drops the inherited tag; Next.js already injects a single
+// <meta name="robots" content="noindex"> on every 404 response.
+export const metadata: Metadata = { title: "Page not found", robots: null };
 
 /** Branded 404 with a clear way back. */
 export default function NotFound() {

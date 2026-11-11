@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/site-button";
 import { DURATION, EASE } from "@/lib/motion";
 import { brand, contactCta, isActivePath, primaryNav } from "@/lib/navigation";
+import MenuStage from "./MenuStage";
 import Wordmark from "./Wordmark";
 
 interface NavbarProps {
@@ -222,7 +223,7 @@ export default function Navbar({ introActive = false }: NavbarProps) {
             exit={{ opacity: 0, transition: { duration: DURATION.color, ease: EASE } }}
             transition={{ duration: DURATION.ui, ease: EASE }}
           >
-            <div className="container-content flex min-h-full flex-col justify-between gap-12 pt-28 pb-10">
+            <div className="container-content flex min-h-full flex-col justify-between gap-8 pt-28 pb-10">
               <nav aria-label="Mobile">
                 <p className="eyebrow mb-6 text-ink-3">Menu</p>
                 <ul className="grid">
@@ -251,10 +252,12 @@ export default function Navbar({ introActive = false }: NavbarProps) {
                 </ul>
               </nav>
 
+              <MenuStage reduce={reduce} delay={0.08 + primaryNav.length * step} />
+
               <motion.div
                 initial={{ opacity: 0, y: reduce ? 0 : 24 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: DURATION.reveal, ease: EASE, delay: 0.08 + primaryNav.length * step }}
+                transition={{ duration: DURATION.reveal, ease: EASE, delay: 0.16 + primaryNav.length * step }}
                 className="grid gap-6"
               >
                 <p className="body-6 max-w-xs text-ink-2">{brand.tagline}</p>
