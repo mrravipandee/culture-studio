@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { caseStudiesList, featuredProject } from "@/lib/content/case-studies";
 import { isIndexable, siteUrl } from "@/lib/site";
 
-/** sitemap.xml: public pages only; empty until NEXT_PUBLIC_SITE_URL is set. */
+/** sitemap.xml: public pages on studioculture.in; empty on Vercel previews. */
 export default function sitemap(): MetadataRoute.Sitemap {
   if (!isIndexable) return [];
   const pages = ["", "/services", "/about", "/case-studies"].map((path) => ({

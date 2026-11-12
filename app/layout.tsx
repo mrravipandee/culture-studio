@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Manrope, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { MOTION_ARM_SCRIPT } from "@/lib/motion-arm";
-import { defaultDescription, isIndexable, metadataBase, siteName } from "@/lib/site";
+import { defaultDescription, isIndexable, metadataBase, ogImage, siteName } from "@/lib/site";
 
 // One typeface across the site; Geist Mono only for indices and numeric labels.
 const manrope = Manrope({
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   metadataBase,
   title: {
     default: `${siteName} | Digital Growth, Marketing & Creative Agency`,
-    template: `%s | ${siteName}`,
+    template: `${siteName} | %s`,
   },
   description: defaultDescription,
   applicationName: siteName,
@@ -32,10 +32,12 @@ export const metadata: Metadata = {
     title: `${siteName} | Digital Growth, Marketing & Creative Agency`,
     description: defaultDescription,
   },
+  // og:image is supplied by app/opengraph-image.jpg; X/Twitter reuses the same file.
   twitter: {
     card: "summary_large_image",
     title: `${siteName} | Digital Growth, Marketing & Creative Agency`,
     description: defaultDescription,
+    images: [ogImage],
   },
   formatDetection: { email: false, address: false, telephone: false },
 };

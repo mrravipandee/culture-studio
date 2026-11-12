@@ -4,33 +4,43 @@ import { positioning } from "@/lib/content/service-catalog";
 /**
  * Site-wide SEO configuration.
  *
- * Set NEXT_PUBLIC_SITE_URL to the production origin (e.g. https://www.example.com).
- * Until it is set the site is deliberately NOT indexable: robots are noindex,
- * no canonical URLs are emitted and the sitemap is empty, so nothing points
- * search engines at a wrong or temporary domain.
+ * Production domain: https://studioculture.in. Canonical URLs, og:url, the sitemap,
+ * robots.txt, social image URLs and JSON-LD are all built from it.
+ * NEXT_PUBLIC_SITE_URL can override it (e.g. for a staging domain).
+ *
+ * Vercel preview/development deployments stay noindex (no canonical, empty sitemap,
+ * robots disallow), so only the production site is ever indexed.
  */
-const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+const PRODUCTION_URL = "https://studioculture.in";
+const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim() || PRODUCTION_URL;
 
-export const siteUrl: string | null = raw ? raw.replace(/\/+$/, "") : null;
-export const isIndexable = siteUrl !== null;
+export const siteUrl: string = raw.replace(/\/+$/, "");
+/** False on Vercel preview/development builds; true in production and local builds. */
+export const isIndexable = !process.env.VERCEL_ENV || process.env.VERCEL_ENV === "production";
 
 export const siteName = "CULT.URE";
 export const siteTagline = "Beyond the noise. Into the culture.";
 export const defaultDescription = positioning.oneLiner;
 
-/** Absolute base for metadata URLs (localhost only while the domain is unset). */
-export const metadataBase = new URL(siteUrl ?? "http://localhost:3000");
+/** Absolute base for every metadata URL (canonical, og:url, og:image, twitter:image). */
+export const metadataBase = new URL(siteUrl);
 
-/** Default social card (app/opengraph-image.tsx). Pages that set openGraph must list it explicitly. */
+/**
+ * The one social image for every platform: app/opengraph-image.jpg (1200×630).
+ * Routes without their own openGraph get og:image from the file convention; pages
+ * built with pageMetadata() and the X/Twitter tags reference the same file here
+ * (served at /opengraph-image.jpg). No second image exists for any platform.
+ */
 export const ogImage = {
-  url: "/opengraph-image",
+  url: "/opengraph-image.jpg",
   width: 1200,
   height: 630,
-  alt: `${siteName} — ${siteTagline}`,
+  alt: "CULT.URE wordmark beside a woman in profile with flowing burgundy fabric",
+  type: "image/jpeg",
 };
 
 interface PageMetaInput {
-  /** Page title; the "| CULT.URE" suffix is added by the layout template. */
+  /** Page title; the "CULT.URE | " prefix is added by the layout template. */
   title: string;
   description: string;
   /** Route path, e.g. "/services". Used for canonical and og:url. */
@@ -44,7 +54,7 @@ interface PageMetaInput {
 
 /** Consistent per-page metadata: title, description, canonical, Open Graph, Twitter, robots. */
 export function pageMetadata({ title, description, path, absoluteTitle, noindex, type = "website" }: PageMetaInput): Metadata {
-  const fullTitle = absoluteTitle ? title : `${title} | ${siteName}`;
+  const fullTitle = absoluteTitle ? title : `${siteName} | ${title}`;
   const index = isIndexable && !noindex;
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -59,13 +69,15 @@ export function pageMetadata({ title, description, path, absoluteTitle, noindex,
       title: fullTitle,
       description,
       url: isIndexable ? path : undefined,
+      // A page-level openGraph replaces the inherited one (including the file-based
+      // image), so the same app/opengraph-image.jpg is listed here explicitly.
       images: [ogImage],
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
-      images: [ogImage.url],
+      images: [ogImage],
     },
   };
 }

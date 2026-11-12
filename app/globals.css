@@ -1039,6 +1039,47 @@ html[data-motion-armed] .cr:not([data-in]) > .cr-inner {
 .menu-stage__char--dot { color: rgb(255 255 255 / 0.6); }
 
 /* ========================================
+   404  (app/not-found.tsx)
+   Campaign still with an outlined numeral, in the menu wordmark's style.
+======================================== */
+
+.nf-frame {
+    position: relative;
+    width: 100%;
+    container-type: inline-size;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    border-radius: var(--radius-lg, 1rem);
+    background: #240c0e;
+}
+@media (min-width: 1024px) {
+    /* Portrait, but never taller than the space under the navbar */
+    .nf-frame { aspect-ratio: 4 / 5; max-height: calc(100svh - 15rem); }
+}
+.nf-frame > .cr-inner { position: absolute; inset: 0; }
+
+.nf-scrim {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 55%;
+    background: linear-gradient(to top, rgb(36 12 14 / 0.6), rgb(36 12 14 / 0.2) 45%, transparent);
+}
+
+.nf-numeral {
+    position: absolute;
+    left: clamp(1rem, 5cqi, 2rem);
+    bottom: -0.08em;
+    font-size: clamp(6rem, 42cqi, 16rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgb(255 255 255 / 0.85);
+    text-shadow: 0 10px 40px rgb(36 12 14 / 0.5);
+    user-select: none;
+}
+
+/* ========================================
    SCROLL CUE  (components/motion/ScrollCue.tsx)
    One indicator site-wide: the line draws once, then rests. No loops.
 ======================================== */

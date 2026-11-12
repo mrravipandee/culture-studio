@@ -4,12 +4,12 @@
  * automatically once they are set in lib/content/home.ts. No logo, address,
  * reviews or ratings are emitted because none are confirmed.
  *
- * All builders return null until NEXT_PUBLIC_SITE_URL is set, because schema
- * URLs must be absolute and point at the real domain.
+ * URLs are absolute on the production domain (lib/site.ts). Builders return null
+ * on non-indexable deployments (Vercel previews), which are noindex anyway.
  */
 import { contact } from "@/lib/content/home";
 import { allServices, categoryOf, positioning } from "@/lib/content/service-catalog";
-import { siteName, siteTagline, siteUrl } from "@/lib/site";
+import { isIndexable, siteName, siteTagline, siteUrl } from "@/lib/site";
 
 type Json = Record<string, unknown>;
 
@@ -18,7 +18,7 @@ const webId = () => `${siteUrl}/#website`;
 
 /** Organization + WebSite, emitted on every public page. */
 export function siteSchema(): Json | null {
-  if (!siteUrl) return null;
+  if (!isIndexable) return null;
   const org: Json = {
     "@type": "Organization",
     "@id": orgId(),
@@ -53,7 +53,7 @@ export function siteSchema(): Json | null {
 
 /** One Service node per official service, each pointing at its section on /services. */
 export function servicesSchema(): Json | null {
-  if (!siteUrl) return null;
+  if (!isIndexable) return null;
   return {
     "@context": "https://schema.org",
     "@graph": allServices.map((s) => ({
@@ -71,7 +71,7 @@ export function servicesSchema(): Json | null {
 
 /** BreadcrumbList for an inner page. Items are [name, path] from the home page down. */
 export function breadcrumbSchema(items: [name: string, path: string][]): Json | null {
-  if (!siteUrl) return null;
+  if (!isIndexable) return null;
   const trail: [string, string][] = [["Home", "/"], ...items];
   return {
     "@context": "https://schema.org",
