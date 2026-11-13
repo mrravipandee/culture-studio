@@ -1,10 +1,11 @@
 import { servicesHero } from "@/lib/content/services";
+import { serviceCount } from "@/lib/content/disciplines";
 import ScrollCue from "@/components/motion/ScrollCue";
 import Container from "@/components/home/shared/Container";
 import { ArchitecturalDialVector, GridCrosshairMarker } from "@/components/home/shared/WorkVectors";
 
 export default function ServicesHero() {
-  const { eyebrow, headline, supportingCopy, meta } = servicesHero;
+  const { eyebrow, headline, supportingCopy, sideLabel, meta } = servicesHero;
   const [lineOne, lineTwo] = headline.split("\n");
 
   return (
@@ -26,14 +27,12 @@ export default function ServicesHero() {
             </span>
             <span className="h-1 w-1 rounded-full bg-burgundy" />
             <span className="font-mono text-burgundy font-medium hidden sm:inline">
-              FOUR DISCIPLINES &middot; NINE SERVICES
+              FOUR DISCIPLINES &middot; {serviceCount} SERVICES
             </span>
           </div>
 
           <div className="flex items-center gap-4 font-mono text-xs">
-            <span>DIGITAL GROWTH</span>
-            <span aria-hidden="true" className="text-black/30">/</span>
-            <span className="text-burgundy font-semibold">MARKETING &amp; CREATIVE</span>
+            <span className="text-burgundy font-semibold">{sideLabel}</span>
           </div>
         </div>
 
@@ -47,9 +46,14 @@ export default function ServicesHero() {
               {lineTwo}
             </h1>
 
-            <p className="mt-8 text-lg sm:text-xl lg:text-2xl font-light leading-relaxed text-ink-2 max-w-2xl">
-              {supportingCopy}
-            </p>
+            {supportingCopy.map((paragraph, i) => (
+              <p
+                key={i}
+                className={`${i === 0 ? "mt-8 text-lg sm:text-xl lg:text-2xl" : "mt-5 text-base sm:text-lg"} font-light leading-relaxed text-ink-2 max-w-2xl`}
+              >
+                {paragraph}
+              </p>
+            ))}
           </div>
 
           {/* Right Practice Meta Strip & Scroll Cue */}

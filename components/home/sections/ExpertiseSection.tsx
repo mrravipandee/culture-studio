@@ -1,22 +1,26 @@
 import { expertise, trustedBy } from "@/lib/content/home";
-import { serviceCategories, serviceHref, services } from "@/lib/content/service-catalog";
+import { disciplineHref, disciplines } from "@/lib/content/disciplines";
 import { Button } from "@/components/ui/site-button";
 import LogoMarquee from "@/components/motion/LogoMarquee";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
 import ServicesStory, { type StoryService } from "./ServicesStory";
 
-/** Curated view: one pinned stage per category, linking to each service on /services. */
-const stages: StoryService[] = serviceCategories.map((category) => ({
-  id: `home-${category.id}`,
-  title: category.name,
-  description: category.intro,
-  includes: category.services.map((id) => ({ label: services[id].name, href: serviceHref(id) })),
-  more: { label: `Explore ${category.name}`, href: serviceHref(category.id) },
-  image: category.image,
+/**
+ * One pinned stage per discipline (client copy deck), listing its services.
+ * Each service links to its own section (/services#<service-id>); the
+ * "Explore …" link goes to the discipline section (/services#<discipline-id>).
+ */
+const stages: StoryService[] = disciplines.map((discipline) => ({
+  id: `home-${discipline.id}`,
+  title: discipline.name,
+  description: discipline.summary,
+  includes: discipline.services.map((service) => ({ label: service.name, href: disciplineHref(service.id) })),
+  more: { label: `Explore ${discipline.name}`, href: disciplineHref(discipline.id) },
+  image: discipline.image,
 }));
 
-/** 02 — Services: pinned scroll story through the four service categories. */
+/** 02 — Services: pinned scroll story through the four disciplines. */
 export default function ExpertiseSection() {
   return (
     <section id="expertise" aria-labelledby="expertise-title" className="section surface-paper">

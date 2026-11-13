@@ -44,7 +44,7 @@ export default function NotFound() {
               </Reveal>
               <Reveal delay={0.5} distance={16} className="mt-10 flex flex-wrap items-center gap-6">
                 <Button href="/" icon="arrow">Back to home</Button>
-                <TextLink href="/case-studies" className="title-3">View case studies</TextLink>
+                <TextLink href="/services" className="title-3">Explore services</TextLink>
               </Reveal>
             </div>
 

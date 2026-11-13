@@ -7,6 +7,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Button } from "@/components/ui/site-button";
 import { DURATION, EASE } from "@/lib/motion";
 import { brand, contactCta, isActivePath, primaryNav } from "@/lib/navigation";
+import { contact } from "@/lib/content/home";
 import MenuStage from "./MenuStage";
 import Wordmark from "./Wordmark";
 
@@ -260,7 +261,24 @@ export default function Navbar({ introActive = false }: NavbarProps) {
                 transition={{ duration: DURATION.reveal, ease: EASE, delay: 0.16 + primaryNav.length * step }}
                 className="grid gap-6"
               >
-                <p className="body-6 max-w-xs text-ink-2">{brand.tagline}</p>
+                <div className="grid gap-1">
+                <p className="body-6 max-w-xs text-ink-2">{brand.short}</p>
+                {/* Direct contact: verified phone and email. */}
+                <p className="caption-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-ink-2">
+                  <a href={contact.phone.href} className="link inline-flex min-h-11 items-center text-ink">
+                    Call {contact.phone.display}
+                  </a>
+                  {contact.email && (
+                    <>
+                      <span aria-hidden="true" className="text-ink-3">·</span>
+                      <a href={`mailto:${contact.email}`} className="link inline-flex min-h-11 items-center text-ink">
+                        Email
+                        <span className="sr-only"> {contact.email}</span>
+                      </a>
+                    </>
+                  )}
+                </p>
+                </div>
                 <Button href={contactCta.href} variant="burgundy" size="lg" icon="badge" className="w-full justify-between" onClick={() => closeMenu(false)}>
                   {contactCta.label}
                 </Button>

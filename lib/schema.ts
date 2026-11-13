@@ -1,14 +1,16 @@
 /**
  * JSON-LD builders (schema.org). Verified facts only: name, tagline, positioning
- * and the nine official services. Contact email and social profiles are included
- * automatically once they are set in lib/content/home.ts. No logo, address,
+ * and the 26 services in four disciplines (client copy deck, lib/content/disciplines.ts).
+ * Verified phone and email come from lib/content/home.ts; social profiles are added
+ * automatically once their URLs are set there. No logo, address,
  * reviews or ratings are emitted because none are confirmed.
  *
  * URLs are absolute on the production domain (lib/site.ts). Builders return null
  * on non-indexable deployments (Vercel previews), which are noindex anyway.
  */
 import { contact } from "@/lib/content/home";
-import { allServices, categoryOf, positioning } from "@/lib/content/service-catalog";
+import { disciplines } from "@/lib/content/disciplines";
+import { positioning } from "@/lib/content/service-catalog";
 import { isIndexable, siteName, siteTagline, siteUrl } from "@/lib/site";
 
 type Json = Record<string, unknown>;
@@ -26,12 +28,18 @@ export function siteSchema(): Json | null {
     url: `${siteUrl}/`,
     description: positioning.oneLiner,
     slogan: siteTagline,
-    knowsAbout: allServices.map((s) => s.name),
+    knowsAbout: disciplines.flatMap((d) => d.services.map((s) => s.name)),
   };
-  if (contact.email) {
-    org.email = contact.email;
-    org.contactPoint = { "@type": "ContactPoint", contactType: "sales", email: contact.email };
-  }
+  // Verified contact details (client-approved). Telephone in E.164 from the tel: link.
+  const telephone = contact.phone.href.replace(/^tel:/, "");
+  org.telephone = telephone;
+  if (contact.email) org.email = contact.email;
+  org.contactPoint = {
+    "@type": "ContactPoint",
+    contactType: "sales",
+    telephone,
+    ...(contact.email ? { email: contact.email } : {}),
+  };
   if (contact.socials.length) org.sameAs = contact.socials.map((s) => s.href);
 
   return {
@@ -51,21 +59,23 @@ export function siteSchema(): Json | null {
   };
 }
 
-/** One Service node per official service, each pointing at its section on /services. */
+/** One Service node per service (26), each pointing at its section on /services. */
 export function servicesSchema(): Json | null {
   if (!isIndexable) return null;
   return {
     "@context": "https://schema.org",
-    "@graph": allServices.map((s) => ({
-      "@type": "Service",
-      "@id": `${siteUrl}/services#${s.id}`,
-      name: s.name,
-      serviceType: s.name,
-      category: categoryOf(s.id).name,
-      description: s.what,
-      url: `${siteUrl}/services#${s.id}`,
-      provider: { "@id": orgId() },
-    })),
+    "@graph": disciplines.flatMap((d) =>
+      d.services.map((s) => ({
+        "@type": "Service",
+        "@id": `${siteUrl}/services#${s.id}`,
+        name: s.name,
+        serviceType: s.name,
+        category: d.name,
+        description: s.description,
+        url: `${siteUrl}/services#${s.id}`,
+        provider: { "@id": orgId() },
+      })),
+    ),
   };
 }
 
@@ -82,5 +92,21 @@ export function breadcrumbSchema(items: [name: string, path: string][]): Json | 
       name,
       item: `${siteUrl}${path === "/" ? "/" : path}`,
     })),
+  };
+}
+
+/** ContactPage for /contact, pointing at the Organization (which carries the verified phone and email). */
+export function contactPageSchema(): Json | null {
+  if (!isIndexable) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "@id": `${siteUrl}/contact#webpage`,
+    url: `${siteUrl}/contact`,
+    name: `${siteName} | Contact`,
+    isPartOf: { "@id": webId() },
+    about: { "@id": orgId() },
+    mainEntity: { "@id": orgId() },
+    inLanguage: "en",
   };
 }

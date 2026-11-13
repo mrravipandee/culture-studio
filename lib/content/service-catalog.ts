@@ -299,12 +299,12 @@ export const categoryOf = (id: ServiceId) => serviceCategories.find((c) => c.ser
 export const serviceHref = (id: ServiceId | ServiceCategoryId) => `/services#${id}`;
 
 /** Inquiry link that preselects the service in the contact form. */
-export const inquiryHref = (id?: ServiceId) => (id ? `/?service=${id}#contact` : "/#contact");
+export const inquiryHref = (id?: ServiceId) => (id ? `/contact?service=${id}` : "/contact");
 
-/** Agency positioning, reused in metadata and copy. */
+/** Agency positioning (client copy deck, B2B), reused in default metadata and the Organization schema. */
 export const positioning = {
-  descriptor: "Digital growth, marketing and creative agency",
+  descriptor: "B2B-focused marketing agency",
   oneLiner:
-    "CULT.URE is a digital growth, marketing and creative agency combining strategy, creative and technology to build brands that people remember.",
+    "CULT.URE is a B2B-focused marketing agency helping businesses clarify their market position, communicate their expertise and build stronger relationships with the audiences and decision-makers that matter.",
   tagline: "Beyond the noise. Into the culture.",
 };

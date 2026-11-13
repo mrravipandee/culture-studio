@@ -304,7 +304,8 @@
 
 .hero-pillars {
     display: grid;
-    grid-template-columns: repeat(2, auto);
+    /* One discipline per line on phones (names are long); two columns from 640px. */
+    grid-template-columns: 1fr;
     gap: 0.5rem 1rem;
     margin: 0;
     padding: 0;
@@ -325,6 +326,7 @@
 
 @media (min-width: 640px) {
     .hero-pillars {
+        grid-template-columns: repeat(2, auto);
         column-gap: 1.5rem;
         letter-spacing: var(--track-eyebrow);
     }
@@ -339,7 +341,8 @@
 @media (min-width: 768px) {
     .hero-pillars {
         display: flex;
-        gap: 2.25rem;
+        flex-wrap: wrap;
+        gap: 0.75rem 2.25rem;
     }
 }
 

@@ -5,19 +5,20 @@ import HomeHero from "@/components/home/HomeHero";
 import ManifestoSection from "@/components/home/sections/ManifestoSection";
 import ExpertiseSection from "@/components/home/sections/ExpertiseSection";
 import SelectedWorkSection from "@/components/home/sections/SelectedWorkSection";
-import ThinkingSection from "@/components/home/sections/ThinkingSection";
 import ProcessSection from "@/components/home/sections/ProcessSection";
 import WhyCultureSection from "@/components/home/sections/WhyCultureSection";
 import ClientVoicesSection from "@/components/home/sections/ClientVoicesSection";
 import TaglineReveal from "@/components/motion/TaglineReveal";
-import ContactSection from "@/components/home/sections/ContactSection";
+import ContactCta from "@/components/home/sections/ContactCta";
+import { reputationLine } from "@/lib/content/home";
+import { caseStudiesEnabled } from "@/lib/content/case-studies-publishing";
 
 export const metadata: Metadata = pageMetadata({
-  title: "CULT.URE | Digital Growth, Marketing & Creative Agency",
+  title: "CULT.URE | B2B Marketing Agency",
   absoluteTitle: true,
   path: "/",
   description:
-    "CULT.URE is a digital growth, marketing and creative agency. Brand, social, performance, e-commerce, SEO, GEO & AEO, email, websites and AI automation, planned as one.",
+    "CULT.URE is a B2B-focused marketing agency helping businesses clarify their market position, communicate their expertise and build stronger relationships with the audiences and decision-makers that matter.",
 });
 
 /**
@@ -37,23 +38,17 @@ export default function HomePage() {
         {/* What */}
         <ExpertiseSection />
         {/* Proof */}
-        <SelectedWorkSection />
+        {/* Proof: hidden until a case study is explicitly published (client rule: verified projects only). */}
+        {caseStudiesEnabled && <SelectedWorkSection />}
         {/* One type moment, between proof and method */}
-        <TaglineReveal
-          eyebrow="What we believe"
-          lines={[
-            "Your reputation walks into the room before you do.",
-            "We make sure it says the right thing.",
-          ]}
-        />
+        <TaglineReveal lines={reputationLine.lines} body={reputationLine.body} />
         {/* How */}
         <ProcessSection />
-        <ThinkingSection />
         {/* Why us */}
         <WhyCultureSection />
         {/* Renders only with approved testimonials */}
         <ClientVoicesSection />
-        <ContactSection />
+        <ContactCta />
       </main>
     </div>
   );

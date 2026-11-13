@@ -16,7 +16,7 @@ export const metadata: Metadata = pageMetadata({
   title: "About",
   path: "/about",
   description:
-    "Why CULT.URE brings strategy, creative and technology together, and the philosophy behind how we build brands, marketing and growth.",
+    "CULT.URE is a B2B-focused marketing agency working with businesses to shape how they are positioned, perceived and remembered.",
 });
 
 export default function AboutPage() {
@@ -27,25 +27,26 @@ export default function AboutPage() {
       <Navbar />
 
       <main className="relative z-0">
-        {/* 01 — Editorial Hero */}
+        {/* Order follows the client copy deck (02 / About Us). */}
+        {/* 01 — Hero */}
         <AboutHero />
 
-        {/* 02 — Our Philosophy */}
+        {/* 02 — Our Approach (Practice, Focus, Engagement, Principle) */}
+        <AboutApproach />
+
+        {/* 03 — Our Philosophy */}
         <AboutPhilosophy />
 
-        {/* 03 — Our Story */}
+        {/* 04 — Why CULT.URE (Purpose, Vision, How It Connects, In Practice) */}
         <AboutStory />
 
-        {/* 04 — Our Perspective */}
+        {/* 05 — What CULT.URE Does */}
         <AboutPerspective />
-
-        {/* 05 — Our Approach */}
-        <AboutApproach />
 
         {/* 06 — Our Principles */}
         <AboutPrinciples />
 
-        {/* 07 — Closing CTA */}
+        {/* 07 — Start a Conversation */}
         <AboutCta />
 
         {/* 08 — Contact & Footer */}

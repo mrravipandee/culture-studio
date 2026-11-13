@@ -16,6 +16,19 @@ interface Options {
 }
 
 let modules: Promise<Modules> | null = null;
+
+/** The element named by the URL hash (#id or [name]), if any. */
+function hashTarget(): HTMLElement | null {
+  const raw = window.location.hash.slice(1);
+  if (!raw) return null;
+  let id = raw;
+  try {
+    id = decodeURIComponent(raw);
+  } catch {
+    // Malformed escape sequence: use the raw fragment.
+  }
+  return document.getElementById(id) ?? (document.getElementsByName(id)[0] as HTMLElement | undefined) ?? null;
+}
 /** GSAP + ScrollTrigger, loaded once on demand: pages without scroll timelines never ship them. */
 function loadGsap(): Promise<Modules> {
   modules ??= Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(([{ gsap }, { ScrollTrigger }]) => {
@@ -48,9 +61,11 @@ export function useScrollTimeline(
   { rebuildOnResize = false }: Options = {},
 ) {
   const lenis = useLenis();
+  const lenisRef = useRef(lenis);
   const setupRef = useRef(setup);
   useEffect(() => {
     setupRef.current = setup;
+    lenisRef.current = lenis;
   });
 
   // Lenis ↔ ScrollTrigger sync (does not rebuild timelines).
@@ -79,12 +94,39 @@ export function useScrollTimeline(
     let lastWidth = window.innerWidth;
 
     const build = () => {
+      // Hash anchoring: GSAP loads asynchronously, so the browser / Next.js has usually
+      // already scrolled to the URL hash (e.g. /#contact) before pinning inserts its
+      // scroll space. If the hash target is on or near the screen, remember where it
+      // sits and restore that after the rebuild, so the layout change cannot push it
+      // out of view. Measured, not estimated: no timeouts or fixed offsets.
+      const anchor = hashTarget();
+      const anchorTop = anchor?.getBoundingClientRect().top;
+      const anchored = anchor !== null && anchorTop !== undefined && Math.abs(anchorTop) <= window.innerHeight;
+
       ctx?.revert(); // also runs the cleanup returned by the previous setup
       ctx = null;
-      if (!mods || reduce.matches) return;
-      const { gsap, ScrollTrigger } = mods;
-      ctx = gsap.context(() => setupRef.current(gsap, ScrollTrigger, el), el);
-      ScrollTrigger.refresh();
+      if (mods && !reduce.matches) {
+        const { gsap, ScrollTrigger } = mods;
+        ctx = gsap.context(() => setupRef.current(gsap, ScrollTrigger, el), el);
+        ScrollTrigger.refresh();
+      }
+
+      if (anchored) {
+        const shift = anchor!.getBoundingClientRect().top - anchorTop!;
+        if (Math.abs(shift) >= 1) {
+          const top = window.scrollY + shift;
+          const lenisInstance = lenisRef.current;
+          if (lenisInstance) {
+            // Lenis caches the page height (updated later by its ResizeObserver) and may still
+            // hold the previous page's scroll target: re-measure, then move it with its own API.
+            lenisInstance.resize();
+            lenisInstance.scrollTo(top, { immediate: true, force: true });
+          } else {
+            window.scrollTo({ top, behavior: "instant" as ScrollBehavior });
+          }
+          mods?.ScrollTrigger.update();
+        }
+      }
     };
 
     loadGsap().then((m) => {

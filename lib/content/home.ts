@@ -8,7 +8,15 @@
  * placeholder frame with an optimised next/image.
  */
 
-import type { ServiceId } from "./service-catalog";
+import { caseStudiesEnabled } from "./case-studies-publishing";
+
+/**
+ * Home section numbers. "03 — Selected Work" appears only when a case study is explicitly
+ * published; until then the following sections move up one number.
+ * Published: 01 Manifesto · 02 Services · 03 Selected Work · 04 Process · 05 Why · 06 Contact
+ * Hidden:    01 Manifesto · 02 Services · 03 Process · 04 Why · 05 Contact
+ */
+const homeIndex = (published: number) => String(caseStudiesEnabled ? published : published - 1).padStart(2, "0");
 
 export type ContentImage = {
   /** Path under /public, e.g. "/images/work/project-01.jpg". */
@@ -33,27 +41,30 @@ export const manifesto = {
   intro: {
     index: "01",
     eyebrow: "Manifesto",
-    title: "Attention is rented. Culture is owned.",
+    title: "Attention is easy to buy. Being remembered is harder.",
   } satisfies SectionIntro,
-  lead:
-    "Most brands are built for the feed: loud, frequent and easy to forget. A brand earns its place differently, by standing for something clear and saying it consistently, on the channels and in the moments that matter.",
+  /** One string per paragraph. */
+  lead: [
+    "B2B markets are crowded with businesses making similar promises. More content, more campaigns and more visibility do not automatically make a business distinctive. What matters is what decision-makers understand about you, what they associate with your name and whether they have a reason to consider you.",
+    "That comes from a clear market position, communication with substance and a consistent presence across every point of contact. CULT.URE believes marketing should do more than keep a business visible. It should give the market a reason to pay attention.",
+  ],
   beliefs: [
     {
-      title: "Clarity before content",
-      body: "Before anything is published, we define what you stand for and who it is for. Everything else follows from that.",
+      title: "Clarity before communication",
+      body: "A business needs to know what it stands for, who it serves and why its work matters before it can communicate those things convincingly.",
     },
     {
-      title: "Consistency compounds",
-      body: "Recognition is built over time. A steady, recognisable voice outlasts any single viral moment.",
+      title: "Substance over volume",
+      body: "Publishing more is not the same as saying something worthwhile. Every message should have a purpose and every channel should have a role.",
     },
     {
-      title: "Substance over spectacle",
-      body: "The strongest brands are built on real expertise, presented well, rather than on volume or borrowed trends.",
+      title: "Consistency builds recognition",
+      body: "A brand becomes familiar when its identity, language and experience reinforce the same impression over time.",
     },
   ],
   value: {
     title: "Why it has to work as one",
-    body: "People choose brands they recognise and trust. When strategy, creative and technology point in the same direction, every channel (search, social, email and the website) reinforces the same idea instead of competing for attention.",
+    body: "A strong market position cannot exist in isolation from the way a business communicates. The website, content, campaigns, search presence and customer experience all contribute to the same perception. When those elements are disconnected, the business tells several different stories. When they are aligned, each interaction builds on the last.",
   },
 };
 
@@ -82,108 +93,18 @@ export const expertise = {
   intro: {
     index: "02",
     eyebrow: "Services",
-    title: "Marketing, brand and technology services that work as one.",
+    title: "The work behind how a business is seen, understood and chosen.",
     description:
-      "Nine services in four disciplines, from personal branding and social media marketing to SEO, websites and AI automation. Use one, or combine them in a single plan.",
+      "CULT.URE works primarily with B2B businesses, bringing four connected areas of expertise to the challenges of positioning, communication, demand generation and growth.",
   } satisfies SectionIntro,
-  /** Services themselves live in lib/content/service-catalog.ts. */
-  cta: { label: "Explore all nine services", href: "/services" },
+  /** Disciplines and services live in lib/content/disciplines.ts. */
+  cta: { label: "Explore all services", href: "/services" },
 };
 
 /* ---------------------------------------------------------------
-   05 — Selected Work
+   05 — Selected Work: moved to lib/content/selected-work.ts (server-only),
+   so unpublished sample projects never reach client JavaScript bundles.
 ---------------------------------------------------------------- */
-
-export type Project = {
-  id: string;
-  title: string;
-  description: string;
-  /** Link to the full case study once it exists. */
-  href: string | null;
-  placeholder: boolean;
-  image: ContentImage;
-  year?: string;
-  /** Official services involved (lib/content/service-catalog.ts). */
-  services: ServiceId[];
-  scope?: string;
-};
-
-export const selectedWork = {
-  intro: {
-    index: "03",
-    eyebrow: "Selected work",
-    title: "Selected work",
-    description:
-      "Sample projects that show how our services combine. Confirmed client case studies will replace them as they are published.",
-  } satisfies SectionIntro,
-  cta: { label: "View all case studies", href: "/case-studies" },
-  projects: [
-    {
-      id: "sample-01",
-      title: "Aura & Influence",
-      description:
-        "Public positioning and media narrative for a technology founder.",
-      href: "/case-studies/aura-and-influence",
-      placeholder: true,
-      services: ["personal-branding-linkedin-marketing"],
-      year: "2026",
-      scope: "Technology founder",
-      image: {
-        src: "/images/work/featured.jpg",
-        alt: "Man in a dark suit fastening his jacket button",
-        placeholderLabel: "Project image — Aura & Influence",
-      },
-    },
-    {
-      id: "sample-02",
-      title: "Vanguard Monograph",
-      description:
-        "An editorial publication and visual content series for an investor audience.",
-      href: "/case-studies/vanguard-monograph",
-      placeholder: true,
-      services: ["social-media-marketing"],
-      year: "2025",
-      scope: "Venture capital partner",
-      image: {
-        src: "/images/work/project-02.jpg",
-        alt: "Smiling woman wearing a crown of red and pink flowers",
-        placeholderLabel: "Project image — Vanguard Monograph",
-      },
-    },
-    {
-      id: "sample-03",
-      title: "Cognition Capital",
-      description:
-        "Visual identity, website and a private editorial channel for a venture investor.",
-      href: "/case-studies/cognition-capital",
-      placeholder: true,
-      services: ["personal-branding-linkedin-marketing", "website-design-development"],
-      year: "2025",
-      scope: "Venture investor",
-      image: {
-        src: "/images/work/project-03.jpg",
-        alt: "Glass office towers seen from street level",
-        placeholderLabel: "Project image — Cognition Capital",
-      },
-    },
-    {
-      id: "sample-04",
-      title: "The Synthesist",
-      description:
-        "A multi-platform presence supported by AI-assisted research and publishing workflows.",
-      href: "/case-studies/the-synthesist",
-      placeholder: true,
-      services: ["personal-branding-linkedin-marketing", "ai-business-automation"],
-      year: "2026",
-      scope: "Life sciences leader",
-      image: {
-        src: "/images/work/project-04.jpg",
-        alt: "Bright workspace with a laptop beside tall windows",
-        placeholderLabel: "Project image — The Synthesist",
-      },
-    },
-  ] satisfies Project[],
-};
 
 /* ---------------------------------------------------------------
    06 — Our Thinking
@@ -225,36 +146,36 @@ export const thinking = {
 
 export const processSteps = {
   intro: {
-    index: "04",
+    index: homeIndex(4),
     eyebrow: "Process",
-    title: "From first conversation to measurable progress.",
+    title: "Good work begins with the right questions.",
     description:
-      "The same four stages apply whether you work with us on one service or several.",
+      "Every engagement starts with understanding the business, not selecting a service from a list. The scope is shaped around the objective, the market and the work required to make progress.",
   } satisfies SectionIntro,
   steps: [
     {
       title: "Discover",
-      tagline: "Understand the starting point",
-      body: "We learn about your business, audience, channels and competitors, and agree what success should look like.",
-      deliverables: ["Discovery conversation", "Channel review", "Agreed objectives"],
+      tagline: "Understand the context",
+      body: "Understand the business, its market, its audience and the challenges it needs to address.",
+      deliverables: ["Discovery discussion", "Business and channel assessment", "Audience and competitor review", "Agreed objectives"],
     },
     {
       title: "Define",
-      tagline: "Decide the plan",
-      body: "We recommend the services, priorities and measures that fit your goals, and leave out what does not.",
-      deliverables: ["Recommended scope", "Channel priorities", "Measurement plan"],
+      tagline: "Set the direction",
+      body: "Translate the findings into a focused plan, with clear priorities, recommended activities and measures of success.",
+      deliverables: ["Strategic recommendations", "Scope and deliverables", "Execution plan", "Measurement framework"],
     },
     {
       title: "Create",
-      tagline: "Design, build and launch",
-      body: "Creative, content, campaigns and technology are produced together, so each part supports the others.",
-      deliverables: ["Creative and content", "Campaigns and websites", "Automations"],
+      tagline: "Develop and execute",
+      body: "Develop and execute the agreed work across brand communication, creative production, campaigns, digital experiences and automation.",
+      deliverables: ["Content and creative", "Campaign execution", "Digital development", "Technical implementation"],
     },
     {
       title: "Evolve",
-      tagline: "Measure and improve",
-      body: "We report clearly, learn from the results and refine the plan as the work continues.",
-      deliverables: ["Reporting", "Optimisation", "Next steps"],
+      tagline: "Review, refine and progress",
+      body: "Review performance against the original objectives, identify refinements and establish the next priorities.",
+      deliverables: ["Performance reporting", "Analysis and recommendations", "Optimisation", "Next-stage planning"],
     },
   ],
 };
@@ -266,32 +187,46 @@ export const processSteps = {
 
 export const whyCulture = {
   intro: {
-    index: "06",
+    index: homeIndex(5),
     eyebrow: "Why CULT.URE",
-    title: "Strategy, creative and technology in one team.",
+    title: "A considered approach to modern B2B marketing.",
     description:
-      "We work at the intersection of three things most agencies keep separate. That is what lets a brand feel coherent instead of assembled.",
+      "The quality of marketing depends on more than the individual pieces produced. It depends on the thinking behind them, the standards applied to them and how well they work together.",
   } satisfies SectionIntro,
   pillars: [
     {
-      title: "Strategy",
-      body: "Every decision traces back to a clear position and a defined audience. Nothing is published without a reason.",
+      title: "Strategic perspective",
+      body: "Business objectives, market context and audience priorities inform the work from the outset.",
     },
     {
-      title: "Creativity",
-      body: "Editorial standards for every piece: considered writing, intentional visuals and a recognisable aesthetic.",
+      title: "Editorial and creative judgement",
+      body: "Language, design and execution are treated as essential parts of how a business is perceived.",
     },
     {
-      title: "Cultural relevance",
-      body: "We pay attention to the conversations shaping your field, so your voice adds to them rather than echoing them.",
+      title: "Connected disciplines",
+      body: "Brand, content, marketing and technology are considered in relation to one another, rather than treated as unrelated activities.",
+    },
+    {
+      title: "Commercial awareness",
+      body: "The work is planned around the business objective, with performance and progress evaluated against relevant measures.",
     },
   ],
+  /** Shown under "What to expect". */
   commitments: [
-    "Strategy before a single post",
-    "One team across brand, marketing, search and technology",
-    "Work built around you — not a template",
-    "Honest conversations about what is and isn't working",
+    "A clear understanding of the brief before recommendations are made.",
+    "A defined scope, priorities and intended outcomes.",
+    "Thoughtful communication and considered creative execution.",
+    "Transparent discussions about performance, constraints and next steps.",
   ],
+};
+
+/* ---------------------------------------------------------------
+   Tagline moment (between Selected Work and Process)
+---------------------------------------------------------------- */
+
+export const reputationLine = {
+  lines: ["Your reputation arrives before you do.", "Make every impression count."],
+  body: "The way a business presents itself shapes the expectations people bring to the first conversation.",
 };
 
 /* ---------------------------------------------------------------
@@ -308,7 +243,7 @@ export type Testimonial = {
 
 export const clientVoices = {
   intro: {
-    index: "07",
+    index: homeIndex(6),
     eyebrow: "Client Voices",
     title: "In their words.",
     description:
@@ -348,18 +283,36 @@ export type SocialLink = { label: string; href: string };
 /** Only approved testimonials are ever shown; placeholders keep the section hidden. */
 export const hasClientVoices = clientVoices.testimonials.some((t) => !t.placeholder);
 
+/**
+ * Home "06 — Contact": a call to action to the Contact page (client copy deck, Home → 06 — Contact).
+ * The full enquiry form lives on /contact (and in the About page's inline contact section).
+ */
+export const contactCta = {
+  intro: {
+    index: homeIndex(hasClientVoices ? 7 : 6),
+    eyebrow: "Contact",
+    title: "There is a business objective behind every good brief.",
+    description:
+      "A new market to reach. A proposition to clarify. A brand that needs a stronger presence. A growth opportunity worth pursuing.",
+  } satisfies SectionIntro,
+  closing: "Tell CULT.URE what you are working towards.",
+  action: { label: "Start a conversation", href: "/contact" },
+};
+
 export const contact = {
   intro: {
-    index: hasClientVoices ? "08" : "07",
+    index: hasClientVoices ? "07" : "06",
     eyebrow: "Contact",
-    title: "Let's build something that outlasts the noise.",
+    title: "There is a business objective behind every good brief.",
     description:
-      "Tell us where your brand is today, what you want to achieve and which services interest you. If you are not sure yet, choose \"Not sure yet\" and we will help you decide where to start.",
+      "A new market to reach. A proposition to clarify. A brand that needs a stronger presence. A growth opportunity worth pursuing. Tell CULT.URE what you are working towards.",
   } satisfies SectionIntro,
-  /** Set to the real inbox, e.g. "hello@yourdomain.com". */
-  email: null as string | null,
-  /** Add real profiles, e.g. { label: "LinkedIn", href: "https://..." }. */
+  /** Verified (client copy deck). Display form and tel: link. */
+  phone: { display: "+91 77439 79071", href: "tel:+917743979071" },
+  /** Verified official inbox (client-approved). Shown as a mailto link; it is not a form backend. */
+  email: "cult.urestudioagency@gmail.com" as string | null,
+  /** Profiles named in the copy deck (Instagram, LinkedIn, Facebook, X) have no URLs yet; add them here. */
   socials: [] as SocialLink[],
   /** Used for the CTA while no email is configured. */
-  fallbackCta: { label: "Get in touch", href: "/#contact" },
+  fallbackCta: { label: "Get in touch", href: "/contact" },
 };

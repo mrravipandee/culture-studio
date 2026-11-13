@@ -11,8 +11,12 @@ export default function ManifestoSection() {
         <SectionHeading intro={manifesto.intro} titleId="manifesto-title" tone="dark" />
 
         <div className="mt-16 grid gap-12 lg:mt-24 lg:grid-cols-12 lg:gap-8">
-          <Reveal as="p" className="body-lead max-w-measure text-paper-2 lg:col-span-6">
-            {manifesto.lead}
+          <Reveal className="grid max-w-measure gap-6 lg:col-span-6">
+            {manifesto.lead.map((paragraph) => (
+              <p key={paragraph.slice(0, 24)} className="body-lead text-paper-2">
+                {paragraph}
+              </p>
+            ))}
           </Reveal>
 
           <RevealGroup as="ol" count={manifesto.beliefs.length} delay={0.1} className="grid gap-8 lg:col-span-5 lg:col-start-8">

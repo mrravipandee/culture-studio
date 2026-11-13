@@ -16,6 +16,8 @@ interface TaglineRevealProps {
   eyebrow?: string;
   /** Each entry renders on its own line, so breaks land where the thought breaks. */
   lines: string[];
+  /** Optional supporting sentence under the lines (static body copy). */
+  body?: string;
 }
 
 function Word({
@@ -36,7 +38,7 @@ function Word({
 }
 
 /** Large type moment: each word brightens in reading order as it scrolls through. */
-export default function TaglineReveal({ eyebrow, lines }: TaglineRevealProps) {
+export default function TaglineReveal({ eyebrow, lines, body }: TaglineRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const reduce = useReducedMotion();
   const { scrollYProgress } = useScroll({
@@ -84,6 +86,7 @@ export default function TaglineReveal({ eyebrow, lines }: TaglineRevealProps) {
             </span>
           ))}
         </p>
+        {body && <p className="body-lead mx-auto mt-8 max-w-measure text-paper-3">{body}</p>}
       </div>
     </section>
   );

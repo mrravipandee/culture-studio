@@ -1,7 +1,7 @@
 /**
  * HomeHero content & art direction.
  *
- * Copy is derived from existing CULT.URE positioning (tagline + site metadata).
+ * Copy: client copy deck (CULTURE_Complete_Website_Copy_B2B.pdf), Home → Hero.
  * Photography: drop real, licensed images into /public/images/hero/ and set
  * `src` below. While `src` is null, a brand plate renders in its place.
  */
@@ -20,40 +20,40 @@ export type HeroImage = {
   focus?: string;
 };
 
-export const heroLabel = "Digital Growth & Creative Agency";
+export const heroLabel = "Marketing Agency";
 export const heroTagline = "Beyond the noise. Into the culture.";
 
 /** Each inner array is one line on tablet+; words wrap naturally on mobile. */
 export const heroHeadline: HeadlineWord[][] = [
-  [{ text: "We" }, { text: "build" }],
-  [
-    { text: "brands", tone: "serif" },
-    { text: "that", tone: "serif" },
-  ],
-  [{ text: "become" }],
-  [{ text: "culture.", tone: "accent" }],
+  [{ text: "Before" }, { text: "the" }],
+  [{ text: "pitch,", tone: "serif" }],
+  [{ text: "there" }, { text: "is" }],
+  [{ text: "perception.", tone: "accent" }],
 ];
 
 export const heroDescription =
-  "CULT.URE is a digital growth, marketing and creative agency. We bring brand strategy, social and performance marketing, SEO, websites and automation together, so every channel works towards the same goal.";
+  "By the time a potential client speaks to your business, they have already formed an opinion. Your positioning, reputation and communication have shaped it. CULT.URE works with B2B businesses to shape that perception, bringing together brand strategy, content, marketing and technology to make expertise understood, build market relevance and create stronger commercial opportunities.";
 
 export const heroActions = {
-  primary: { label: "Explore our services", href: "/services" },
-  secondary: { label: "View case studies", href: "/case-studies" },
+  primary: { label: "Start a conversation", href: "/contact" },
+  secondary: { label: "Explore services", href: "/services" },
 } as const;
 
+/** The four service disciplines (exact names from the client copy deck). */
 export const heroPillars = [
-  "Brand & Presence",
-  "Marketing & Growth",
-  "Search & Engagement",
-  "Technology",
+  "Brand Strategy & Communications",
+  "Content & Creative",
+  "Digital Marketing & Growth",
+  "Technology & Automation",
 ] as const;
 
 export const heroMedia: { primary: HeroImage; secondary: HeroImage } = {
   primary: {
-    // Art directed from /images/work/featured.jpg: 4:5 crop, monochrome, burgundy shadows.
-    src: "/images/hero/campaign.jpg",
-    alt: "A man in a tailored dark suit fastening his jacket, photographed in black and white",
+    // Art directed from the existing /images/work/project-04.jpg (same treatment as the
+    // previous campaign.jpg: 4:5 crop, monochrome, burgundy shadows). Person-free on purpose:
+    // no image may imply an unverified CULT.URE founder, employee or client.
+    src: "/images/hero/workspace.jpg",
+    alt: "A quiet workspace with a laptop and a tall plant beside floor-to-ceiling windows, in monochrome",
     caption: "Fig. 01 — Presence",
     focus: "50% 45%",
   },

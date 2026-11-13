@@ -6,11 +6,11 @@ import SectionHeading from "../shared/SectionHeading";
 import InquiryForm from "./InquiryForm";
 
 /**
- * Contact: inquiry form with service selection, plus direct details.
+ * Contact: enquiry form with the four service disciplines, plus verified direct details.
  * See InquiryForm for how submission works (real endpoint or email only; never simulated).
  */
 export default function ContactSection() {
-  const { email, socials } = contact;
+  const { email, phone, socials } = contact;
 
   return (
     <section id="contact" aria-labelledby="contact-title" className="section surface-ink">
@@ -22,21 +22,26 @@ export default function ContactSection() {
             <InquiryForm email={email} />
           </div>
 
+          {/* Direct details: only verified information is shown (no "To be added" rows). */}
           <dl className="grid content-start gap-8 lg:col-span-4 lg:col-start-9">
             <div>
-              <dt className="eyebrow text-paper-3">Email</dt>
+              <dt className="eyebrow text-paper-3">Phone</dt>
               <dd className="title-1 mt-3 text-paper">
-                {email ? (
-                  <TextLink href={`mailto:${email}`}>{email}</TextLink>
-                ) : (
-                  <span className="text-paper-3">To be added</span>
-                )}
+                <TextLink href={phone.href}>{phone.display}</TextLink>
               </dd>
             </div>
-            <div>
-              <dt className="eyebrow text-paper-3">Social</dt>
-              <dd className="mt-3">
-                {socials.length > 0 ? (
+            {email && (
+              <div>
+                <dt className="eyebrow text-paper-3">Email</dt>
+                <dd className="title-1 mt-3 text-paper">
+                  <TextLink href={`mailto:${email}`}>{email}</TextLink>
+                </dd>
+              </div>
+            )}
+            {socials.length > 0 && (
+              <div>
+                <dt className="eyebrow text-paper-3">Connect</dt>
+                <dd className="mt-3">
                   <ul className="grid gap-2">
                     {socials.map((social) => (
                       <li key={social.href} className="title-1 text-paper">
@@ -47,11 +52,9 @@ export default function ContactSection() {
                       </li>
                     ))}
                   </ul>
-                ) : (
-                  <span className="title-1 text-paper-3">To be added</span>
-                )}
-              </dd>
-            </div>
+                </dd>
+              </div>
+            )}
           </dl>
         </Reveal>
       </Container>

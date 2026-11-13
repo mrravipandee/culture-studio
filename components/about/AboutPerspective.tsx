@@ -1,9 +1,12 @@
+import Link from "next/link";
 import Container from "@/components/home/shared/Container";
-import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import { aboutPerspective } from "@/lib/content/about";
+import { RevealGroup, RevealItem, TextMask } from "@/components/motion";
+import { Button } from "@/components/ui/site-button";
 
+/** What CULT.URE Does: the four disciplines, each linking to its section on /services. */
 export default function AboutPerspective() {
-  const { eyebrow, title, lead, pillars } = aboutPerspective;
+  const { eyebrow, title, pillars, cta } = aboutPerspective;
 
   return (
     <section className="py-24 sm:py-32 bg-white text-black border-b border-black/10">
@@ -15,53 +18,42 @@ export default function AboutPerspective() {
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
             <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
-            <Reveal as="p" delay={0.15} distance={16} className="lg:col-span-4 text-base font-light text-black/70 leading-relaxed">
-              {lead}
-            </Reveal>
           </div>
         </div>
 
-        {/* 4 Perspective Pillars */}
+        {/* Four disciplines */}
         <RevealGroup count={pillars.length} className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-14">
           {pillars.map((pillar) => (
             <RevealItem
               as="article"
               key={pillar.number}
-              className="group border border-black/10 bg-subtle p-8 sm:p-10 rounded-sm hover:border-black/30 transition-all flex flex-col justify-between"
+              className="group relative border border-black/10 bg-subtle p-8 sm:p-10 rounded-sm hover:border-black/30 transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between text-xs font-mono tracking-eyebrow text-ink-3 pb-6 border-b border-black/10">
-                  <span className="text-black font-semibold">PILLAR {pillar.number}</span>
-                  <span className="text-burgundy font-medium uppercase">
-                    CULT.URE THESIS
-                  </span>
+                  <span className="text-black font-semibold">DISCIPLINE {pillar.number}</span>
+                  <span aria-hidden="true" className="btn-arrow text-burgundy">↗</span>
                 </div>
-
                 <h3 className="mt-6 text-2xl sm:text-3xl font-light text-black tracking-tight">
-                  {pillar.title}
+                  {/* The whole card is the link (stretched over the article). */}
+                  <Link href={pillar.href} className="after:absolute after:inset-0 after:content-['']">
+                    {pillar.title}
+                  </Link>
                 </h3>
-                <p className="mt-2 text-xs font-mono uppercase tracking-eyebrow text-burgundy">
-                  {pillar.subtitle}
-                </p>
-
                 <p className="mt-6 text-sm sm:text-base font-light text-black/75 leading-relaxed">
                   {pillar.description}
-                </p>
-              </div>
-
-              <div className="mt-8 pt-6 border-t border-black/10 flex items-start gap-3">
-                <span className="font-mono text-xs uppercase tracking-wider text-ink-3 shrink-0">
-                  IMPACT:
-                </span>
-                <p className=" text-sm text-black/90">
-                  &ldquo;{pillar.takeaway}&rdquo;
                 </p>
               </div>
             </RevealItem>
           ))}
         </RevealGroup>
+
+        <div className="mt-12 flex justify-start md:justify-end">
+          <Button href={cta.href} variant="secondary" icon="arrow">
+            {cta.label}
+          </Button>
+        </div>
       </Container>
     </section>
   );
 }
-

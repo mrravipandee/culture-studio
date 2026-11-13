@@ -11,19 +11,21 @@ import Navbar from "@/components/navigation/Navbar";
 import JsonLd from "@/components/seo/JsonLd";
 import { breadcrumbSchema } from "@/lib/schema";
 import Container from "@/components/home/shared/Container";
-import {
-  featuredProject,
-  caseStudiesList,
-  type CaseStudy,
-} from "@/lib/content/case-studies";
+import { publishedCaseStudies } from "@/lib/content/case-studies";
 
-const allProjects: CaseStudy[] = [featuredProject, ...caseStudiesList];
+/** Only explicitly published case studies (lib/content/case-studies-publishing.ts). */
+const allProjects = publishedCaseStudies;
 
-// Unknown slugs never reach this page: proxy.ts answers them with a real 404.
+/**
+ * cacheComponents requires generateStaticParams to return at least one param, so while
+ * nothing is published a non-sample placeholder slug is returned instead of the sample
+ * slugs: it prerenders as a 404 and proxy.ts rewrites it to a 404 as well. Unpublished
+ * sample slugs are never prerendered and always return HTTP 404 via proxy.ts.
+ */
 export async function generateStaticParams() {
-  return allProjects.map((project) => ({
-    slug: project.slug,
-  }));
+  return allProjects.length > 0
+    ? allProjects.map((project) => ({ slug: project.slug }))
+    : [{ slug: "unpublished" }];
 }
 
 export async function generateMetadata({

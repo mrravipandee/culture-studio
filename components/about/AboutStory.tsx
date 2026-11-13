@@ -4,7 +4,7 @@ import Container from "@/components/home/shared/Container";
 import { aboutStory } from "@/lib/content/about";
 
 export default function AboutStory() {
-  const { eyebrow, title, lead, purpose, vision, editableNotice, milestones } =
+  const { eyebrow, title, lead, purpose, vision, editableNotice, milestones, inPractice, tagline } =
     aboutStory;
 
   return (
@@ -22,8 +22,15 @@ export default function AboutStory() {
         <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
           {/* Left Column: Narrative, Purpose, Vision */}
           <div className="lg:col-span-7 space-y-10">
-            <Reveal as="p" distance={16} className="text-xl sm:text-2xl font-light leading-relaxed text-black/85">
-              {lead}
+            <Reveal distance={16} className="grid gap-5">
+              {lead.map((paragraph, i) => (
+                <p
+                  key={i}
+                  className={`${i === 0 ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"} font-light leading-relaxed text-black/85`}
+                >
+                  {paragraph}
+                </p>
+              ))}
             </Reveal>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 border-t border-black/10 pt-8">
@@ -92,26 +99,28 @@ export default function AboutStory() {
             <ClipReveal className="rounded-sm">
             <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-subtle shadow-sm border border-black/5">
               <Image
-                src="/images/hero/portrait.jpg"
-                alt="Editorial portrait representing leadership craft"
+                src={inPractice.image.src}
+                alt={inPractice.image.alt}
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover grayscale contrast-105"
+                style={{ objectPosition: "70% 50%" }}
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
               <div className="absolute bottom-5 left-5 right-5 text-white">
-                <p className="font-mono text-xs uppercase tracking-eyebrow text-white/70">
-                  IN PRACTICE
+                <p className="font-mono text-xs uppercase tracking-eyebrow text-white/80">
+                  {inPractice.label}
                 </p>
-                <p className="text-sm font-light tracking-wide mt-1">
-                  &ldquo;A steady, recognisable voice outlasts any single algorithm.&rdquo;
-                </p>
+                <h3 className="text-lg sm:text-xl font-light tracking-tight mt-1">{inPractice.title}</h3>
               </div>
             </div>
             </ClipReveal>
 
+            <Reveal as="p" distance={16} className="text-base font-light leading-relaxed text-black/75">
+              {inPractice.body}
+            </Reveal>
             <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3 text-center">
-              CULT.URE &mdash; Beyond the noise. Into the culture.
+              CULT.URE &mdash; {tagline}
             </p>
           </div>
         </div>

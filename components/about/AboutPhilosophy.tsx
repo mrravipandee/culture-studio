@@ -21,8 +21,12 @@ export default function AboutPhilosophy() {
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
             <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
-            <Reveal as="p" delay={0.15} distance={16} className="lg:col-span-4 text-sm sm:text-base font-light text-white/70 leading-relaxed">
-              {intro}
+            <Reveal delay={0.15} distance={16} className="lg:col-span-4 grid gap-4">
+              {intro.map((paragraph, i) => (
+                <p key={i} className="text-sm sm:text-base font-light text-white/70 leading-relaxed">
+                  {paragraph}
+                </p>
+              ))}
             </Reveal>
           </div>
         </div>

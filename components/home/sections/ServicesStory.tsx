@@ -216,7 +216,7 @@ export default function ServicesStory({ services }: { services: StoryService[] }
                 <p className="body-3 mt-4 max-w-lg text-ink-2">{service.description}</p>
                 <ul className="mt-6 grid grid-cols-1 gap-x-6 gap-y-3 lg:mt-8">
                   {service.includes.map((item) => (
-                    <li key={item.href} className="flex items-center gap-3">
+                    <li key={item.label} className="flex items-center gap-3">
                       <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-burgundy" />
                       <Link href={item.href} className="link body-5 min-h-6 py-0.5 text-ink">
                         {item.label}

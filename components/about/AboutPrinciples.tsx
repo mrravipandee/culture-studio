@@ -1,9 +1,9 @@
 import Container from "@/components/home/shared/Container";
-import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
+import { RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import { aboutPrinciples } from "@/lib/content/about";
 
 export default function AboutPrinciples() {
-  const { eyebrow, title, lead, items } = aboutPrinciples;
+  const { eyebrow, title, items } = aboutPrinciples;
 
   return (
     <section className="py-24 sm:py-32 bg-white text-black border-b border-black/10">
@@ -15,9 +15,6 @@ export default function AboutPrinciples() {
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
             <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
-            <Reveal as="p" delay={0.15} distance={16} className="lg:col-span-4 text-base font-light text-black/70 leading-relaxed">
-              {lead}
-            </Reveal>
           </div>
         </div>
 
@@ -34,14 +31,11 @@ export default function AboutPrinciples() {
                 {principle.number}
               </div>
 
-              {/* Principle Title & Summary */}
+              {/* Principle Title */}
               <div className="md:col-span-5">
                 <h3 className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight text-black">
                   {principle.title}
                 </h3>
-                <p className="mt-3 text-sm sm:text-base text-burgundy">
-                  &ldquo;{principle.summary}&rdquo;
-                </p>
               </div>
 
               {/* Detail Narrative */}

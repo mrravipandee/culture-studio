@@ -2,12 +2,15 @@ import Image from "next/image";
 import { ServiceTags, SampleBadge } from "@/components/case-studies/ServiceTags";
 import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
-import { featuredProject } from "@/lib/content/case-studies";
+import { publishedFeatured } from "@/lib/content/case-studies";
 import { Button } from "@/components/ui/site-button";
 import { ClipReveal, Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
+/** Featured case study. Renders nothing unless the featured project is explicitly published. */
 export default function FeaturedProject() {
+  const featuredProject = publishedFeatured;
+  if (!featuredProject) return null;
   return (
     <section className="py-20 md:py-32 bg-white">
       <Container>

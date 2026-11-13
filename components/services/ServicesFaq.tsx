@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { servicesFaq } from "@/lib/content/services";
+import { servicesFaq, servicesFaqIntro } from "@/lib/content/services";
 import Container from "@/components/home/shared/Container";
 import { Plus } from "lucide-react";
 
@@ -18,19 +18,15 @@ export default function ServicesFaq() {
         {/* Section Header */}
         <div className="border-b border-black/10 pb-8">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-burgundy font-semibold">
-            [ 06 / FREQUENTLY ASKED QUESTIONS ]
+            {servicesFaqIntro.eyebrow}
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
             <h2 className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.08] text-ink">
-              Clarity on our practice,{" "}
+              {servicesFaqIntro.title}{" "}
               <span className="font-serif italic font-normal text-burgundy">
-                engagements and terms.
+                {servicesFaqIntro.titleAccent}
               </span>
             </h2>
-            <p className="lg:col-span-4 text-sm sm:text-base font-light text-ink-2 leading-relaxed">
-              Transparent answers regarding how we partner, who we work with,
-              and the operational standards governing our studio engagements.
-            </p>
           </div>
         </div>
 

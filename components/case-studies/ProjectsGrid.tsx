@@ -3,7 +3,7 @@ import { ServiceTags, SampleBadge } from "@/components/case-studies/ServiceTags"
 import { categoryOf } from "@/lib/content/service-catalog";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { caseStudiesList, type CaseStudy } from "@/lib/content/case-studies";
+import { publishedList, type CaseStudy } from "@/lib/content/case-studies";
 import { ClipReveal, Reveal, TextMask } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
@@ -82,7 +82,10 @@ function GridCard({ project, index }: { project: CaseStudy; index: number }) {
   );
 }
 
+/** Grid of further case studies. Renders nothing unless at least one is explicitly published. */
 export default function ProjectsGrid() {
+  const caseStudiesList = publishedList;
+  if (caseStudiesList.length === 0) return null;
   return (
     <section className="py-20 md:py-32 bg-subtle border-t border-b border-black/10">
       <Container>

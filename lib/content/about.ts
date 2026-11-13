@@ -1,313 +1,192 @@
 /**
- * CULT.URE — About Page Content Model.
+ * CULT.URE — About page content.
  *
- * All copy is centralized here to allow editorial updates without altering UI architecture.
- * Missing or pending founder/team narratives are clearly marked as editable placeholders.
+ * Source of truth: client copy deck "CULTURE_Complete_Website_Copy_B2B.pdf" (02 / About Us).
+ * Sections follow the PDF order: Hero, Our Approach, Our Philosophy, Why CULT.URE
+ * (Purpose, Vision, How It Connects, In Practice), What CULT.URE Does, Our Principles,
+ * Start a Conversation.
+ *
+ * No company history, founder or team details, statistics or testimonials: none are
+ * provided in the copy deck. Add confirmed details here only once supplied.
  */
 
-export interface AboutHeroData {
-  eyebrow: string;
-  headline: string;
-  lead: string;
-  metadata: Array<{ label: string; value: string }>;
-  disciplines: string[];
-}
+import { disciplineHref, disciplines } from "./disciplines";
 
-export interface PhilosophyStatement {
-  domain: string;
-  statement: string;
-  elaboration: string;
-}
-
-export interface AboutPhilosophyData {
-  eyebrow: string;
-  title: string;
-  intro: string;
-  statements: PhilosophyStatement[];
-}
-
-export interface AboutStoryData {
-  eyebrow: string;
-  title: string;
-  lead: string;
-  purpose: string;
-  vision: string;
-  editableNotice: string;
-  milestones: Array<{
-    phase: string;
-    label: string;
-    description: string;
-  }>;
-}
-
-export interface PerspectivePillar {
-  number: string;
-  title: string;
-  subtitle: string;
-  description: string;
-  takeaway: string;
-}
-
-export interface AboutPerspectiveData {
-  eyebrow: string;
-  title: string;
-  lead: string;
-  pillars: PerspectivePillar[];
-}
-
-export interface ApproachStep {
-  step: string;
-  name: string;
-  tagline: string;
-  description: string;
-  deliverables: string[];
-}
-
-export interface AboutApproachData {
-  eyebrow: string;
-  title: string;
-  lead: string;
-  steps: ApproachStep[];
-}
-
-export interface PrincipleItem {
-  number: string;
-  title: string;
-  summary: string;
-  detail: string;
-}
-
-export interface AboutPrinciplesData {
-  eyebrow: string;
-  title: string;
-  lead: string;
-  items: PrincipleItem[];
-}
-
-export interface AboutCtaData {
-  eyebrow: string;
-  headline: string;
-  lead: string;
-  primaryAction: {
-    label: string;
-    href: string;
-  };
-  secondaryAction: {
-    label: string;
-    href: string;
-  };
-}
-
-export const aboutHero: AboutHeroData = {
+export const aboutHero = {
   eyebrow: "ABOUT CULT.URE",
-  headline: "We believe brands should mean something.",
-  lead:
-    "CULT.URE is a digital growth, marketing and creative agency. We bring brand strategy, marketing, search and technology together, so brands are clear about what they stand for, visible where their audience looks, and built on systems that support growth.",
-  metadata: [
-    { label: "PRACTICE", value: "Digital growth, marketing & creative" },
-    { label: "DISCIPLINES", value: "Brand · Growth · Search · Technology" },
-    { label: "SERVICES", value: "Nine, delivered individually or together" },
-    { label: "TAGLINE", value: "BEYOND THE NOISE. INTO THE CULTURE." },
+  strapline: "B2B MARKETING AGENCY",
+  motto: "CONTENT × CULTURE × COGNITION",
+  /** Rendered as two lines; the second is set in burgundy. */
+  headline: ["Good businesses have a story.", "The market needs to understand it."],
+  lead: [
+    "CULT.URE is a B2B-focused marketing agency working with businesses to shape how they are positioned, perceived and remembered.",
+    "The practice brings together brand strategy, communications, content, digital marketing and technology. The focus is on making business expertise easier to recognise, giving brands a more distinctive voice and connecting marketing activity to meaningful commercial objectives.",
   ],
-  disciplines: [
-    "Brand & Presence",
-    "Digital Marketing & Growth",
-    "Search & Customer Engagement",
-    "Technology & Experience",
+  /** The four service disciplines (exact names). */
+  disciplines: disciplines.map((d) => d.name),
+  image: {
+    src: "/images/hero/detail.jpg",
+    alt: "Gallery wall of framed prints on white shelves",
+  },
+};
+
+export const aboutApproach = {
+  eyebrow: "OUR APPROACH",
+  title: "Marketing requires more than good execution.",
+  lead: [
+    "A campaign can attract attention. A well-designed website can make a strong first impression. A consistent content programme can build familiarity. But none of these works as well as it should when the thinking behind it is unclear.",
+    "CULT.URE approaches marketing as a connected business function: understanding the market, defining the message, choosing the right channels and executing with purpose.",
+  ],
+  cards: [
+    { label: "Practice", text: "Brand strategy, communications, marketing and technology." },
+    {
+      label: "Focus",
+      text: "B2B businesses and service-led organisations, with additional work across e-commerce and executive positioning.",
+    },
+    { label: "Engagement", text: "Individual projects or connected, ongoing support." },
+    { label: "Principle", text: "Beyond the noise. Into the culture." },
   ],
 };
 
-export const aboutPhilosophy: AboutPhilosophyData = {
+export const aboutPhilosophy = {
   eyebrow: "OUR PHILOSOPHY",
-  title: "Attention is easy to buy. Recognition has to be built.",
-  intro:
-    "Any brand can be loud for a moment. The ones people remember are clear about who they are, consistent in how they show up, and supported by systems that keep the work moving.",
+  title: "Recognition is not a media plan. It is the result of everything a brand does.",
+  intro: [
+    "A business is understood through more than its advertising. Its reputation, language, visual identity, expertise, customer experience and public presence all influence the way it is perceived.",
+    "That is why marketing cannot be reduced to a publishing schedule or a collection of campaigns. It needs a point of view and a consistent standard of execution.",
+  ],
   statements: [
     {
-      domain: "BRAND BUILDING",
-      statement: "A brand is what people repeat, not what it says.",
+      domain: "BRAND STRATEGY",
+      statement: "A position worth recognising.",
       elaboration:
-        "We start with positioning and voice, so every campaign, page and post adds to the same idea instead of starting from zero.",
+        "A clear position gives a business a reason to be considered. It defines what the business stands for, the audiences it serves and the distinction it brings to the market.",
     },
     {
-      domain: "MARKETING & GROWTH",
-      statement: "Growth comes from the right message in the right channel.",
+      domain: "COMMUNICATION",
+      statement: "A message worth understanding.",
       elaboration:
-        "Social, paid, search, email and commerce each play a different role. We plan them together and measure them against clear goals.",
+        "Expertise has little commercial value if it cannot be communicated clearly. The language, content and creative expression of a business should make its value easier to understand.",
     },
     {
-      domain: "CREATIVE COMMUNICATION",
-      statement: "Craft is how a brand earns attention it did not pay for.",
+      domain: "MARKETING",
+      statement: "A presence built with purpose.",
       elaboration:
-        "Considered writing, design and visual direction make communication worth noticing and easier to trust.",
+        "The right channels bring a business into relevant conversations. Strategy determines where to show up, what to say and how to turn attention into meaningful engagement.",
     },
     {
       domain: "TECHNOLOGY",
-      statement: "Automate the process. Never the perspective.",
+      statement: "Systems that support the work.",
       elaboration:
-        "Websites, automation and AI tools should remove friction and repetitive work, so people can spend their time on strategy and creativity.",
+        "Digital platforms, automation and AI can make marketing more efficient and business processes more connected. Their value lies in how well they solve a real problem.",
     },
   ],
 };
 
-export const aboutStory: AboutStoryData = {
+export const aboutStory = {
   eyebrow: "WHY CULT.URE",
-  title: "One agency for the brand, the growth and the systems behind them.",
-  lead:
-    "Brand, marketing and technology are often handled by separate teams that rarely talk to each other. CULT.URE brings them into one plan, so positioning, campaigns, search, websites and automation support the same goals.",
+  title: "The brand, the communication and the business objective belong in the same conversation.",
+  lead: [
+    "Marketing often becomes fragmented. Brand decisions are made separately from campaign decisions. Content is produced without a wider communication strategy. Technology is introduced without a clear operational purpose.",
+    "CULT.URE takes a connected view. The objective is not to add more activity to an already crowded marketing environment. It is to make the existing effort more coherent, more considered and more useful to the business.",
+  ],
   purpose:
-    "To help brands and the people behind them become clear, visible and easy to choose, through strategy, creative and technology that work together.",
+    "To help B2B businesses communicate their value with greater clarity, build stronger market recognition and make more of their marketing efforts.",
   vision:
-    "Brands that stand for something, show up consistently, and grow without adding noise.",
+    "A business landscape where good work is recognised, expertise is communicated with substance and brands build relevance beyond short-lived attention.",
   /** Optional note shown in the story section. Add confirmed company history, founder or team details here. */
   editableNotice: "",
+  /** "How It Connects". */
   milestones: [
     {
       phase: "Strategy",
-      label: "Clarity first",
+      label: "Establish the position.",
       description:
-        "Positioning, audience and objectives are defined before any channel or tool is chosen.",
+        "Understand the business, its market and the audiences it needs to reach. Define the direction before choosing the activity.",
     },
     {
       phase: "Creative",
-      label: "Communication with craft",
+      label: "Give the position a voice.",
       description:
-        "Content, design, campaigns and PR express that position consistently across every touchpoint.",
+        "Develop the language, content and visual communication that make the business recognisable across its touchpoints.",
+    },
+    {
+      phase: "Growth",
+      label: "Put the work into the market.",
+      description:
+        "Use relevant digital channels, campaigns and customer journeys to build discoverability, engagement and commercial opportunity.",
     },
     {
       phase: "Technology",
-      label: "Systems that scale",
+      label: "Strengthen the infrastructure.",
       description:
-        "Websites, search, lifecycle communication and automation turn attention into lasting growth.",
+        "Develop the digital experiences and workflows that support better communication, more efficient execution and informed decisions.",
     },
   ],
+  /** "In Practice" (PDF), shown with the image. Person-free existing asset. */
+  inPractice: {
+    label: "IN PRACTICE",
+    title: "A clear point of view. A consistent standard of work.",
+    body: "The details matter: the argument behind a headline, the hierarchy of a page, the relevance of a campaign and the experience after someone responds. CULT.URE approaches each with the same consideration.",
+    image: {
+      src: "/images/work/project-04.jpg",
+      alt: "Bright workspace with a laptop beside floor-to-ceiling windows",
+    },
+  },
+  tagline: "Beyond the noise. Into the culture.",
 };
 
-export const aboutPerspective: AboutPerspectiveData = {
-  eyebrow: "WHAT WE DO",
-  title: "Four disciplines, connected by one approach.",
-  lead:
-    "Our nine services are organised into four disciplines. Each one solves a different part of the same problem: helping a brand be understood, found and chosen.",
+export const aboutPerspective = {
+  eyebrow: "WHAT CULT.URE DOES",
+  title: "Four disciplines. One connected practice.",
   pillars: [
+    { id: "brand-strategy-communications", description: "Defining how a business is positioned, presented and understood." },
+    { id: "content-creative", description: "Developing the written and visual communication that gives a business its voice." },
     {
-      number: "01",
-      title: "Brand & Presence",
-      subtitle: "Personal Branding & LinkedIn Marketing · PR & Event Marketing",
-      description:
-        "Shaping how a brand and the people behind it are seen: in feeds, in the press and in person.",
-      takeaway: "Recognition starts with a clear position.",
+      id: "digital-marketing-growth",
+      description: "Connecting businesses with relevant audiences through digital channels and measurable marketing activity.",
     },
-    {
-      number: "02",
-      title: "Digital Marketing & Growth",
-      subtitle: "Social Media Marketing · Performance & Growth Marketing · E-commerce Marketing & Growth",
-      description:
-        "Content, paid media and commerce connected to clear objectives and measured honestly.",
-      takeaway: "Attention only matters when it moves people to act.",
-    },
-    {
-      number: "03",
-      title: "Search & Customer Engagement",
-      subtitle: "SEO, GEO & AEO · Email & Lifecycle Marketing",
-      description:
-        "Being found in search and AI answers, then staying relevant through owned communication.",
-      takeaway: "Discovery and loyalty are one relationship.",
-    },
-    {
-      number: "04",
-      title: "Technology & Experience",
-      subtitle: "Website Design & Development · AI & Business Automation",
-      description:
-        "The websites and automated systems that every other discipline depends on.",
-      takeaway: "Strong marketing needs strong foundations.",
-    },
-  ],
+    { id: "technology-automation", description: "Building digital platforms and workflows that support the wider business and its marketing." },
+  ].map((p, i) => ({
+    number: String(i + 1).padStart(2, "0"),
+    title: disciplines.find((d) => d.id === p.id)!.name,
+    description: p.description,
+    href: disciplineHref(p.id),
+  })),
+  cta: { label: "Explore services", href: "/services" },
 };
 
-export const aboutApproach: AboutApproachData = {
-  eyebrow: "OUR APPROACH",
-  title: "How the disciplines come together.",
-  lead:
-    "Whether a project uses one service or several, it follows the same sequence.",
-  steps: [
-    {
-      step: "01",
-      name: "Understand",
-      tagline: "Where the brand stands today",
-      description:
-        "We learn about the business, audience, channels and competitors, and agree what success should look like.",
-      deliverables: ["Discovery conversation", "Channel review", "Agreed objectives"],
-    },
-    {
-      step: "02",
-      name: "Strategize",
-      tagline: "What to do, and in what order",
-      description:
-        "We recommend the services, priorities and measures that fit the objectives, and nothing that does not.",
-      deliverables: ["Recommended scope", "Channel priorities", "Measurement plan"],
-    },
-    {
-      step: "03",
-      name: "Create",
-      tagline: "Design, build and launch",
-      description:
-        "Creative, campaigns, content and technology are produced together so each part supports the others.",
-      deliverables: ["Creative and content", "Campaigns and websites", "Automations"],
-    },
-    {
-      step: "04",
-      name: "Evolve",
-      tagline: "Measure and improve",
-      description:
-        "We report clearly, learn from the results and refine the plan over time.",
-      deliverables: ["Reporting", "Optimisation", "Next steps"],
-    },
-  ],
-};
-
-export const aboutPrinciples: AboutPrinciplesData = {
+export const aboutPrinciples = {
   eyebrow: "OUR PRINCIPLES",
-  title: "The standards behind every engagement.",
-  lead: "Four convictions guide how we plan, create and judge our work.",
+  title: "The standards behind the work.",
   items: [
     {
       number: "I",
-      title: "Clarity over noise.",
-      summary: "Clear thinking travels further than volume.",
-      detail: "We remove jargon and filler and say what is true in as few words as possible.",
+      title: "Clarity over complexity.",
+      detail: "Good communication makes the important things easier to understand. It does not hide the message behind jargon.",
     },
     {
       number: "II",
-      title: "Meaning over attention.",
-      summary: "Short-term clicks are not the goal; lasting recognition is.",
-      detail: "We judge work by whether it builds trust and moves the business forward, not by vanity metrics.",
+      title: "Substance over spectacle.",
+      detail: "A strong idea should have more to offer than a moment of attention. Relevance, credibility and quality matter.",
     },
     {
       number: "III",
-      title: "Strategy before execution.",
-      summary: "Publishing without a plan is expensive noise.",
-      detail: "Every channel, campaign and tool is chosen for a reason that traces back to the objectives.",
+      title: "Intent before activity.",
+      detail: "Every campaign, channel and deliverable should have a reason to exist and a role to play.",
     },
     {
       number: "IV",
-      title: "Creativity with purpose.",
-      summary: "Craft that serves the message.",
-      detail: "Design, writing and technology are held to a high standard because they shape how a brand is perceived.",
+      title: "Craft in every detail.",
+      detail: "The standard of the work is visible in the details: the thinking, the writing, the design and the execution.",
     },
   ],
 };
 
-export const aboutCta: AboutCtaData = {
-  eyebrow: "START AN INQUIRY",
-  headline: "Tell us what you want to build.",
-  lead:
-    "Share where your brand is today and which services interest you. If you are not sure yet, we will help you decide where to start.",
-  primaryAction: {
-    label: "Start an inquiry",
-    href: "/#contact",
-  },
-  secondaryAction: {
-    label: "Explore our services",
-    href: "/services",
-  },
+export const aboutCta = {
+  eyebrow: "START A CONVERSATION",
+  headline: "Have something worth putting into the world?",
+  lead: "Whether the priority is a stronger market position, a more effective marketing function or a new business initiative, start with the objective.",
+  primaryAction: { label: "Get in touch", href: "/contact" },
+  secondaryAction: { label: "Explore services", href: "/services" },
 };

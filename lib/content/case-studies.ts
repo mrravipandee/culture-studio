@@ -1,4 +1,12 @@
 import type { ServiceId } from "./service-catalog";
+import { isCaseStudyPublished, publishedCaseStudySlugs } from "./case-studies-publishing";
+
+/*
+ * SERVER-ONLY DATA. Every entry below is an unverified SAMPLE kept for layout and
+ * future use. Nothing here is public unless its slug is listed in
+ * lib/content/case-studies-publishing.ts (explicit client approval).
+ * Do not import this file from client components.
+ */
 
 export interface CaseStudy {
   id: string;
@@ -178,6 +186,24 @@ export const caseStudiesCta = {
   description:
     "Tell us where your brand is today and which services interest you. If you are not sure yet, we will help you decide where to start.",
   ctaText: "Start an inquiry",
-  ctaHref: "/#contact",
+  ctaHref: "/contact",
 };
 
+
+/* ---------------------------------------------------------------
+   Publishing (see lib/content/case-studies-publishing.ts)
+---------------------------------------------------------------- */
+
+export const allCaseStudies: CaseStudy[] = [featuredProject, ...caseStudiesList];
+
+// Guard: an approved slug must exist and must not be a sample entry.
+for (const slug of publishedCaseStudySlugs) {
+  const project = allCaseStudies.find((p) => p.slug === slug);
+  if (!project) throw new Error(`Published case study "${slug}" does not exist in lib/content/case-studies.ts.`);
+  if (project.placeholder) throw new Error(`Published case study "${slug}" is still marked as a sample (placeholder: true).`);
+}
+
+/** Only explicitly approved projects. Empty while no case study is published. */
+export const publishedCaseStudies: CaseStudy[] = allCaseStudies.filter((p) => isCaseStudyPublished(p.slug));
+export const publishedFeatured: CaseStudy | null = isCaseStudyPublished(featuredProject.slug) ? featuredProject : null;
+export const publishedList: CaseStudy[] = caseStudiesList.filter((p) => isCaseStudyPublished(p.slug));

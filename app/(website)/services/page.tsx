@@ -7,7 +7,7 @@ import ServiceChapter from "@/components/services/ServiceChapter";
 import ServicesProcess from "@/components/services/ServicesProcess";
 import ServicesFaq from "@/components/services/ServicesFaq";
 import ServicesCta from "@/components/services/ServicesCta";
-import { serviceCategories } from "@/lib/content/service-catalog";
+import { disciplines } from "@/lib/content/disciplines";
 import JsonLd from "@/components/seo/JsonLd";
 import { breadcrumbSchema, servicesSchema } from "@/lib/schema";
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = pageMetadata({
   title: "Services",
   path: "/services",
   description:
-    "Nine services in four disciplines: brand and presence, digital marketing and growth, search and customer engagement, and technology and experience. See what each includes.",
+    "CULT.URE works primarily with B2B businesses across brand strategy, content, digital marketing and technology. Four disciplines and 26 services, commissioned individually or together.",
 });
 
 export default function ServicesPage() {
@@ -27,8 +27,8 @@ export default function ServicesPage() {
       <main className="relative z-0">
         <ServicesHero />
         <ServiceIndex />
-        {serviceCategories.map((category, i) => (
-          <ServiceChapter key={category.id} category={category} index={i} />
+        {disciplines.map((discipline, i) => (
+          <ServiceChapter key={discipline.id} discipline={discipline} index={i} />
         ))}
         <ServicesProcess />
         <ServicesFaq />

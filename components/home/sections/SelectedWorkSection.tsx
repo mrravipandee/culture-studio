@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight } from "@/components/ui/Arrow";
 import { Button } from "@/components/ui/site-button";
-import { selectedWork, type Project } from "@/lib/content/home";
+import { selectedWork, type Project } from "@/lib/content/selected-work";
+import { isCaseStudyPublished } from "@/lib/content/case-studies-publishing";
 import { categoryOf, services } from "@/lib/content/service-catalog";
 import Container from "../shared/Container";
 import ImageFrame from "../shared/ImageFrame";
@@ -156,7 +157,12 @@ function ProjectCard({
 
 /** 03 — Selected work: proof, placed right after what we do. */
 export default function SelectedWorkSection() {
-  const { projects } = selectedWork;
+  // Client rule: only verified client projects appear here. A project is shown only if
+  // its case study is explicitly published (lib/content/case-studies-publishing.ts).
+  const projects = selectedWork.projects.filter(
+    (project) => !project.placeholder && project.href !== null && isCaseStudyPublished(project.href.split("/").pop() ?? ""),
+  );
+  const hasProjects = projects.length > 0;
 
   return (
     <section
@@ -190,6 +196,8 @@ export default function SelectedWorkSection() {
         {/* Section Heading */}
         <SectionHeading intro={selectedWork.intro} titleId="work-title" />
 
+        {hasProjects ? (
+          <>
         {/* Archival Practice Metadata Strip */}
         <div className="mt-10 flex flex-wrap items-center justify-between gap-4 border-y border-black/10 py-3.5 text-xs text-black/55">
           <div className="flex items-center gap-6">
@@ -242,6 +250,14 @@ export default function SelectedWorkSection() {
             {selectedWork.cta.label}
           </Button>
         </div>
+          </>
+        ) : (
+          <div className="mt-12 flex justify-start md:justify-end">
+            <Button href={selectedWork.cta.href} variant="secondary" icon="arrow">
+              {selectedWork.cta.label}
+            </Button>
+          </div>
+        )}
       </Container>
     </section>
   );

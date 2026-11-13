@@ -1,4 +1,4 @@
-import { serviceProcess } from "@/lib/content/services";
+import { serviceProcess, servicesProcessIntro } from "@/lib/content/services";
 import Container from "@/components/home/shared/Container";
 import { Reveal } from "@/components/motion";
 import { ProcessStepGlyph, GridCrosshairMarker } from "@/components/home/shared/WorkVectors";
@@ -13,16 +13,15 @@ export default function ServicesProcess() {
         {/* Header */}
         <div className="border-b border-black/10 pb-8">
           <p className="font-mono text-xs uppercase tracking-[0.25em] text-burgundy font-semibold">
-            [ 05 / OUR PROCESS ]
+            {servicesProcessIntro.eyebrow}
           </p>
           <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
             <h2 className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.08] text-ink">
-              How every engagement{" "}
-              <span className="text-burgundy">runs.</span>
+              {servicesProcessIntro.title}{" "}
+              <span className="text-burgundy">{servicesProcessIntro.titleAccent}</span>
             </h2>
             <p className="lg:col-span-4 text-sm sm:text-base font-light text-ink-2 leading-relaxed">
-              Four stages, from the first conversation to ongoing improvement.
-              Scope and timing are agreed for each project.
+              {servicesProcessIntro.description}
             </p>
           </div>
         </div>
@@ -53,9 +52,6 @@ export default function ServicesProcess() {
                     <div className="flex items-center gap-2.5">
                       <span className="grid size-7 place-items-center rounded-full bg-black text-white font-mono text-xs font-bold transition-colors group-hover:bg-burgundy">
                         {stage.number}
-                      </span>
-                      <span className="font-mono text-xs uppercase tracking-wider text-ink-3">
-                        {stage.timeline}
                       </span>
                     </div>
 
@@ -102,8 +98,7 @@ export default function ServicesProcess() {
 
         {/* Footnote */}
         <div className="mt-12 flex items-center justify-between border-t border-black/10 pt-4 text-xs font-mono text-ink-3">
-          <span>FOUR-PHASE ENGAGEMENT LIFECYCLE</span>
-          <span>DISCIPLINE &middot; DISCOVERY &middot; DOMINANCE</span>
+          <span>{serviceProcess.map((stage) => stage.name.toUpperCase()).join(" · ")}</span>
         </div>
       </Container>
     </section>

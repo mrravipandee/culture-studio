@@ -12,7 +12,7 @@ export default function WhyCultureSection() {
 
         <div className="mt-16 grid gap-12 lg:mt-24 lg:grid-cols-12 lg:gap-8">
           <RevealGroup as="div" count={whyCulture.pillars.length} className="lg:col-span-8">
-            <dl className="grid gap-10 sm:grid-cols-3 sm:gap-8">
+            <dl className="grid gap-10 sm:grid-cols-2 sm:gap-x-8 sm:gap-y-12">
               {whyCulture.pillars.map((pillar) => (
                 <RevealItem key={pillar.title}>
                   <span aria-hidden="true" className="block h-0.5 w-8 bg-burgundy" />

@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase,
   title: {
-    default: `${siteName} | Digital Growth, Marketing & Creative Agency`,
+    default: `${siteName} | B2B Marketing Agency`,
     template: `${siteName} | %s`,
   },
   description: defaultDescription,
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName,
-    title: `${siteName} | Digital Growth, Marketing & Creative Agency`,
+    title: `${siteName} | B2B Marketing Agency`,
     description: defaultDescription,
   },
   // og:image is supplied by app/opengraph-image.jpg; X/Twitter reuses the same file.
   twitter: {
     card: "summary_large_image",
-    title: `${siteName} | Digital Growth, Marketing & Creative Agency`,
+    title: `${siteName} | B2B Marketing Agency`,
     description: defaultDescription,
     images: [ogImage],
   },
