@@ -1083,6 +1083,58 @@ html[data-motion-armed] .cr:not([data-in]) > .cr-inner {
 }
 
 /* ========================================
+   CASE STUDY VISUAL  (components/case-studies/ProjectVisual.tsx)
+   Typographic stand-in until approved project imagery is supplied.
+======================================== */
+
+.cs-visual {
+    position: absolute;
+    inset: 0;
+    container-type: inline-size;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: clamp(1rem, 5cqi, 2rem);
+    transition: transform var(--duration-image) var(--ease);
+}
+.group:hover .cs-visual { transform: scale(1.03); }
+
+.cs-visual--ink      { background: var(--black); color: var(--white); }
+.cs-visual--burgundy { background: var(--burgundy); color: var(--white); }
+.cs-visual--ivory    { background: var(--subtle); color: var(--black); }
+
+.cs-visual__lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.14;
+    pointer-events: none;
+}
+
+.cs-visual__meta {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 0.75rem;
+    line-height: 1rem;
+    letter-spacing: var(--track-eyebrow, 0.2em);
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.cs-visual__number {
+    position: relative;
+    align-self: flex-end;
+    font-size: clamp(4rem, 34cqi, 12rem);
+    font-weight: 300;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+}
+
+/* ========================================
    SCROLL CUE  (components/motion/ScrollCue.tsx)
    One indicator site-wide: the line draws once, then rests. No loops.
 ======================================== */
@@ -1123,4 +1175,21 @@ html.lenis {
 .marquee-mask {
     -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
     mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* Case Studies hero image: angled left edge (editorial cut), straight on small screens. */
+.cs-hero-cut {
+    clip-path: inset(0 round 0.75rem);
+}
+@media (width >= 64rem) {
+    .cs-hero-cut { clip-path: polygon(22% 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+/* Case Studies CTA: satin sheen on deep burgundy (decorative). */
+.cs-cta-sheen {
+    background:
+        linear-gradient(118deg, transparent 38%, rgb(122 24 38 / 0.55) 52%, rgb(60 12 20 / 0.2) 60%, transparent 70%),
+        linear-gradient(128deg, transparent 58%, rgb(150 34 50 / 0.45) 70%, transparent 82%),
+        radial-gradient(120% 140% at 85% 20%, rgb(110 22 34 / 0.55), transparent 60%),
+        linear-gradient(90deg, rgb(36 12 14 / 0.85), rgb(36 12 14 / 0.2));
 }

@@ -1,4 +1,5 @@
-import { behindTheWork } from "@/lib/content/case-studies";
+// Not rendered: no approved copy for this section (legacy content, archived).
+import { behindTheWork } from "@/lib/content/archive/legacy-case-studies";
 import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 
