@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { caseStudiesHero, caseStudyHighlights } from "@/lib/content/case-studies";
 import Container from "@/components/home/shared/Container";
 import { ClipReveal, Reveal, RevealGroup, RevealItem } from "@/components/motion";
-import { editorialSerif } from "./fonts";
+import { editorialSerif } from "@/lib/fonts";
 
 /** Deep burgundy-black used for the editorial headline and figures. */
 const HEADLINE = "text-[#240c0e]";

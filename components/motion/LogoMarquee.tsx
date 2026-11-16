@@ -17,6 +17,8 @@ export type MarqueeLogo = {
   name: string;
   /** SVG/PNG under /public. While null, a styled wordmark placeholder renders. */
   src: string | null;
+  /** Tile background: the logo's own background colour, so it is shown as supplied. */
+  bg?: string;
 };
 
 interface LogoMarqueeProps {
@@ -25,6 +27,8 @@ interface LogoMarqueeProps {
   speed?: number;
   label?: string;
   className?: string;
+  /** 1 = single row (few logos); 2 = two rows drifting in opposite directions. */
+  rows?: 1 | 2;
 }
 
 const COPIES = 4;
@@ -58,6 +62,22 @@ const WORDMARK = [
 ];
 
 function Logo({ logo, i, hidden }: { logo: MarqueeLogo; i: number; hidden: boolean }) {
+  // Real logo: shown in full colour inside a uniform tile, contained (never stretched or cropped).
+  if (logo.src) {
+    return (
+      <li aria-hidden={hidden} className="shrink-0">
+        <div
+          className="grid h-24 w-44 place-items-center overflow-hidden rounded-lg border border-black/8 p-2.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 sm:h-28 sm:w-56 sm:p-3"
+          style={{ backgroundColor: logo.bg ?? "#ffffff" }}
+        >
+          <div className="relative h-full w-full">
+            <Image src={logo.src} alt={hidden ? "" : logo.name} fill sizes="224px" className="object-contain" />
+          </div>
+        </div>
+      </li>
+    );
+  }
+
   return (
     <li
       aria-hidden={hidden}
@@ -96,6 +116,7 @@ function Row({ logos, reverse, speed, offset = 0 }: { logos: MarqueeLogo[]; reve
   });
 
   const items = Array.from({ length: COPIES }, () => logos).flat();
+  const tiles = logos.some((logo) => logo.src);
 
   return (
     <div
@@ -103,7 +124,7 @@ function Row({ logos, reverse, speed, offset = 0 }: { logos: MarqueeLogo[]; reve
       onMouseEnter={() => (paused.current = true)}
       onMouseLeave={() => (paused.current = false)}
     >
-      <motion.ul style={{ x }} className="flex w-max shrink-0 items-center gap-16 pr-16 will-change-transform sm:gap-24 sm:pr-24">
+      <motion.ul style={{ x }} className={`flex w-max shrink-0 items-center will-change-transform ${tiles ? "gap-5 pr-5 sm:gap-6 sm:pr-6" : "gap-16 pr-16 sm:gap-24 sm:pr-24"}`}>
         {items.map((logo, i) => (
           <Logo key={i} logo={logo} i={(i + offset) % logos.length} hidden={i >= logos.length} />
         ))}
@@ -113,7 +134,7 @@ function Row({ logos, reverse, speed, offset = 0 }: { logos: MarqueeLogo[]; reve
 }
 
 /** Full bleed, two row logo band. Rows drift in opposite directions and react to scroll speed. */
-export default function LogoMarquee({ logos, speed = 18, label, className = "" }: LogoMarqueeProps) {
+export default function LogoMarquee({ logos, speed = 18, label, className = "", rows = 2 }: LogoMarqueeProps) {
   const rowB = [...logos].reverse();
 
   return (
@@ -134,7 +155,7 @@ export default function LogoMarquee({ logos, speed = 18, label, className = "" }
       )}
       <div className="grid gap-8 sm:gap-12">
         <Row logos={logos} speed={speed} />
-        <Row logos={rowB} speed={speed * 1.2} reverse offset={2} />
+        {rows === 2 && <Row logos={rowB} speed={speed * 1.2} reverse offset={2} />}
       </div>
     </motion.section>
   );

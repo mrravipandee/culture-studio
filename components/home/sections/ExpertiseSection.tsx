@@ -27,9 +27,9 @@ export default function ExpertiseSection() {
       <Container>
         <SectionHeading intro={expertise.intro} titleId="expertise-title" />
 
-        {/* Client logos appear only once real, approved logos replace the placeholders. */}
+        {/* Client logos (lib/content/home.ts → trustedBy). */}
         {!trustedBy.placeholder && (
-          <LogoMarquee label={trustedBy.label} logos={trustedBy.logos} speed={18} className="mt-16 lg:mt-24" />
+          <LogoMarquee label={trustedBy.label} logos={trustedBy.logos} speed={34} rows={1} className="mt-16 lg:mt-24" />
         )}
       </Container>
 

@@ -73,19 +73,21 @@ export const manifesto = {
 ---------------------------------------------------------------- */
 
 /**
- * Logo marquee. PLACEHOLDER names: replace with real, approved client logos
- * (set `src` to an SVG in /public/images/clients/) before launch.
+ * Client logo strip (Home → Services section). Logos supplied by CULT.URE (Nov 2026),
+ * cropped from the supplied files without recolouring; each tile keeps the logo's own
+ * background colour. Files: /public/images/clients/. Not linked to individual case studies.
  */
 export const trustedBy = {
-  label: "Trusted by founders and leaders at",
-  placeholder: true,
+  label: "Brands we\u2019ve worked with",
+  placeholder: false,
   logos: [
-    { name: "Client One", src: null },
-    { name: "Client Two", src: null },
-    { name: "Client Three", src: null },
-    { name: "Client Four", src: null },
-    { name: "Client Five", src: null },
-    { name: "Client Six", src: null },
+    { name: "THE DCO Hospitality Advisory", src: "/images/clients/the-dco-logo.png", bg: "#000000" },
+    { name: "XLAR Media Service", src: "/images/clients/xlar-media-logo.png", bg: "#ffffff" },
+    { name: "Pehnavah", src: "/images/clients/pehnavah-logo.png", bg: "#f5d2d9" },
+    { name: "Soham Orthopaedic & General Health Clinic", src: "/images/clients/soham-orthopaedic-logo.png", bg: "#10184e" },
+    { name: "Janani Maternity & Infertility Clinic", src: "/images/clients/janani-clinic-logo.png", bg: "#ffffff" },
+    { name: "Mystic Bloom Healing Center", src: "/images/clients/mystic-bloom-logo.png", bg: "#f5eeea" },
+    { name: "Celife Health Solutions", src: "/images/clients/celife-logo.png", bg: "#f6f5f0" },
   ],
 };
 

@@ -4,7 +4,7 @@ import { ArrowUpRight } from "lucide-react";
 import { caseStudiesCta, caseStudiesHero } from "@/lib/content/case-studies";
 import { Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
-import { editorialSerif } from "./fonts";
+import { editorialSerif } from "@/lib/fonts";
 
 /** Closing burgundy CTA (listing and detail pages). Links to /contact. */
 export default function CaseStudiesCta() {

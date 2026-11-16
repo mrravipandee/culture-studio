@@ -11,6 +11,7 @@ export const primaryNav: NavLink[] = [
   { label: "Case studies", href: "/case-studies" },
   { label: "About", href: "/about" },
   { label: "Services", href: "/services" },
+  { label: "Blog", href: "/blog" },
 ].filter(visible);
 
 /** Footer "Explore" list: labels and order from the client copy deck (05 / Footer). */
@@ -19,6 +20,7 @@ export const footerNav: NavLink[] = [
   { label: "About Us", href: "/about" },
   { label: "Services", href: "/services" },
   { label: "Case Studies", href: "/case-studies" },
+  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/contact" },
 ].filter(visible);
 
