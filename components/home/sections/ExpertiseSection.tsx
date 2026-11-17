@@ -29,7 +29,7 @@ export default function ExpertiseSection() {
 
         {/* Client logos (lib/content/home.ts → trustedBy). */}
         {!trustedBy.placeholder && (
-          <LogoMarquee label={trustedBy.label} logos={trustedBy.logos} speed={34} rows={1} className="mt-16 lg:mt-24" />
+          <LogoMarquee label={trustedBy.label} logos={trustedBy.logos} speed={70} className="mt-16 lg:mt-24" />
         )}
       </Container>
 

@@ -74,7 +74,8 @@ export const manifesto = {
 
 /**
  * Client logo strip (Home → Services section). Logos supplied by CULT.URE (Nov 2026),
- * cropped from the supplied files without recolouring; each tile keeps the logo's own
+ * cropped from the supplied files without recolouring (the second batch was cut out of one
+ * low-resolution grid screenshot and upscaled, so replace with original files when available); each tile keeps the logo's own
  * background colour. Files: /public/images/clients/. Not linked to individual case studies.
  */
 export const trustedBy = {
@@ -88,6 +89,25 @@ export const trustedBy = {
     { name: "Janani Maternity & Infertility Clinic", src: "/images/clients/janani-clinic-logo.png", bg: "#ffffff" },
     { name: "Mystic Bloom Healing Center", src: "/images/clients/mystic-bloom-logo.png", bg: "#f5eeea" },
     { name: "Celife Health Solutions", src: "/images/clients/celife-logo.png", bg: "#f6f5f0" },
+    { name: "Icon Media", src: "/images/clients/icon-media-logo.png", bg: "#ffffff" },
+    { name: "Asian Paints", src: "/images/clients/asian-paints-logo.png", bg: "#ffffff" },
+    { name: "Invesics", src: "/images/clients/invesics-logo.png", bg: "#100f1f" },
+    { name: "Supreemo Dry Cleaners", src: "/images/clients/supreemo-drycleaners-logo.png", bg: "#a3d445" },
+    { name: "RoboProfit 2.0", src: "/images/clients/roboprofit-logo.png", bg: "#ffffff" },
+    { name: "Kraish Group", src: "/images/clients/kraish-group-logo.png", bg: "#ffffff" },
+    { name: "HGIH", src: "/images/clients/hgih-logo.png", bg: "#ffffff" },
+    { name: "Greepie", src: "/images/clients/greepie-logo.png", bg: "#000000" },
+    { name: "T\u00dcV Rheinland NIFE", src: "/images/clients/tuv-rheinland-nife-logo.png", bg: "#ffffff" },
+    { name: "The Sarathi", src: "/images/clients/the-sarathi-logo.png", bg: "#000000" },
+    { name: "Rooh Desi", src: "/images/clients/rooh-desi-logo.png", bg: "#ffffff" },
+    { name: "Songbird", src: "/images/clients/songbird-logo.png", bg: "#efefed" },
+    { name: "Silkaara", src: "/images/clients/silkaara-logo.png", bg: "#ffffff" },
+    { name: "SMDP", src: "/images/clients/smdp-logo.png", bg: "#ffffff" },
+    { name: "Wallberry", src: "/images/clients/wallberry-logo.png", bg: "#ffffff" },
+    { name: "Gibbonte", src: "/images/clients/gibbonte-logo.png", bg: "#ffffff" },
+    { name: "Kr\u00e9me", src: "/images/clients/kreme-logo.png", bg: "#ffffff" },
+    { name: "Wolpin Wallpaper", src: "/images/clients/wolpin-logo.png", bg: "#ffffff" },
+    { name: "PropGems", src: "/images/clients/propgems-logo.png", bg: "#ffffff" },
   ],
 };
 

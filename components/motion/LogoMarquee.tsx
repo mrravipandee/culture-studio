@@ -135,7 +135,10 @@ function Row({ logos, reverse, speed, offset = 0 }: { logos: MarqueeLogo[]; reve
 
 /** Full bleed, two row logo band. Rows drift in opposite directions and react to scroll speed. */
 export default function LogoMarquee({ logos, speed = 18, label, className = "", rows = 2 }: LogoMarqueeProps) {
-  const rowB = [...logos].reverse();
+  // Many logos: split them across the two rows so no logo repeats on screen.
+  const split = rows === 2 && logos.length >= 12;
+  const rowA = split ? logos.filter((_, i) => i % 2 === 0) : logos;
+  const rowB = split ? logos.filter((_, i) => i % 2 === 1) : [...logos].reverse();
 
   return (
     <motion.section
@@ -154,7 +157,7 @@ export default function LogoMarquee({ logos, speed = 18, label, className = "", 
         </div>
       )}
       <div className="grid gap-8 sm:gap-12">
-        <Row logos={logos} speed={speed} />
+        <Row logos={rowA} speed={speed} />
         {rows === 2 && <Row logos={rowB} speed={speed * 1.2} reverse offset={2} />}
       </div>
     </motion.section>
