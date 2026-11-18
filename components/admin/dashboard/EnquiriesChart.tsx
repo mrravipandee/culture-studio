@@ -6,8 +6,8 @@ import type { SeriesPoint } from "@/lib/admin/dashboard-utils";
 import { editorialSerif } from "@/lib/fonts";
 
 /**
- * Enquiries Overview: area chart drawn in SVG (no chart library). The range filter only
- * slices the supplied series, so it never shows dates outside the dataset.
+ * Enquiries Overview: area chart drawn in SVG (no chart library). The series is real
+ * MongoDB data (one point per India-time day, zero-filled); the range filter only slices it.
  * Accessible: summary label, keyboard-explorable points, and a screen-reader table.
  */
 
@@ -108,7 +108,7 @@ export default function EnquiriesChart({ series, dataEndLabel }: { series: Serie
             Enquiries Overview
           </h2>
           <p className="mt-1 text-xs text-ink-3">
-            {enough ? `${total} enquiries · ` : ""}Demo data to {dataEndLabel}
+            {enough ? `${total} enquiries · ` : ""}Up to {dataEndLabel} (India time)
           </p>
         </div>
         <div className="relative">

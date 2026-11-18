@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Admin login activity (collection: admin_login_activity). SERVER-ONLY.
  *
@@ -7,7 +9,7 @@
 import { Types, isValidObjectId } from "mongoose";
 import { AdminLoginActivityModel, type AdminLoginActivityDoc, type LoginStatus } from "@/lib/db/models/AdminLoginActivity";
 import type { LoginActivityData, LoginActivityItem } from "@/lib/admin/settings-schemas";
-import { DatabaseUnavailableError, db } from "./admin-store";
+import { connectToDatabase, withDb } from "@/lib/db/mongoose";
 import { summariseUserAgent } from "./user-agent";
 
 export async function recordLoginActivity(entry: {
@@ -19,7 +21,7 @@ export async function recordLoginActivity(entry: {
   location: string | null;
 }) {
   try {
-    await db();
+    await connectToDatabase();
     const ua = summariseUserAgent(entry.userAgent);
     await AdminLoginActivityModel.create({
       ...(entry.id ? { _id: entry.id } : {}),
@@ -50,8 +52,7 @@ const PUBLIC_FIELDS = "status loggedInAt device browser os location" as const;
  */
 export async function getLoginActivity(adminId: string, currentLoginId: string | undefined, limit: number): Promise<LoginActivityData> {
   if (!isValidObjectId(adminId)) return { current: null, lastLogin: null, recent: [], failedLast30Days: 0 };
-  await db();
-  try {
+  return withDb(async () => {
     const owner = new Types.ObjectId(adminId);
     const currentId = currentLoginId && isValidObjectId(currentLoginId) ? new Types.ObjectId(currentLoginId) : null;
     const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -90,7 +91,5 @@ export async function getLoginActivity(adminId: string, currentLoginId: string |
       recent: recent.map(toItem),
       failedLast30Days,
     };
-  } catch {
-    throw new DatabaseUnavailableError();
-  }
+  });
 }

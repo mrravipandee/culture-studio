@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * AdminLoginActivity — one document per sign-in attempt on the admin account
  * (collection: admin_login_activity). SERVER-ONLY.
@@ -5,7 +7,7 @@
  * - SUCCESS: a completed sign-in. Its _id is also stored in the session cookie, so the
  *   Settings page can tell "this session" apart from earlier sign-ins.
  * - FAILED: the correct admin email with a wrong password (attempts with unknown emails
- *   have no admin to attach to and are only counted by the in-memory rate limiter).
+ *   have no admin to attach to and are only counted by the per-IP rate limit).
  *
  * Never stores passwords, hashes or session data. ipAddress / location are only stored when
  * they come from trusted proxy headers (see lib/auth/request.ts) and are never returned by

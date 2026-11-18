@@ -1,6 +1,6 @@
 "use client";
 
-import { isApiResponse, type ApiErrorBody } from "@/lib/admin/settings-schemas";
+import { isApiResponse, type ApiErrorBody } from "@/lib/api/response";
 
 /** Same path as SESSION_ENDED_PATH in lib/auth/require-admin.ts (server-only module). */
 export const SESSION_ENDED_URL = "/api/admin/session/ended";
@@ -15,7 +15,7 @@ const UNEXPECTED: ApiErrorBody = { code: "UNEXPECTED_RESPONSE", message: "Someth
  * Never throws: network failures and unreadable responses become friendly errors.
  * A 401 means the session ended (expired or revoked): the browser is sent to sign in again.
  */
-export async function settingsRequest<T>(url: string, init: { method?: "GET" | "PATCH"; body?: unknown; signal?: AbortSignal } = {}): Promise<ApiResult<T>> {
+export async function settingsRequest<T>(url: string, init: { method?: "GET" | "PATCH" | "DELETE"; body?: unknown; signal?: AbortSignal } = {}): Promise<ApiResult<T>> {
   let response: Response;
   try {
     response = await fetch(url, {
@@ -46,6 +46,9 @@ export async function settingsRequest<T>(url: string, init: { method?: "GET" | "
   if (body.success) return { ok: true, data: body.data as T };
   return { ok: false, status: response.status, error: body.error };
 }
+
+/** Same client for every admin API (Settings, Enquiries, …). */
+export const adminRequest = settingsRequest;
 
 /** Local date + time in the viewer's time zone. */
 export const formatDateTime = (iso: string) => new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));

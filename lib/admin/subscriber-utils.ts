@@ -3,6 +3,7 @@
  * "now" where dates matter) as arguments, so it is testable and ready for API data.
  */
 
+import { EMAIL_PATTERN, normalizeEmail } from "@/lib/validation/common";
 import { subscriberSourceLabels, subscriberStatusLabels, SUBSCRIBER_SOURCES, type Subscriber, type SubscriberSource, type SubscriberStatus } from "./types";
 
 const time = (iso: string | undefined | null) => {
@@ -98,10 +99,9 @@ export const SUBSCRIBER_PAGE_SIZE = 6;
 
 /* Add subscriber -------------------------------------------------------------------------- */
 
-export const normaliseEmail = (value: string) => value.trim().toLowerCase();
-
-/** Practical email check (local@domain.tld, no spaces, sane length). */
-export const EMAIL_PATTERN = /^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,}$/i;
+/** Shared normalisation and address check (lib/validation/common.ts); kept under these names for existing imports. */
+export const normaliseEmail = normalizeEmail;
+export { EMAIL_PATTERN };
 
 export interface NewSubscriberValues {
   name: string;

@@ -15,10 +15,25 @@ interface Props {
   onToggleAll: (ids: string[], select: boolean) => void;
 }
 
-export function ServicePill({ service }: { service: Enquiry["service"] }) {
+/** One pill per service, or (compact) the first service plus "+N". */
+export function ServicePill({ services, compact = true }: { services: Enquiry["services"]; compact?: boolean }) {
+  const pill = "inline-block max-w-full truncate whitespace-nowrap rounded-full bg-[#f7e4e4] px-2.5 py-1 align-middle text-xs font-medium text-[#7a1f2b]";
+  if (!compact) {
+    return (
+      <span className="flex flex-wrap gap-1.5">
+        {services.map((s) => (
+          <span key={s} className={pill}>
+            {serviceLabel(s)}
+          </span>
+        ))}
+      </span>
+    );
+  }
+  const [first, ...rest] = services;
   return (
-    <span className="inline-block max-w-full truncate whitespace-nowrap rounded-full bg-[#f7e4e4] px-2.5 py-1 align-middle text-xs font-medium text-[#7a1f2b]">
-      {serviceLabel(service)}
+    <span className={pill} title={services.map(serviceLabel).join(", ")}>
+      {first ? serviceLabel(first) : "—"}
+      {rest.length > 0 && <span className="ml-1 opacity-70">+{rest.length}</span>}
     </span>
   );
 }
@@ -40,7 +55,7 @@ export default function EnquiryTable({ rows, selectedId, checked, onSelect, onTo
   return (
     <div className="@container">
       <table className="w-full table-fixed text-left text-sm">
-        <caption className="sr-only">Enquiries (demo data), newest first. Select a row to see full details.</caption>
+        <caption className="sr-only">Enquiries, newest first. Select a row to see full details.</caption>
         <thead>
           <tr className="text-[0.8125rem] text-ink">
             <th scope="col" className="w-10 py-3 pl-2">
@@ -98,7 +113,7 @@ export default function EnquiryTable({ rows, selectedId, checked, onSelect, onTo
                   </button>
                 </td>
                 <td className="hidden py-4 pr-3 @[30rem]:table-cell">
-                  <ServicePill service={e.service} />
+                  <ServicePill services={e.services} />
                 </td>
                 <td className="hidden py-4 pr-4 text-[0.8125rem] leading-snug text-ink @[42rem]:table-cell">
                   <span className="line-clamp-2" title={e.message}>

@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Admin — the admin account (collection: admins). SERVER-ONLY.
  *

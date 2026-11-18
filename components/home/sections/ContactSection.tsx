@@ -4,12 +4,13 @@ import { Reveal } from "@/components/motion";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
 import InquiryForm from "./InquiryForm";
+import type { EnquirySource } from "@/lib/admin/types";
 
 /**
  * Contact: enquiry form with the four service disciplines, plus verified direct details.
- * See InquiryForm for how submission works (real endpoint or email only; never simulated).
+ * Submissions go to POST /api/enquiries; `source` records which page the form was on.
  */
-export default function ContactSection() {
+export default function ContactSection({ source = "HOME" }: { source?: EnquirySource }) {
   const { email, phone, socials } = contact;
 
   return (
@@ -19,7 +20,7 @@ export default function ContactSection() {
 
         <Reveal className="mt-16 grid gap-12 border-t border-line pt-10 lg:mt-24 lg:grid-cols-12 lg:gap-8">
           <div className="lg:col-span-7">
-            <InquiryForm email={email} />
+            <InquiryForm email={email} source={source} />
           </div>
 
           {/* Direct details: only verified information is shown (no "To be added" rows). */}

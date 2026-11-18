@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 /**
- * Checks a password against ADMIN_PASSWORD_HASH exactly as the server reads it.
+ * Checks a password against ADMIN_PASSWORD_HASH in .env (the BOOTSTRAP value).
+ *
+ * Note: the running app signs in against MongoDB, not .env. This only tells you whether a
+ * password matches the hash that `npm run admin:account -- bootstrap` would use; to check
+ * the live account, sign in. To recover a lost password: npm run admin:account -- reset-password --confirm
  *
  *   npm run admin:check
  *

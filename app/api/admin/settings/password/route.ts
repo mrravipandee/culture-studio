@@ -1,74 +1,71 @@
 import type { NextRequest } from "next/server";
-import { apiError, apiOk, readJsonMutation } from "@/lib/auth/api";
-import { DatabaseUnavailableError, findPasswordHash, replacePasswordHash, toProfileData } from "@/lib/auth/admin-store";
+import { replacePasswordHash, toProfileData } from "@/lib/auth/admin-store";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
-import { passwordCheckRetryAfter, recordPasswordCheckFailure, recordPasswordCheckSuccess } from "@/lib/auth/rate-limit";
+import { assertCurrentPassword } from "@/lib/auth/password-check";
 import { requireAdminApi } from "@/lib/auth/require-admin";
-import { getAdminSession } from "@/lib/auth/session";
-import { parseChangePassword, type PasswordChangeData } from "@/lib/admin/settings-schemas";
+import { SESSION_TTL_SECONDS, getAdminSession } from "@/lib/auth/session";
+import { createSession, newSessionToken, revokeAllSessions } from "@/lib/auth/sessions";
+import { ConflictError, ValidationError } from "@/lib/server/errors";
+import { apiHandler, apiOk, readJsonMutation } from "@/lib/server/http";
+import { parseWith } from "@/lib/validation/common";
+import { changePasswordSchema } from "@/lib/validation/auth";
+import type { PasswordChangeData } from "@/lib/admin/settings-schemas";
 
 /**
  * PATCH /api/admin/settings/password — change the signed-in admin's password.
  *
- * 1. same-origin JSON body (CSRF)   2. session checked against MongoDB
- * 3. rate limit per admin           4. body validated (rules, confirmation, max length)
- * 5. current password verified      6. new ≠ current
- * 7. Argon2id hash stored, passwordChangedAt set, sessionVersion incremented
- *    (every other session is revoked)
- * 8. this browser's session is re-sealed with the new version, so it stays signed in.
+ * 1. same-origin JSON body (CSRF)          2. session checked against MongoDB
+ * 3. body validated (rules, confirmation, max length, new ≠ current)
+ * 4. current password verified (rate limited per admin)
+ * 5. new password not equal to the stored one
+ * 6. Argon2id hash stored only if the old hash is unchanged; passwordChangedAt set;
+ *    sessionVersion incremented
+ * 7. EVERY existing session of the admin is revoked (including this browser's token)
+ * 8. this browser gets a fresh session token with the SAME absolute 8-hour deadline
  *
  * Passwords and hashes are never logged or returned.
  */
-export async function PATCH(request: NextRequest) {
-  const read = await readJsonMutation(request);
-  if (!read.ok) return read.response;
-  const guard = await requireAdminApi();
-  if (!guard.ok) return guard.response;
-  const { admin } = guard.auth;
+export const PATCH = apiHandler(async (request: NextRequest) => {
+  const body = await readJsonMutation(request);
+  const { admin, session } = await requireAdminApi();
 
-  const wait = passwordCheckRetryAfter(admin.id);
-  if (wait > 0) {
-    return apiError(429, "RATE_LIMITED", "Too many incorrect password attempts. Please wait 15 minutes and try again.", undefined, { "Retry-After": String(wait) });
-  }
-
-  const parsed = parseChangePassword(read.body);
-  if (!parsed.ok) return apiError(422, "VALIDATION_ERROR", "Please check the highlighted fields.", parsed.fields);
+  const parsed = parseWith(changePasswordSchema, body);
+  if (!parsed.ok) throw new ValidationError(parsed.fields);
   const { currentPassword, newPassword } = parsed.data;
 
-  try {
-    const currentHash = await findPasswordHash(admin.id);
-    if (!currentHash) return apiError(404, "ADMIN_NOT_FOUND", "Your admin account could not be found.");
+  const currentHash = await assertCurrentPassword(admin.id, currentPassword);
 
-    if (!(await verifyPassword(currentHash, currentPassword))) {
-      recordPasswordCheckFailure(admin.id);
-      return apiError(422, "INVALID_CURRENT_PASSWORD", "Your current password is incorrect.", { currentPassword: "Current password is incorrect." });
-    }
-    recordPasswordCheckSuccess(admin.id);
-
-    // Also catches a "new" password that only differs from the stored one in ways the
-    // client comparison can't see (it compares against what was typed, not the hash).
-    if (await verifyPassword(currentHash, newPassword)) {
-      return apiError(422, "PASSWORD_REUSED", "Choose a password different from your current one.", { newPassword: "Choose a password different from your current one." });
-    }
-
-    const nextHash = await hashPassword(newPassword);
-    const updated = await replacePasswordHash(admin.id, currentHash, nextHash);
-    if (!updated) return apiError(409, "CONFLICT", "Your password was changed somewhere else. Reload the page and try again.");
-
-    // Rotate this browser's session to the new version (other sessions are now revoked).
-    const session = await getAdminSession();
-    session.sessionVersion = updated.sessionVersion;
-    await session.save();
-
-    const data: PasswordChangeData = {
-      passwordChangedAt: updated.passwordChangedAt ?? new Date().toISOString(),
-      profile: toProfileData(updated),
-      otherSessionsSignedOut: true,
-    };
-    return apiOk(data);
-  } catch (error) {
-    if (error instanceof DatabaseUnavailableError) return apiError(503, "DATABASE_UNAVAILABLE", "The database is unavailable right now. Your password was not changed.");
-    console.error("[admin-settings] Unexpected error while changing the password.");
-    return apiError(500, "SERVER_ERROR", "Something went wrong. Your password was not changed.");
+  // Catches a "new" password equal to the stored one even if it differs from what was typed as current.
+  if (await verifyPassword(currentHash, newPassword)) {
+    throw new ValidationError({ newPassword: "Choose a password different from your current one." }, "Choose a password different from your current one.", "PASSWORD_REUSED");
   }
-}
+
+  const updated = await replacePasswordHash(admin.id, currentHash, await hashPassword(newPassword));
+  if (!updated) throw new ConflictError("Your password was changed somewhere else. Reload the page and try again.");
+
+  await revokeAllSessions(admin.id, "password_change");
+
+  // New session for this browser; keeps the original sign-in time (absolute lifetime unchanged).
+  const cookie = await getAdminSession();
+  let currentSessionKept = false;
+  try {
+    const token = newSessionToken();
+    await createSession({ adminId: admin.id, token, loginId: session.loginId, issuedAt: session.issuedAt, ttlSeconds: SESSION_TTL_SECONDS });
+    cookie.sid = token;
+    cookie.sessionVersion = updated.sessionVersion;
+    await cookie.save();
+    currentSessionKept = true;
+  } catch {
+    // Password is changed and every old session revoked; this browser must sign in again.
+    console.error("[admin-settings] Password changed, but a new session could not be created; the browser must sign in again.");
+    cookie.destroy();
+  }
+
+  const data: PasswordChangeData = {
+    passwordChangedAt: updated.passwordChangedAt ?? new Date().toISOString(),
+    profile: toProfileData(updated),
+    otherSessionsSignedOut: true,
+    currentSessionKept,
+  };
+  return apiOk(data);
+}, "admin-settings");

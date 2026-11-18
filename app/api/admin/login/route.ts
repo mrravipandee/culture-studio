@@ -1,104 +1,85 @@
 import { after, type NextRequest } from "next/server";
 import { Types } from "mongoose";
-import { AuthConfigError } from "@/lib/auth/config";
-import { DatabaseUnavailableError } from "@/lib/auth/admin-store";
-import { verifyAdminCredentials } from "@/lib/auth/credentials";
-import { loginRetryAfter, recordLoginFailure, recordLoginSuccess } from "@/lib/auth/rate-limit";
-import { clientIp, isSameOrigin, json, trustedClientIp, trustedLocation } from "@/lib/auth/request";
-import { getAdminSession } from "@/lib/auth/session";
+import { findAdminCredentials } from "@/lib/auth/admin-store";
+import { checkCredentials } from "@/lib/auth/credentials";
 import { recordLoginActivity } from "@/lib/auth/login-log";
+import { RATE_LIMITS, rateLimitKeys, rateLimitRetryAfter, recordRateLimitFailure, resetRateLimit } from "@/lib/auth/rate-limit";
+import { trustedClientIp, trustedLocation } from "@/lib/auth/request";
+import { SESSION_TTL_SECONDS, getAdminSession } from "@/lib/auth/session";
+import { createSession, newSessionToken } from "@/lib/auth/sessions";
+import { BadRequestError, RateLimitError, UnauthorizedError } from "@/lib/server/errors";
+import { apiHandler, apiOk, readJsonMutation } from "@/lib/server/http";
+import { parseWith } from "@/lib/validation/common";
+import { loginSchema } from "@/lib/validation/auth";
 
 const GENERIC_ERROR = "Invalid email or password.";
-const MAX_BODY_BYTES = 2048;
-const MAX_EMAIL = 254;
-const MAX_PASSWORD = 256; // bounds Argon2 work per request
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-interface LoginBody {
-  email: string;
-  password: string;
-}
-
-function parseBody(raw: string): LoginBody | null {
-  let data: unknown;
-  try {
-    data = JSON.parse(raw);
-  } catch {
-    return null;
-  }
-  if (typeof data !== "object" || data === null) return null;
-  const { email, password } = data as Record<string, unknown>;
-  if (typeof email !== "string" || typeof password !== "string") return null;
-  if (!email.trim() || email.length > MAX_EMAIL || !EMAIL_PATTERN.test(email.trim())) return null;
-  if (!password || password.length > MAX_PASSWORD) return null;
-  return { email, password };
-}
+const TOO_MANY = "Too many sign-in attempts. Please try again later.";
 
 /**
- * POST /api/admin/login — single-admin sign-in against the `admins` collection in MongoDB.
- * 200 { ok, redirect } · 400 invalid body · 401 generic failure · 403 cross-site ·
- * 413 too large · 415 not JSON · 429 rate limited · 500 not configured · 503 database down.
+ * POST /api/admin/login — single-admin sign-in against the `admins` collection.
+ *
+ * 200 { success, data: { redirect } } · 400 invalid body · 401 generic failure ·
+ * 403 cross-site · 413 too large · 415 not JSON · 429 rate limited · 500 not configured ·
+ * 503 database unavailable.
+ *
+ * On success a server-side session (admin_sessions, token hash only) is created and its
+ * random token sealed into the HTTP-only cookie together with adminId/sessionVersion.
  */
-export async function POST(request: NextRequest) {
-  if (!isSameOrigin(request)) return json({ error: "Forbidden." }, 403);
-  if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json")) {
-    return json({ error: "Unsupported request." }, 415);
+export const POST = apiHandler(async (request: NextRequest) => {
+  const body = await readJsonMutation(request, 2048);
+  const parsed = parseWith(loginSchema, body);
+  if (!parsed.ok) throw new BadRequestError("VALIDATION_ERROR", "Enter a valid email address and password.");
+  const { email, password } = parsed.data;
+
+  // Per-IP bucket only when the IP comes from a trusted proxy header.
+  const ip = trustedClientIp(request);
+  const ipKey = ip ? rateLimitKeys.loginIp(ip) : null;
+  if (ipKey) {
+    const wait = await rateLimitRetryAfter(ipKey, RATE_LIMITS.loginIp);
+    if (wait > 0) throw new RateLimitError(wait, TOO_MANY);
   }
 
-  const ip = clientIp(request);
-  const retryAfter = loginRetryAfter(ip);
-  if (retryAfter > 0) {
-    return json({ error: "Too many sign-in attempts. Please try again later." }, 429, { "Retry-After": String(retryAfter) });
+  const admin = await findAdminCredentials();
+  const adminId = admin ? admin._id.toString() : null;
+  if (!admin) console.warn("[admin-auth] Sign-in attempted but no admin account exists. See docs/backend/auth.md (bootstrap).");
+  const accountKey = adminId ? rateLimitKeys.loginAccount(adminId) : null;
+  if (accountKey) {
+    const wait = await rateLimitRetryAfter(accountKey, RATE_LIMITS.loginAccount);
+    if (wait > 0) throw new RateLimitError(wait, TOO_MANY);
   }
 
-  const raw = await request.text();
-  if (new TextEncoder().encode(raw).length > MAX_BODY_BYTES) return json({ error: "Request too large." }, 413);
-  const body = parseBody(raw);
-  if (!body) return json({ error: "Enter a valid email address and password." }, 400);
-
-  let result;
-  try {
-    result = await verifyAdminCredentials(body.email, body.password);
-  } catch (error) {
-    if (error instanceof AuthConfigError) {
-      // Names the variable only; never logs credentials or hashes.
-      console.error(`[admin-auth] Configuration error: ${error.message}`);
-      return json({ error: "Admin sign-in is not configured on the server." }, 500);
-    }
-    if (error instanceof DatabaseUnavailableError) {
-      console.error("[admin-auth] Sign-in failed: database unavailable.");
-      return json({ error: "Sign-in is temporarily unavailable. Please try again shortly." }, 503);
-    }
-    console.error("[admin-auth] Unexpected error during sign-in.");
-    return json({ error: "Something went wrong. Please try again." }, 500);
-  }
-
-  const userAgent = request.headers.get("user-agent") ?? "";
-  const context = { userAgent, ipAddress: trustedClientIp(request), location: trustedLocation(request) };
+  const result = await checkCredentials(admin, email, password);
+  const context = { userAgent: request.headers.get("user-agent") ?? "", ipAddress: ip, location: trustedLocation(request) };
 
   if (!result.ok) {
-    recordLoginFailure(ip);
-    // A wrong password for the real admin email is security-relevant: log it for that admin.
-    // Unknown emails are not logged (no account to attach them to); the response is identical.
-    if (result.emailMatched) {
-      const { adminId } = result;
-      after(() => recordLoginActivity({ adminId, status: "FAILED", ...context }));
-    }
-    return json({ error: GENERIC_ERROR }, 401);
+    await Promise.all([
+      ipKey ? recordRateLimitFailure(ipKey, RATE_LIMITS.loginIp) : null,
+      // Only wrong passwords for the real admin email count against the account.
+      accountKey && result.emailMatched ? recordRateLimitFailure(accountKey, RATE_LIMITS.loginAccount) : null,
+    ]);
+    if (adminId && result.emailMatched) after(() => recordLoginActivity({ adminId, status: "FAILED", ...context }));
+    throw new UnauthorizedError(GENERIC_ERROR, "INVALID_CREDENTIALS");
   }
 
-  recordLoginSuccess(ip);
+  // Success (admin is non-null here).
+  const id = adminId as string;
+  await Promise.all([ipKey ? resetRateLimit(ipKey) : null, accountKey ? resetRateLimit(accountKey) : null]);
+
   const loginId = new Types.ObjectId();
+  const token = newSessionToken();
+  const issuedAt = Date.now();
+  await createSession({ adminId: id, token, loginId, issuedAt, ttlSeconds: SESSION_TTL_SECONDS });
+
   const session = await getAdminSession();
-  session.adminId = result.adminId;
-  session.sessionVersion = result.sessionVersion;
-  session.issuedAt = Date.now();
+  session.adminId = id;
+  session.sessionVersion = admin!.sessionVersion;
+  session.issuedAt = issuedAt;
   session.loginId = loginId.toString();
+  session.sid = token;
   await session.save();
 
   // Record the sign-in after the response is sent (never delays or blocks login).
-  const { adminId } = result;
-  after(() => recordLoginActivity({ id: loginId, adminId, status: "SUCCESS", ...context }));
+  after(() => recordLoginActivity({ id: loginId, adminId: id, status: "SUCCESS", ...context }));
 
-  return json({ ok: true, redirect: "/admin/dashboard" }, 200);
-}
+  return apiOk({ redirect: "/admin/dashboard" });
+}, "admin-auth");

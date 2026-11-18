@@ -50,7 +50,7 @@ export default function AboutPage() {
         <AboutCta />
 
         {/* 08 — Contact & Footer */}
-        <ContactSection />
+        <ContactSection source="ABOUT" />
       </main>
     </div>
   );

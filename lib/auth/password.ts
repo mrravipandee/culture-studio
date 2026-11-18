@@ -1,3 +1,5 @@
+import "server-only";
+
 /**
  * Password hashing. SERVER-ONLY.
  *
@@ -20,5 +22,5 @@ export async function verifyPassword(passwordHash: string, password: string): Pr
   }
 }
 
-/** $argon2id$v=19$m=…,t=…,p=…$<salt>$<hash> */
+/** $argon2id$v=19$m=…,t=…,p=…$<salt>$<hash> (also checked by scripts/admin-account.mjs). */
 export const ARGON2ID_PATTERN = /^\$argon2id\$v=\d+\$m=\d+,t=\d+,p=\d+\$[A-Za-z0-9+/]+\$[A-Za-z0-9+/]+$/;

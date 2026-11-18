@@ -5,6 +5,7 @@ import { Menu, X } from "lucide-react";
 import type { AdminNavBadges } from "@/lib/admin/navigation";
 import { editorialSerif } from "@/lib/fonts";
 import AdminSidebar, { type SidebarMode } from "./AdminSidebar";
+import { useAdminCounts } from "./AdminCountsContext";
 
 /**
  * Admin frame: fixed sidebar from 768px (collapsible), drawer below 768px.
@@ -24,7 +25,10 @@ const subscribe = (onChange: () => void) => {
   return () => mq.removeEventListener("change", onChange);
 };
 
-export default function AdminShell({ children, badges }: { children: ReactNode; badges?: AdminNavBadges }) {
+export default function AdminShell({ children, badges: extraBadges }: { children: ReactNode; badges?: AdminNavBadges }) {
+  // Enquiries badge: live NEW count from AdminCountsContext (reported by each page from MongoDB).
+  const { newEnquiries } = useAdminCounts();
+  const badges: AdminNavBadges = { ...extraBadges, ...(newEnquiries ? { enquiries: newEnquiries } : {}) };
   const [mode, setMode] = useState<SidebarMode>("auto");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const menuButton = useRef<HTMLButtonElement>(null);

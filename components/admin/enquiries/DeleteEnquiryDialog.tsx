@@ -8,6 +8,8 @@ interface Props {
   count: number | null;
   /** Name shown for a single delete. */
   name?: string;
+  /** A delete is in progress: both buttons are disabled. */
+  busy?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -16,7 +18,7 @@ interface Props {
  * Confirmation before deleting. Uses the native <dialog> element: modal, focus-trapped
  * by the browser, Escape cancels.
  */
-export default function DeleteEnquiryDialog({ count, name, onConfirm, onCancel }: Props) {
+export default function DeleteEnquiryDialog({ count, name, busy = false, onConfirm, onCancel }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const open = count !== null;
 
@@ -34,7 +36,7 @@ export default function DeleteEnquiryDialog({ count, name, onConfirm, onCancel }
       ref={ref}
       onCancel={(e) => {
         e.preventDefault();
-        onCancel();
+        if (!busy) onCancel();
       }}
       aria-labelledby="delete-dialog-title"
       aria-describedby="delete-dialog-desc"
@@ -48,12 +50,13 @@ export default function DeleteEnquiryDialog({ count, name, onConfirm, onCancel }
           {title}
         </h2>
         <p id="delete-dialog-desc" className="mt-2 text-sm leading-relaxed text-ink-2">
-          This removes it from this preview only. Demo data is not saved, so it returns when the page reloads.
+          {count === 1 ? "It" : "They"} will be removed from the Enquiries list and dashboard. The record is kept in the database as deleted, so it can be recovered if needed.
         </p>
         <div className="mt-6 flex justify-end gap-2.5">
           <button
             type="button"
             onClick={onCancel}
+            disabled={busy}
             autoFocus
             className="h-11 rounded-md border border-black/20 px-4 text-sm font-medium text-ink hover:border-black/40 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy"
           >
@@ -62,9 +65,10 @@ export default function DeleteEnquiryDialog({ count, name, onConfirm, onCancel }
           <button
             type="button"
             onClick={onConfirm}
-            className="h-11 rounded-md bg-[#a3242f] px-4 text-sm font-medium text-white hover:bg-[#8e1d27] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a3242f]"
+            disabled={busy}
+            className="h-11 rounded-md bg-[#a3242f] px-4 text-sm font-medium text-white hover:bg-[#8e1d27] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a3242f] disabled:opacity-60"
           >
-            Delete
+            {busy ? "Deleting…" : "Delete"}
           </button>
         </div>
       </div>

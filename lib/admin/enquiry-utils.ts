@@ -1,52 +1,43 @@
 /**
- * Enquiry helpers. Pure and client-safe (they receive the list as an argument and import
- * only types), so the same functions serve the dashboard, the enquiries page, tests and,
- * later, data loaded from MongoDB.
+ * Enquiry display helpers. Pure and client-safe.
+ *
+ * Filtering, search, pagination and counts now happen in MongoDB
+ * (lib/enquiries/repository.ts via /api/admin/enquiries). What stays here is shared UI
+ * logic: page lists, labels and date formatting (India time).
  */
 
-import { serviceLabels, type Enquiry, type EnquiryStatus, type ServiceId } from "./types";
+import { serviceLabels, type EnquiryStatus, type ServiceId } from "./types";
+import { ENQUIRY_PAGE_SIZE, nextStatuses } from "@/lib/validation/enquiry";
 
-const time = (iso: string) => {
-  const t = Date.parse(iso);
-  return Number.isNaN(t) ? null : t;
-};
+export { nextStatuses };
 
-/** Valid records only, newest first. */
-export const getAllEnquiries = (list: Enquiry[]) =>
-  list.filter((e) => time(e.createdAt) !== null).sort((a, b) => (time(b.createdAt) ?? 0) - (time(a.createdAt) ?? 0));
-
-export const getEnquiriesByStatus = (list: Enquiry[], status: EnquiryStatus) => list.filter((e) => e.status === status);
-export const getTotalEnquiries = (list: Enquiry[]) => list.length;
-export const getNewEnquiries = (list: Enquiry[]) => getEnquiriesByStatus(list, "NEW").length;
-export const getReadEnquiries = (list: Enquiry[]) => getEnquiriesByStatus(list, "READ").length;
-export const getRepliedEnquiries = (list: Enquiry[]) => getEnquiriesByStatus(list, "REPLIED").length;
-export const getClosedEnquiries = (list: Enquiry[]) => getEnquiriesByStatus(list, "CLOSED").length;
-export const getRecentEnquiries = (list: Enquiry[], limit = 5) => getAllEnquiries(list).slice(0, limit);
-
-/* Search and filters ------------------------------------------------- */
+/* UI filter state (mirrors the API query) ------------------------------------------- */
 
 export interface EnquiryFilters {
   search: string;
   service: ServiceId | "all";
   status: EnquiryStatus | "all";
+  range: "all" | "today" | "7d" | "30d" | "month";
 }
 
-export const emptyFilters: EnquiryFilters = { search: "", service: "all", status: "all" };
-export const hasActiveFilters = (f: EnquiryFilters) => f.search.trim() !== "" || f.service !== "all" || f.status !== "all";
+export const emptyFilters: EnquiryFilters = { search: "", service: "all", status: "all", range: "all" };
+export const hasActiveFilters = (f: EnquiryFilters) => f.search.trim() !== "" || f.service !== "all" || f.status !== "all" || f.range !== "all";
 
-/** Case-insensitive match on name, email, company and message. */
-export function matchesSearch(e: Enquiry, query: string) {
-  const q = query.trim().toLowerCase();
-  if (!q) return true;
-  return [e.name, e.email, e.company ?? "", e.message].some((field) => field.toLowerCase().includes(q));
+/** Query string for GET /api/admin/enquiries (only non-default values). */
+export function enquiryQueryString(f: EnquiryFilters, page: number, pageSize = ENQUIRY_PAGE_SIZE) {
+  const q = new URLSearchParams();
+  if (page > 1) q.set("page", String(page));
+  if (pageSize !== ENQUIRY_PAGE_SIZE) q.set("pageSize", String(pageSize));
+  if (f.search.trim()) q.set("search", f.search.trim().slice(0, 100));
+  if (f.status !== "all") q.set("status", f.status);
+  if (f.service !== "all") q.set("service", f.service);
+  if (f.range !== "all") q.set("range", f.range);
+  return q.toString();
 }
-
-export const filterEnquiries = (list: Enquiry[], f: EnquiryFilters) =>
-  list.filter((e) => (f.service === "all" || e.service === f.service) && (f.status === "all" || e.status === f.status) && matchesSearch(e, f.search));
 
 /* Pagination ------------------------------------------------------------ */
 
-export const PAGE_SIZE = 6;
+export const PAGE_SIZE = ENQUIRY_PAGE_SIZE;
 export const pageCount = (total: number, size = PAGE_SIZE) => Math.max(1, Math.ceil(total / size));
 export const paginate = <T,>(list: T[], page: number, size = PAGE_SIZE) => list.slice((page - 1) * size, page * size);
 
@@ -58,19 +49,9 @@ export function pageList(current: number, total: number): (number | "gap")[] {
   return [1, "gap", current, "gap", total];
 }
 
-/* Status actions -------------------------------------------------------- */
-
-/** Status changes that make sense from each state (invalid ones are not offered). */
-export const nextStatuses: Record<EnquiryStatus, EnquiryStatus[]> = {
-  NEW: ["READ", "REPLIED", "CLOSED"],
-  READ: ["REPLIED", "CLOSED"],
-  REPLIED: ["CLOSED"],
-  CLOSED: [],
-};
-
 /* Display ----------------------------------------------------------------- */
 
-export const serviceLabel = (id: ServiceId) => serviceLabels[id] ?? "Other";
+export const serviceLabel = (id: ServiceId) => serviceLabels[id] ?? id;
 
 export const initials = (name: string) =>
   name
@@ -79,6 +60,11 @@ export const initials = (name: string) =>
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
     .join("") || "?";
+
+const time = (iso: string) => {
+  const t = Date.parse(iso);
+  return Number.isNaN(t) ? null : t;
+};
 
 const IST = "Asia/Kolkata";
 export const formatEnquiryDate = (iso: string) => {

@@ -1,15 +1,14 @@
 import { CheckCircle2, Mail, Reply, Sparkles, type LucideIcon } from "lucide-react";
 import { editorialSerif } from "@/lib/fonts";
-import type { Enquiry } from "@/lib/admin/types";
-import { getClosedEnquiries, getNewEnquiries, getRepliedEnquiries, getTotalEnquiries } from "@/lib/admin/enquiry-utils";
+import type { EnquiryStatus } from "@/lib/admin/types";
 
-/** Four summary cards, recalculated from the current list on every change. */
-export default function EnquiryStats({ items }: { items: Enquiry[] }) {
+/** Four summary cards from the server's counts (all non-deleted enquiries, not just the current filter). */
+export default function EnquiryStats({ total, counts }: { total: number; counts: Record<EnquiryStatus, number> }) {
   const cards: { icon: LucideIcon; value: number; label: string; highlight?: boolean }[] = [
-    { icon: Mail, value: getTotalEnquiries(items), label: "Total Enquiries" },
-    { icon: Sparkles, value: getNewEnquiries(items), label: "New Enquiries", highlight: true },
-    { icon: Reply, value: getRepliedEnquiries(items), label: "Replied" },
-    { icon: CheckCircle2, value: getClosedEnquiries(items), label: "Closed" },
+    { icon: Mail, value: total, label: "Total Enquiries" },
+    { icon: Sparkles, value: counts.NEW, label: "New Enquiries", highlight: true },
+    { icon: Reply, value: counts.REPLIED, label: "Replied" },
+    { icon: CheckCircle2, value: counts.CLOSED, label: "Closed" },
   ];
 
   return (

@@ -40,7 +40,7 @@ export default function EnquiryMobileList({ rows, selectedId, checked, onSelect,
               {e.company && <span className="block truncate text-xs text-ink-2">{e.company}</span>}
               <span className="mt-1.5 line-clamp-2 text-sm text-ink-2">{e.message}</span>
               <span className="mt-2 flex items-center justify-between gap-2">
-                <ServicePill service={e.service} />
+                <ServicePill services={e.services} />
                 <time dateTime={e.createdAt} className="shrink-0 text-xs text-ink-3">
                   {formatEnquiryDate(e.createdAt)}
                 </time>

@@ -8,10 +8,16 @@ import { formatDate } from "@/lib/admin/dashboard-utils";
 /** Unread enquiries get a dot next to the name. */
 const dot = (status: EnquiryStatus) => (status === "NEW" ? "bg-[#2f9e5b]" : "bg-black/20");
 
-function ServicePill({ service }: { service: Enquiry["service"] }) {
+/** First selected service, plus "+N" when the enquiry selected more than one. */
+function ServicePill({ services }: { services: Enquiry["services"] }) {
+  const [first, ...rest] = services;
   return (
-    <span className="inline-block max-w-full truncate whitespace-nowrap rounded-full border border-burgundy/20 bg-burgundy/[0.04] px-2.5 py-0.5 align-middle text-xs text-burgundy">
-      {serviceLabels[service]}
+    <span
+      title={services.map((s) => serviceLabels[s]).join(", ")}
+      className="inline-block max-w-full truncate whitespace-nowrap rounded-full border border-burgundy/20 bg-burgundy/[0.04] px-2.5 py-0.5 align-middle text-xs text-burgundy"
+    >
+      {first ? serviceLabels[first] : "—"}
+      {rest.length > 0 && ` +${rest.length}`}
     </span>
   );
 }
@@ -58,7 +64,7 @@ export default function RecentEnquiries({ items }: { items: Enquiry[] }) {
                       </span>
                     </td>
                     <td className="py-3 pr-4">
-                      <ServicePill service={e.service} />
+                      <ServicePill services={e.services} />
                     </td>
                     <td className="truncate py-3 pr-4 text-ink-2" title={e.message}>
                       {e.message}
@@ -85,7 +91,7 @@ export default function RecentEnquiries({ items }: { items: Enquiry[] }) {
                 </div>
                 <p className="mt-1 line-clamp-2 text-sm text-ink-2">{e.message}</p>
                 <div className="mt-2 flex items-center justify-between gap-3">
-                  <ServicePill service={e.service} />
+                  <ServicePill services={e.services} />
                   <time dateTime={e.createdAt} className="text-xs text-ink-3">
                     {formatDate(e.createdAt)}
                   </time>

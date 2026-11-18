@@ -1,6 +1,7 @@
-import Link from "next/link";
-import { Bell, CalendarDays } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { editorialSerif } from "@/lib/fonts";
+import { SyncNewEnquiries } from "../AdminCountsContext";
+import NewEnquiriesBell from "./NewEnquiriesBell";
 import ProfileMenu from "./ProfileMenu";
 
 interface Props {
@@ -48,14 +49,8 @@ export default function DashboardHeader({
           <CalendarDays aria-hidden="true" size={17} strokeWidth={1.6} />
           <time dateTime={todayIso}>{today}</time>
         </p>
-        <Link
-          href="/admin/enquiries"
-          aria-label={newEnquiries > 0 ? `${newEnquiries} new enquiries` : "Enquiries"}
-          className="relative grid size-11 place-items-center rounded-full text-ink transition-colors hover:bg-black/[0.04] focus-visible:outline-2 focus-visible:outline-burgundy"
-        >
-          <Bell aria-hidden="true" size={20} strokeWidth={1.6} />
-          {newEnquiries > 0 && <span aria-hidden="true" className="absolute right-2.5 top-2.5 size-2 rounded-full bg-[#b3261e] ring-2 ring-[var(--cream)]" />}
-        </Link>
+        <SyncNewEnquiries count={newEnquiries} />
+        <NewEnquiriesBell initial={newEnquiries} />
         <span aria-hidden="true" className="hidden h-10 w-px bg-black/10 sm:block" />
         <ProfileMenu name={name} email={email} />
       </div>

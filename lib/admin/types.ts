@@ -7,30 +7,51 @@ import type { DisciplineId } from "@/lib/content/disciplines";
 import type { RichNode } from "@/lib/rich-text";
 
 export type EnquiryStatus = "NEW" | "READ" | "REPLIED" | "CLOSED";
-export type ServiceId = DisciplineId | "other";
+/** The public form's service values: the four discipline ids plus "not-sure" (never anything else). */
+export type ServiceId = DisciplineId | "not-sure";
+export type EnquirySource = "CONTACT_PAGE" | "HOME" | "ABOUT";
 
+export interface EnquiryStatusChange {
+  from: EnquiryStatus | null;
+  to: EnquiryStatus;
+  /** ISO 8601 */
+  at: string;
+}
+
+/** Admin list row (MongoDB). `message` is a short preview in lists; full text in detail. */
 export interface Enquiry {
   id: string;
   name: string;
   email: string;
   company?: string;
   website?: string;
-  /** Only present when the enquirer supplied one (never invented). */
-  phone?: string;
-  service: ServiceId;
+  services: ServiceId[];
   message: string;
   status: EnquiryStatus;
+  source: EnquirySource;
   /** ISO 8601 */
   createdAt: string;
+  updatedAt: string;
 }
 
-/** Service filter and labels: CULT.URE's four disciplines (lib/content/disciplines.ts) plus "Other". */
+/** Full record for the detail panel. */
+export interface EnquiryDetail extends Enquiry {
+  statusHistory: EnquiryStatusChange[];
+}
+
+/** Service filter and labels: CULT.URE's four disciplines (lib/content/disciplines.ts) plus "Not sure yet". */
 export const serviceLabels: Record<ServiceId, string> = {
   "brand-strategy-communications": "Brand Strategy",
   "content-creative": "Content & Creative",
   "digital-marketing-growth": "Digital Marketing",
   "technology-automation": "Technology",
-  other: "Other",
+  "not-sure": "Not sure yet",
+};
+
+export const enquirySourceLabels: Record<EnquirySource, string> = {
+  CONTACT_PAGE: "Contact page",
+  HOME: "Home page",
+  ABOUT: "About page",
 };
 
 export const enquiryStatusLabels: Record<EnquiryStatus, string> = {

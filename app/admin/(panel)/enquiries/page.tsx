@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { enquiries } from "@/lib/admin/data";
-import { getAllEnquiries, getNewEnquiries } from "@/lib/admin/enquiry-utils";
+import { getEnquiry, listEnquiries } from "@/lib/enquiries/repository";
+import { enquiryListQuerySchema } from "@/lib/validation/enquiry";
 import { editorialSerif } from "@/lib/fonts";
 import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
 import EnquiriesWorkspace from "@/components/admin/enquiries/EnquiriesWorkspace";
@@ -10,8 +10,9 @@ import EnquiriesWorkspace from "@/components/admin/enquiries/EnquiriesWorkspace"
 export const metadata: Metadata = { title: "Enquiries" };
 
 /**
- * /admin/enquiries — manage enquiries (DEMO DATA from lib/admin/data.ts).
- * Changes made on this page live only in the browser tab and reset on reload.
+ * /admin/enquiries — real enquiries from MongoDB. The first page (and the first record's
+ * details) render on the server; filters, pagination, status changes and deletes then go
+ * through /api/admin/enquiries.
  */
 export default function AdminEnquiriesPage() {
   return (
@@ -26,7 +27,10 @@ async function Enquiries() {
   const now = new Date();
   const today = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" }).format(now);
   const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(now);
-  const all = getAllEnquiries(enquiries);
+
+  const initial = await listEnquiries(enquiryListQuerySchema.parse({}), now.getTime());
+  const first = initial.items[0];
+  const initialDetail = first ? await getEnquiry(first.id).catch(() => null) : null;
 
   return (
     <main className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
@@ -38,14 +42,12 @@ async function Enquiries() {
         email={email}
         today={today}
         todayIso={todayIso}
-        newEnquiries={getNewEnquiries(all)}
+        newEnquiries={initial.statusCounts.NEW}
+        showDemoBadge={false}
       />
       <div className="mt-8 lg:mt-10">
-        <EnquiriesWorkspace initial={all} serifClassName={editorialSerif.className} />
+        <EnquiriesWorkspace initial={initial} initialDetail={initialDetail} serifClassName={editorialSerif.className} />
       </div>
-      <p className="mt-6 text-center text-xs text-ink-3">
-        Preview with demo data: these enquiries are fictional. Status changes and deletions are not saved and no emails are sent.
-      </p>
     </main>
   );
 }

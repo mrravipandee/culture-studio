@@ -10,8 +10,8 @@ const websiteLabel = new URL(siteUrl).host;
 
 /**
  * Direct Enquiries + "Tell Us About the Project" (enquiry form).
- * The form is the shared InquiryForm (same component as Home/About): it stays disabled
- * until a real submission endpoint is configured, and ?service=<discipline> preselects.
+ * The form is the shared InquiryForm (same component as Home/About). It submits to
+ * POST /api/enquiries (source CONTACT_PAGE); ?service=<discipline> preselects.
  * DOM order follows the PDF (details first, so they lead on mobile); on desktop the form
  * takes the left columns and the details sit on the right.
  */
@@ -55,7 +55,7 @@ export default function ContactEnquiry() {
         <div className="lg:order-1 lg:col-span-7">
           <TextMask as="h2" id="enquiry-title" text={contactEnquiry.formTitle} className="heading-2 text-paper" />
           <Reveal delay={0.1} className="mt-10 border-t border-line pt-10">
-            <InquiryForm email={email} />
+            <InquiryForm email={email} source="CONTACT_PAGE" />
           </Reveal>
         </div>
       </div>

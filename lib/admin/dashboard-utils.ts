@@ -1,13 +1,19 @@
 /**
- * Dashboard calculations. Pure functions: every one takes its collection as an argument
- * (testable, and ready for MongoDB data later). Invalid dates are skipped, empty arrays
- * return zeroes.
+ * Dashboard calculations. Pure functions over data passed in (enquiry figures come from
+ * the MongoDB aggregation in lib/enquiries/repository.ts; blog, case-study and subscriber
+ * figures still from lib/admin/data.ts). Invalid dates are skipped, empty inputs give zeroes.
  */
 
-import type { AdminBlog, DailyEnquiries, Subscriber } from "./data";
-import { serviceLabels, type AdminCaseStudy, type Enquiry, type ServiceId } from "./types";
-export { getTotalEnquiries, getNewEnquiries, getRecentEnquiries } from "./enquiry-utils";
+import type { AdminBlog, Subscriber } from "./data";
+import { serviceLabels, type AdminCaseStudy, type ServiceId } from "./types";
 import { getActiveSubscribers } from "./subscriber-utils";
+
+/** One India-time day of enquiries (from the MongoDB aggregation in lib/enquiries/repository.ts). */
+export interface DailyEnquiries {
+  /** YYYY-MM-DD (India time). */
+  date: string;
+  count: number;
+}
 
 const time = (iso: string | null | undefined) => {
   const t = iso ? Date.parse(iso) : NaN;
@@ -54,24 +60,29 @@ export interface ServiceShare {
   percent: number;
 }
 
-export function getEnquiriesByService(list: Enquiry[]): ServiceShare[] {
+/**
+ * Shares of service selections (an enquiry can select several services, so shares are of
+ * selections, not of enquiries). Rounded to add up to 100 (largest-remainder method).
+ * "Not sure yet" is always listed last.
+ */
+export function toServiceShares(counts: Record<ServiceId, number>): ServiceShare[] {
   const ids = Object.keys(serviceLabels) as ServiceId[];
-  const counts = ids.map((id) => ({ id, label: serviceLabels[id], count: list.filter((e) => e.service === id).length }));
-  const total = list.length;
-  if (total === 0) return counts.map((c) => ({ ...c, percent: 0 }));
+  const rows = ids.map((id) => ({ id, label: serviceLabels[id], count: counts[id] ?? 0 }));
+  const total = rows.reduce((n, r) => n + r.count, 0);
+  if (total === 0) return rows.map((r) => ({ ...r, percent: 0 }));
 
-  const raw = counts.map((c) => (c.count / total) * 100);
+  const raw = rows.map((r) => (r.count / total) * 100);
   const floors = raw.map(Math.floor);
   let remainder = 100 - floors.reduce((a, b) => a + b, 0);
   const order = raw.map((r, i) => ({ i, frac: r - Math.floor(r) })).sort((a, b) => b.frac - a.frac);
   for (const { i } of order) {
     if (remainder <= 0) break;
-    if (counts[i].count > 0) {
+    if (rows[i].count > 0) {
       floors[i] += 1;
       remainder -= 1;
     }
   }
-  return counts.map((c, i) => ({ ...c, percent: floors[i] })).sort((a, b) => (a.id === "other" ? 1 : b.id === "other" ? -1 : b.count - a.count));
+  return rows.map((r, i) => ({ ...r, percent: floors[i] })).sort((a, b) => (a.id === "not-sure" ? 1 : b.id === "not-sure" ? -1 : b.count - a.count));
 }
 
 /* Recent ----------------------------------------------------------- */

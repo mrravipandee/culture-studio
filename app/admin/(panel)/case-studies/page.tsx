@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { countNewEnquiries } from "@/lib/enquiries/repository";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { caseStudies, caseStudyCategoryOptions, caseStudyServiceOptions, enquiries } from "@/lib/admin/data";
-import { getNewEnquiries } from "@/lib/admin/enquiry-utils";
+import { caseStudies, caseStudyCategoryOptions, caseStudyServiceOptions } from "@/lib/admin/data";
 import { editorialSerif } from "@/lib/fonts";
 import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
 import CaseStudiesWorkspace from "@/components/admin/case-studies/CaseStudiesWorkspace";
@@ -37,7 +37,7 @@ async function CaseStudies() {
         email={email}
         today={today}
         todayIso={todayIso}
-        newEnquiries={getNewEnquiries(enquiries)}
+        newEnquiries={await countNewEnquiries()}
         showDemoBadge={false}
       />
       <div className="mt-8 lg:mt-10">

@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { countNewEnquiries } from "@/lib/enquiries/repository";
 import { requireAdmin, getAuthenticatedAdmin } from "@/lib/auth/require-admin";
 import { toProfileData } from "@/lib/auth/admin-store";
-import { enquiries } from "@/lib/admin/data";
-import { getNewEnquiries } from "@/lib/admin/enquiry-utils";
 import { editorialSerif } from "@/lib/fonts";
 import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
 import SettingsWorkspace from "@/components/admin/settings/SettingsWorkspace";
@@ -41,7 +40,7 @@ async function Settings() {
         email={email}
         today={today}
         todayIso={todayIso}
-        newEnquiries={getNewEnquiries(enquiries)}
+        newEnquiries={await countNewEnquiries()}
         showDemoBadge={false}
       />
       <div className="mt-8 lg:mt-10">

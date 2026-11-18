@@ -3,6 +3,7 @@
 import { useId, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Eye, EyeOff, LoaderCircle, LockKeyhole, Mail } from "lucide-react";
+import { isApiResponse } from "@/lib/api/response";
 
 /**
  * Admin sign-in form. Holds only what the user types; it never sees a token or secret.
@@ -49,15 +50,15 @@ export default function LoginForm() {
         credentials: "same-origin",
         body: JSON.stringify({ email: email.trim(), password }),
       });
-      const data: { ok?: boolean; redirect?: string; error?: string } = await response.json().catch(() => ({}));
+      const data: unknown = await response.json().catch(() => null);
 
-      if (response.ok && data.ok) {
+      if (response.ok && isApiResponse(data) && data.success) {
         setPassword("");
         router.replace("/admin/dashboard");
         router.refresh();
         return;
       }
-      setError(data.error ?? "Invalid email or password.");
+      setError(isApiResponse(data) && !data.success ? data.error.message : "Invalid email or password.");
       setPassword("");
     } catch {
       setError("Could not reach the server. Check your connection and try again.");

@@ -8,7 +8,11 @@ const STROKE = 26;
 const C = 2 * Math.PI * R;
 
 /** Enquiries by Service: SVG donut + legend. Percentages arrive pre-computed (sum to 100). */
-export default function ServiceBreakdown({ shares, total }: { shares: ServiceShare[]; total: number }) {
+/**
+ * `total` = service selections (an enquiry may pick several), used for the arcs;
+ * `enquiries` = number of enquiries, shown in the centre.
+ */
+export default function ServiceBreakdown({ shares, total, enquiries }: { shares: ServiceShare[]; total: number; enquiries: number }) {
   const withColor = shares.map((s, i) => ({ ...s, color: SHADES[i % SHADES.length] }));
   // Pre-compute each arc's length and start offset (pure, no mutation during render).
   const segments = withColor
@@ -32,7 +36,7 @@ export default function ServiceBreakdown({ shares, total }: { shares: ServiceSha
       ) : (
         <div className="mt-5 flex flex-1 flex-col items-center gap-6 @[30rem]:flex-row @[30rem]:gap-8">
           <div className="relative shrink-0">
-            <svg width={190} height={190} viewBox="0 0 190 190" role="img" aria-label={`${total} enquiries by service: ${withColor.map((s) => `${s.label} ${s.percent}%`).join(", ")}`}>
+            <svg width={190} height={190} viewBox="0 0 190 190" role="img" aria-label={`${enquiries} enquiries, ${total} service selections: ${withColor.map((s) => `${s.label} ${s.percent}%`).join(", ")}`}>
               <g transform="rotate(-90 95 95)">
                 <circle cx={95} cy={95} r={R} fill="none" stroke="rgba(0,0,0,0.05)" strokeWidth={STROKE} />
                 {segments.map((s) => (
@@ -52,8 +56,8 @@ export default function ServiceBreakdown({ shares, total }: { shares: ServiceSha
               </g>
             </svg>
             <div aria-hidden="true" className="absolute inset-0 grid place-content-center text-center">
-              <span className={`${editorialSerif.className} text-4xl font-medium leading-none text-[#1a0a0c]`}>{total}</span>
-              <span className="mt-1 text-xs text-ink-2">Total</span>
+              <span className={`${editorialSerif.className} text-4xl font-medium leading-none text-[#1a0a0c]`}>{enquiries}</span>
+              <span className="mt-1 text-xs text-ink-2">Enquiries</span>
             </div>
           </div>
 

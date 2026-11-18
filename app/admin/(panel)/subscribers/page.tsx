@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { countNewEnquiries } from "@/lib/enquiries/repository";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { enquiries, subscribers } from "@/lib/admin/data";
-import { getNewEnquiries } from "@/lib/admin/enquiry-utils";
+import { subscribers } from "@/lib/admin/data";
 import { getAllSubscribers } from "@/lib/admin/subscriber-utils";
 import { editorialSerif } from "@/lib/fonts";
 import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
@@ -38,7 +38,7 @@ async function Subscribers() {
         email={email}
         today={today}
         todayIso={todayIso}
-        newEnquiries={getNewEnquiries(enquiries)}
+        newEnquiries={await countNewEnquiries()}
       />
       <div className="mt-8 lg:mt-10">
         <SubscribersWorkspace initial={getAllSubscribers(subscribers)} serifClassName={editorialSerif.className} />

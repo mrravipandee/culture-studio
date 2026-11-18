@@ -3,7 +3,7 @@
 import { useId, useRef, useState } from "react";
 import { Check, Circle, KeyRound, LoaderCircle } from "lucide-react";
 import { PASSWORD_MAX, checkPasswordRules, passwordStrength, type PasswordChangeData, type ProfileData } from "@/lib/admin/settings-schemas";
-import { settingsRequest } from "./settings-api";
+import { SESSION_ENDED_URL, settingsRequest } from "./settings-api";
 import { FormNotice, LocalTime, PasswordField, SettingsCard, primaryButton } from "./SettingsParts";
 
 type Fields = Partial<Record<"currentPassword" | "newPassword" | "confirmPassword", string>>;
@@ -76,6 +76,11 @@ export default function PasswordSection({
     lock.current = false;
     setPending(false);
 
+    if (result.ok && !result.data.currentSessionKept) {
+      // Password changed and every session revoked, but this browser's new session couldn't be created.
+      window.location.replace(SESSION_ENDED_URL);
+      return;
+    }
     if (result.ok) {
       setCurrent("");
       setNext("");

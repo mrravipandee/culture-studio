@@ -1,31 +1,34 @@
+import "server-only";
+
 /**
  * Credential check against MongoDB. SERVER-ONLY.
  *
- * The admin record (and its Argon2id hash) lives in the `admins` collection; it is created
- * once from ADMIN_EMAIL / ADMIN_PASSWORD_HASH if missing (see admin-store.ts).
- *
- * The Argon2id verification always runs, even when the email does not match, so the
- * response time does not reveal which of the two was wrong.
+ * Constant-shape work: the Argon2id verification always runs (against a throwaway hash
+ * when no admin exists), and the email comparison is constant-time, so response timing
+ * doesn't reveal which part was wrong or whether an admin exists.
  */
 
-import { createHash, timingSafeEqual } from "node:crypto";
-import { normalizeEmail } from "./config";
-import { getAdminCredentials } from "./admin-store";
-import { verifyPassword } from "./password";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
+import { normalizeEmail } from "@/lib/validation/common";
+import type { AdminCredentials } from "./admin-store";
+import { hashPassword, verifyPassword } from "./password";
 
 const digest = (value: string) => createHash("sha256").update(value).digest();
 
-export type CredentialResult =
-  | { ok: true; adminId: string; sessionVersion: number }
-  /** emailMatched: the admin's email was right but the password wasn't (logged as FAILED). */
-  | { ok: false; adminId: string; emailMatched: boolean };
+let dummyHash: Promise<string> | null = null;
+const throwawayHash = () => (dummyHash ??= hashPassword(randomBytes(24).toString("base64url")));
 
-/** Throws AuthConfigError (bootstrap env invalid) or DatabaseUnavailableError. */
-export async function verifyAdminCredentials(email: string, password: string): Promise<CredentialResult> {
-  const admin = await getAdminCredentials();
+export type CredentialCheck =
+  | { ok: true }
+  /** emailMatched: the admin's email was right but the password wasn't (logged as FAILED). */
+  | { ok: false; emailMatched: boolean };
+
+export async function checkCredentials(admin: AdminCredentials | null, email: string, password: string): Promise<CredentialCheck> {
+  if (!admin) {
+    await verifyPassword(await throwawayHash(), password); // same cost as a real check
+    return { ok: false, emailMatched: false };
+  }
   const emailMatched = timingSafeEqual(digest(normalizeEmail(email)), digest(admin.email));
   const passwordMatches = await verifyPassword(admin.passwordHash, password);
-  const adminId = admin._id.toString();
-  if (emailMatched && passwordMatches) return { ok: true, adminId, sessionVersion: admin.sessionVersion };
-  return { ok: false, adminId, emailMatched };
+  return emailMatched && passwordMatches ? { ok: true } : { ok: false, emailMatched };
 }

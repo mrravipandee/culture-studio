@@ -1,93 +1,111 @@
+import "server-only";
+
 /**
- * Attempt rate limiting (in memory). SERVER-ONLY.
+ * Attempt rate limiting for admin authentication, shared by every server instance
+ * (MongoDB collection: rate_limits). SERVER-ONLY.
  *
- * Login:
- * - Per client IP: 5 failed attempts in 15 minutes locks that IP for 15 minutes.
- * - Per server instance: 30 failed attempts in 15 minutes locks login for everyone on
- *   that instance for 15 minutes (slows distributed guessing).
+ * Fixed windows. Each failure is counted with ONE atomic findOneAndUpdate (pipeline upsert):
+ * if the bucket's window has ended it restarts at 1, otherwise the count increments.
+ * A bucket at or above its limit blocks until its window ends (Retry-After = seconds left).
  *
- * Current-password checks in Settings (password change, email change):
- * - Per admin: 5 wrong current passwords in 15 minutes locks those checks for 15 minutes,
- *   so a hijacked session can't be used to brute-force the password.
+ * Policies
+ *  - login per IP       5 failures / 15 min. Only when the IP comes from a trusted proxy
+ *                        header (Vercel, or TRUST_PROXY_HEADERS=true); stored hashed.
+ *  - login per account  20 failures / 15 min, counting only wrong passwords for the REAL
+ *                        admin email. Stops slow distributed guessing; unknown emails can't
+ *                        trip it. Residual risk: someone who knows the admin email can keep
+ *                        sign-in locked by failing 20 times per window (documented).
+ *  - password checks    5 wrong current passwords / 15 min per signed-in admin (Settings).
+ *  - enquiries per IP    5 submissions / 15 min (trusted IP only, hashed).
+ *  - enquiries per email 3 submissions / 15 min (hashed), so the limit still applies when
+ *                        the IP can't be trusted (local development, non-Vercel hosting).
  *
- * Limitation: memory is per serverless instance on Vercel, so an attacker spread across
- * many cold instances gets more attempts. For a hard global limit, move these counters to
- * a shared store (e.g. Upstash Redis or MongoDB) behind the same functions.
+ * The previous instance-wide lockout (30 failures from anyone, including unknown emails,
+ * locked sign-in for everyone) was removed: it let anonymous visitors deny admin access.
  */
 
-const WINDOW_MS = 15 * 60 * 1000;
-const LOCK_MS = 15 * 60 * 1000;
-const MAX_TRACKED_KEYS = 5000;
+import { createHash } from "node:crypto";
+import { withDb } from "@/lib/db/mongoose";
+import { RateLimitModel } from "@/lib/db/models/RateLimit";
+import { isDuplicateKeyError } from "@/lib/server/errors";
 
-interface Counter {
-  failures: number;
-  windowStart: number;
-  lockedUntil: number;
+export interface RateLimitPolicy {
+  limit: number;
+  windowMs: number;
 }
 
-class AttemptLimiter {
-  private readonly counters = new Map<string, Counter>();
-  constructor(private readonly maxFailures: number) {}
+const MINUTES = 60 * 1000;
 
-  private fresh(counter: Counter, now: number) {
-    if (now - counter.windowStart > WINDOW_MS) {
-      counter.failures = 0;
-      counter.windowStart = now;
+export const RATE_LIMITS = {
+  loginIp: { limit: 5, windowMs: 15 * MINUTES },
+  loginAccount: { limit: 20, windowMs: 15 * MINUTES },
+  passwordCheck: { limit: 5, windowMs: 15 * MINUTES },
+  /** Public enquiry form: every submission counts (not just failures). */
+  enquiryIp: { limit: 5, windowMs: 15 * MINUTES },
+  enquiryEmail: { limit: 3, windowMs: 15 * MINUTES },
+} as const satisfies Record<string, RateLimitPolicy>;
+
+const hashed = (value: string) => createHash("sha256").update(value).digest("hex").slice(0, 32);
+
+/** Bucket keys. IPs are hashed so raw addresses are never stored in rate_limits. */
+export const rateLimitKeys = {
+  loginIp: (ip: string) => `login:ip:${hashed(ip)}`,
+  loginAccount: (adminId: string) => `login:account:${adminId}`,
+  passwordCheck: (adminId: string) => `password-check:${adminId}`,
+  enquiryIp: (ip: string) => `enquiry:ip:${hashed(ip)}`,
+  enquiryEmail: (email: string) => `enquiry:email:${hashed(email)}`,
+};
+
+/** Seconds until the bucket allows another attempt, or 0 when allowed. */
+export async function rateLimitRetryAfter(key: string, policy: RateLimitPolicy, now = Date.now()): Promise<number> {
+  const doc = await withDb(() => RateLimitModel.findById(key).select("count expiresAt").lean());
+  return secondsBlocked(doc, policy, now);
+}
+
+/** Pure decision (exported for tests). */
+export function secondsBlocked(doc: { count: number; expiresAt: Date } | null, policy: RateLimitPolicy, now: number): number {
+  if (!doc) return 0;
+  const end = doc.expiresAt.getTime();
+  if (end <= now || doc.count < policy.limit) return 0;
+  return Math.ceil((end - now) / 1000);
+}
+
+/**
+ * The update pipeline for one failure (exported for tests). Every expression reads the
+ * stored document as it was before this update, so the check-and-increment is atomic.
+ */
+export function failurePipeline(policy: RateLimitPolicy, now: number) {
+  const at = new Date(now);
+  const windowOpen = { $gt: ["$expiresAt", at] }; // false when the bucket is new or its window ended
+  return [
+    {
+      $set: {
+        count: { $cond: [windowOpen, { $add: [{ $ifNull: ["$count", 0] }, 1] }, 1] },
+        windowStart: { $cond: [windowOpen, "$windowStart", at] },
+        expiresAt: { $cond: [windowOpen, "$expiresAt", new Date(now + policy.windowMs)] },
+      },
+    },
+  ];
+}
+
+/** Counts one failure atomically. Returns the bucket's count after this failure. */
+export async function recordRateLimitFailure(key: string, policy: RateLimitPolicy, now = Date.now()): Promise<number> {
+  const run = () =>
+    RateLimitModel.collection.findOneAndUpdate({ _id: key } as never, failurePipeline(policy, now), { upsert: true, returnDocument: "after" });
+  return withDb(async () => {
+    let doc;
+    try {
+      doc = await run();
+    } catch (error) {
+      // Two first failures at the same moment can race on the upsert; the retry increments.
+      if (!isDuplicateKeyError(error)) throw error;
+      doc = await run();
     }
-  }
-
-  private prune(now: number) {
-    if (this.counters.size < MAX_TRACKED_KEYS) return;
-    for (const [key, c] of this.counters) {
-      if (c.lockedUntil < now && now - c.windowStart > WINDOW_MS) this.counters.delete(key);
-    }
-  }
-
-  /** Epoch ms until which `key` is locked (0 when not locked). */
-  lockedUntil(key: string) {
-    return this.counters.get(key)?.lockedUntil ?? 0;
-  }
-
-  fail(key: string, now = Date.now()) {
-    this.prune(now);
-    const counter = this.counters.get(key) ?? { failures: 0, windowStart: now, lockedUntil: 0 };
-    this.fresh(counter, now);
-    counter.failures += 1;
-    if (counter.failures >= this.maxFailures) counter.lockedUntil = now + LOCK_MS;
-    this.counters.set(key, counter);
-  }
-
-  reset(key: string) {
-    this.counters.delete(key);
-  }
+    return typeof doc?.count === "number" ? doc.count : 1;
+  });
 }
 
-const seconds = (until: number, now: number) => (until > now ? Math.ceil((until - now) / 1000) : 0);
-
-/* Login ------------------------------------------------------------------------------- */
-
-const loginByIp = new AttemptLimiter(5);
-const loginGlobal = new AttemptLimiter(30);
-const GLOBAL = "*";
-
-/** Seconds until this IP may try again, or 0 when allowed. */
-export function loginRetryAfter(ip: string, now = Date.now()): number {
-  return seconds(Math.max(loginByIp.lockedUntil(ip), loginGlobal.lockedUntil(GLOBAL)), now);
+/** Clears a bucket (after a successful sign-in or password check). */
+export async function resetRateLimit(key: string) {
+  await withDb(() => RateLimitModel.deleteOne({ _id: key }));
 }
-
-export function recordLoginFailure(ip: string, now = Date.now()) {
-  loginByIp.fail(ip, now);
-  loginGlobal.fail(GLOBAL, now);
-}
-
-export function recordLoginSuccess(ip: string) {
-  loginByIp.reset(ip);
-}
-
-/* Current-password checks (Settings) --------------------------------------------------- */
-
-const passwordChecks = new AttemptLimiter(5);
-
-export const passwordCheckRetryAfter = (adminId: string, now = Date.now()) => seconds(passwordChecks.lockedUntil(adminId), now);
-export const recordPasswordCheckFailure = (adminId: string, now = Date.now()) => passwordChecks.fail(adminId, now);
-export const recordPasswordCheckSuccess = (adminId: string) => passwordChecks.reset(adminId);
