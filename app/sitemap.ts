@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { publishedCaseStudies } from "@/lib/content/case-studies";
+import { publicBlogArticles } from "@/lib/content/blog";
 import { caseStudiesEnabled } from "@/lib/content/case-studies-publishing";
 import { isIndexable, siteUrl } from "@/lib/site";
 
@@ -19,5 +20,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "yearly" as const,
     priority: 0.5,
   }));
-  return [...pages, ...studies];
+  // Only published blog articles (none yet: the samples have no body).
+  const articles = publicBlogArticles.map((a) => ({
+    url: `${siteUrl}/blog/${a.slug}`,
+    lastModified: a.date,
+    changeFrequency: "yearly" as const,
+    priority: 0.5,
+  }));
+  return [...pages, ...studies, ...articles];
 }

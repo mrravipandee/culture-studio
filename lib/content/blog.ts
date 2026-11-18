@@ -7,7 +7,12 @@
  * photography. Replace this file with CMS data later; the components only read from it.
  *
  * The page is noindex and left out of the sitemap while this is sample content.
+ * An article is public at /blog/<slug> only when its slug is in lib/content/blog-publishing.ts
+ * AND it has a body (`content`).
  */
+
+import type { RichNode } from "@/lib/rich-text";
+import { isBlogPublished } from "./blog-publishing";
 
 export type BlogTopicId = "brand-strategy" | "marketing" | "content" | "growth" | "design";
 
@@ -22,11 +27,16 @@ export interface BlogArticle {
   slug: string;
   topic: BlogTopicId;
   title: string;
+  /** Excerpt: shown on cards and as the default meta description. */
   description: string;
   /** ISO date (sample). */
   date: string;
+  /** Listing label for the sample cards. Real articles compute it from `content`. */
   readingTime: string;
   image: BlogImage;
+  /** Article body (lib/rich-text.ts JSON). null = not written yet (none of the samples have a body). */
+  content: RichNode | null;
+  tags: string[];
 }
 
 /** Shown on every article (no individual authors yet). */
@@ -52,6 +62,8 @@ export const featuredArticle: BlogArticle = {
     alt: "A studio wall of framed prints in warm burgundy light",
     position: "50% 40%",
   },
+  content: null,
+  tags: [],
 };
 
 /** Illustrative topic list and counts (UI preview; replace with real counts). */
@@ -75,6 +87,8 @@ export const blogArticles: BlogArticle[] = [
     date: "2026-11-10",
     readingTime: "5 min read",
     image: { src: "/images/blog/article-workspace-laptop.jpg", alt: "A laptop on a long desk by tall windows" },
+    content: null,
+    tags: [],
   },
   {
     slug: "performance-marketing-vs-brand-marketing",
@@ -84,6 +98,8 @@ export const blogArticles: BlogArticle[] = [
     date: "2026-11-07",
     readingTime: "6 min read",
     image: { src: "/images/blog/article-abstract-burgundy-ivory.jpg", alt: "Abstract burgundy and ivory curves" },
+    content: null,
+    tags: [],
   },
   {
     slug: "content-that-converts-a-practical-playbook",
@@ -93,6 +109,8 @@ export const blogArticles: BlogArticle[] = [
     date: "2026-11-03",
     readingTime: "5 min read",
     image: { src: "/images/blog/article-creative-tools.jpg", alt: "A camera and lenses on a dark desk", position: "50% 35%" },
+    content: null,
+    tags: [],
   },
 ];
 
@@ -109,3 +127,11 @@ export const blogNewsletter = {
 /** "Nov 14, 2026" */
 export const formatBlogDate = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
+
+/* ---------------------------------------------------------------
+   Public articles: on the publishing list AND with a body.
+---------------------------------------------------------------- */
+
+
+export const publicBlogArticles = [featuredArticle, ...blogArticles].filter((a) => isBlogPublished(a.slug) && a.content !== null);
+export const isBlogArticlePublic = (slug: string) => publicBlogArticles.some((a) => a.slug === slug);

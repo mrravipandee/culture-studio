@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { caseStudiesEnabled, isCaseStudyPublished } from "@/lib/content/case-studies-publishing";
 import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/auth/session";
+import { isBlogArticlePublic } from "@/lib/content/blog";
 
 /**
  * 1. Admin gate (/admin/*, /api/admin/*)
@@ -9,6 +10,8 @@ import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/auth/session";
  *    - Signed-in visitors to /admin/login (or /admin) go to /admin/dashboard.
  *    Pages and handlers re-check the session themselves (lib/auth/require-admin.ts),
  *    so this is the first line of defence, not the only one.
+ *
+ * 3. Blog articles (/blog/<slug>): 404 unless published (lib/content/blog-publishing.ts + a body).
  *
  * 2. Case Studies visibility and real HTTP 404s.
  *    - /case-studies: 404 while no case study is explicitly published.
@@ -54,11 +57,18 @@ export async function proxy(request: NextRequest) {
   }
 
   const [, section, slug] = pathname.split("/");
+
+  // 3. Blog articles: only published ones (publishing list + body). Drafts are never public.
+  if (section === "blog") {
+    if (slug && isBlogArticlePublic(slug)) return NextResponse.next();
+    return NextResponse.rewrite(new URL("/404-not-found", request.url));
+  }
+
   const allowed = slug === undefined || slug === "" ? caseStudiesEnabled : section === "case-studies" && isCaseStudyPublished(slug);
   if (allowed) return NextResponse.next();
   return NextResponse.rewrite(new URL("/404-not-found", request.url));
 }
 
 export const config = {
-  matcher: ["/case-studies", "/case-studies/:slug", "/admin", "/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/case-studies", "/case-studies/:slug", "/blog/:slug", "/admin", "/admin/:path*", "/api/admin/:path*"],
 };

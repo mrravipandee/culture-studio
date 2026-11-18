@@ -1199,3 +1199,56 @@ html.lenis {
 @keyframes admin-reveal { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: none; } }
 .admin-fade-up { animation: admin-fade-up 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .admin-reveal { animation: admin-reveal 1200ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Admin dashboard: chart draw-in, donut fade, dropdown pop (reduced-motion rule shortens all). */
+@keyframes admin-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes admin-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes admin-pop { from { opacity: 0; transform: translateY(-4px) scale(0.98); } to { opacity: 1; transform: none; } }
+.admin-chart-line { stroke-dasharray: 1; animation: admin-draw 1100ms cubic-bezier(0.22, 1, 0.36, 1) 450ms both; }
+.admin-chart-area { animation: admin-fade 900ms ease 650ms both; }
+.admin-donut-seg { animation: admin-fade 700ms ease 600ms both; }
+.admin-pop:not([hidden]) { animation: admin-pop 160ms cubic-bezier(0.22, 1, 0.36, 1) both; transform-origin: top right; }
+
+/* Admin enquiries: row/result entrance, detail swap, dialog (reduced-motion rule shortens all). */
+@keyframes admin-row-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes admin-detail-in { from { opacity: 0; transform: translateX(10px); } to { opacity: 1; transform: none; } }
+.admin-row-in { animation: admin-row-in 280ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.admin-detail-in { animation: admin-detail-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.admin-dialog[open] { animation: admin-pop 180ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Admin sheets (forms): overlay fade + slide from the right. */
+@keyframes admin-sheet-in { from { transform: translateX(32px); opacity: 0; } to { transform: none; opacity: 1; } }
+.admin-overlay-in { animation: admin-fade 220ms ease both; }
+.admin-sheet-in { animation: admin-sheet-in 320ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Article body (public blog + admin preview + editor canvas). Readable measure, clear rhythm. */
+.cs-prose { color: rgb(0 0 0 / 0.82); font-size: 1.0625rem; line-height: 1.75; overflow-wrap: anywhere; }
+.cs-prose > * + * { margin-top: 1.25em; }
+.cs-prose h1, .cs-prose h2, .cs-prose h3, .cs-prose h4 { color: #1a0a0c; line-height: 1.2; letter-spacing: -0.01em; font-weight: 600; }
+.cs-prose h1 { font-size: 2rem; margin-top: 2em; }
+.cs-prose h2 { font-size: 1.625rem; margin-top: 2em; }
+.cs-prose h3 { font-size: 1.3125rem; margin-top: 1.75em; }
+.cs-prose h4 { font-size: 1.0625rem; margin-top: 1.5em; text-transform: none; }
+.cs-prose > :first-child { margin-top: 0; }
+.cs-prose a { color: #7a1f2b; text-decoration: underline; text-underline-offset: 0.18em; text-decoration-thickness: 1px; }
+.cs-prose a:hover { text-decoration-thickness: 2px; }
+.cs-prose ul { list-style: disc; padding-left: 1.4em; }
+.cs-prose ol { list-style: decimal; padding-left: 1.4em; }
+.cs-prose li + li { margin-top: 0.4em; }
+.cs-prose li > p { margin: 0; }
+.cs-prose li > ul, .cs-prose li > ol { margin-top: 0.4em; }
+.cs-prose blockquote { border-left: 2px solid #7a1f2b; padding: 0.2em 0 0.2em 1.25em; font-size: 1.1875rem; font-style: italic; color: #1a0a0c; }
+.cs-prose hr { border: 0; border-top: 1px solid rgb(0 0 0 / 0.12); margin: 2.5em 0; }
+.cs-prose code { font-family: var(--font-geist-mono), ui-monospace, monospace; font-size: 0.875em; background: rgb(0 0 0 / 0.05); padding: 0.1em 0.35em; border-radius: 4px; }
+.cs-prose figure { margin-top: 2em; margin-bottom: 2em; }
+.cs-prose figure img { width: 100%; height: auto; border-radius: 10px; background: rgb(0 0 0 / 0.04); }
+.cs-prose figure[data-align="center"] img { max-width: 34rem; margin-inline: auto; }
+.cs-prose figcaption { margin-top: 0.6em; text-align: center; font-size: 0.8125rem; color: rgb(0 0 0 / 0.56); }
+.cs-prose s { text-decoration-thickness: 1px; }
+
+/* Admin article editor canvas (TipTap). */
+.cs-editor { font-size: 1.0625rem; }
+.cs-editor p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: rgb(0 0 0 / 0.36); float: left; height: 0; pointer-events: none; }
+.cs-editor figure.ProseMirror-selectednode img, .cs-editor img.ProseMirror-selectednode { outline: 2px solid #7a1f2b; outline-offset: 3px; }
+.cs-editor hr.ProseMirror-selectednode { border-top-color: #7a1f2b; }
+.cs-editor ::selection { background: rgb(122 31 43 / 0.18); }

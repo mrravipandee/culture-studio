@@ -11,7 +11,7 @@ import { positioning } from "@/lib/content/service-catalog";
  * Vercel preview/development deployments stay noindex (no canonical, empty sitemap,
  * robots disallow), so only the production site is ever indexed.
  */
-const PRODUCTION_URL = "https://studioculture.in";
+export const PRODUCTION_URL = "https://studioculture.in";
 const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim() || PRODUCTION_URL;
 
 export const siteUrl: string = raw.replace(/\/+$/, "");
