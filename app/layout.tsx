@@ -1,20 +1,29 @@
 import type { Metadata } from "next";
-import { Manrope, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { MOTION_ARM_SCRIPT } from "@/lib/motion-arm";
 import { defaultDescription, isIndexable, metadataBase, ogImage, siteName } from "@/lib/site";
 
-// One typeface across the site; Geist Mono only for indices and numeric labels.
-const manrope = Manrope({
+/*
+ * One typeface across the site; Geist Mono only for indices and numeric labels.
+ *
+ * Self-hosted (app/fonts/, SIL Open Font License) instead of next/font/google: the Google
+ * loader downloads the font CSS during every build and derives the class name from it, and
+ * a differing response in one build step produced mismatched class names in production
+ * (HTML .__variable_0297a5 vs CSS .__variable_369f12), so every font fell back to Times.
+ * Local files make the output deterministic and builds need no network for fonts.
+ * The files are the Latin variable-weight subsets Google served (same glyphs as before).
+ */
+const manrope = localFont({
+  src: [{ path: "./fonts/manrope-latin-var.woff2", weight: "200 800", style: "normal" }],
   variable: "--font-manrope",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const geistMono = localFont({
+  src: [{ path: "./fonts/geist-mono-latin-var.woff2", weight: "100 900", style: "normal" }],
   variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

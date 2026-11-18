@@ -55,7 +55,8 @@
     --burgundy-tint: color-mix(in oklab, var(--burgundy) 10%, var(--cream));
 
     /* Typography */
-    --font-body: var(--font-manrope), system-ui, sans-serif;
+    /* var() fallback: if --font-manrope is ever missing, use the system sans, never the browser default serif. */
+    --font-body: var(--font-manrope, system-ui), system-ui, sans-serif;
     --font-display: var(--font-body); /* legacy alias: one typeface site wide */
 
     /* Letter spacing */
@@ -226,7 +227,7 @@
     --font-sans: var(--font-body);
     --font-serif: var(--font-body); /* legacy: no serif in this system */
     --font-heading: var(--font-body);
-    --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+    --font-mono: var(--font-geist-mono, ui-monospace), ui-monospace, monospace;
 
     /* Letter spacing */
     --tracking-display: var(--track-display);
