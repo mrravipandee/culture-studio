@@ -24,7 +24,7 @@ import { isBlogArticlePublic } from "@/lib/content/blog";
  *    page (status 404, single noindex) before any rendering.
  */
 
-const PUBLIC_ADMIN_APIS = new Set(["/api/admin/login", "/api/admin/logout"]);
+const PUBLIC_ADMIN_APIS = new Set(["/api/admin/login", "/api/admin/logout", "/api/admin/session/ended"]);
 
 function adminHeaders(response: NextResponse) {
   response.headers.set("Cache-Control", "private, no-store");
@@ -35,11 +35,14 @@ function adminHeaders(response: NextResponse) {
 async function adminGate(request: NextRequest, pathname: string) {
   if (PUBLIC_ADMIN_APIS.has(pathname)) return adminHeaders(NextResponse.next());
 
+  // Seal + expiry only (no database). Pages and handlers also check MongoDB (revocation).
   const signedIn = await verifySessionCookie(request.cookies.get(SESSION_COOKIE_NAME)?.value);
 
   if (pathname.startsWith("/api/admin")) {
     if (signedIn) return adminHeaders(NextResponse.next());
-    return adminHeaders(NextResponse.json({ error: "Unauthorised." }, { status: 401 }));
+    return adminHeaders(
+      NextResponse.json({ success: false, error: { code: "UNAUTHENTICATED", message: "Your session has ended. Please sign in again." } }, { status: 401 }),
+    );
   }
 
   const isLogin = pathname === "/admin/login";

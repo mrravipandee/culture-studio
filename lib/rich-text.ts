@@ -109,6 +109,47 @@ export const READING_WPM = 225;
 export const readingMinutes = (words: number, wpm = READING_WPM) => (words === 0 ? 0 : Math.max(1, Math.ceil(words / wpm)));
 export const readingTimeLabel = (words: number) => `${readingMinutes(words)} min read`;
 
+/* Headings outline (table of contents) ---------------------------------------------- */
+
+export interface HeadingAnchor {
+  id: string;
+  text: string;
+  /** Rendered level: body H1 renders as H2 (see components/blog/RichText.tsx). */
+  level: 2 | 3 | 4;
+}
+
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 60) || "section";
+
+/**
+ * Every heading in document order with a unique, stable id. RichText assigns the same ids
+ * in the same order, so the table of contents links always match the rendered headings.
+ */
+export function headingOutline(doc: RichNode | null | undefined): HeadingAnchor[] {
+  const out: HeadingAnchor[] = [];
+  const used = new Map<string, number>();
+  const walk = (node: RichNode) => {
+    if (node.type === "heading") {
+      const text = plainText(node).replace(/\s+/g, " ").trim();
+      const base = slugify(text);
+      const n = (used.get(base) ?? 0) + 1;
+      used.set(base, n);
+      const raw = Number(node.attrs?.level);
+      out.push({ id: n === 1 ? base : `${base}-${n}`, text, level: raw === 3 ? 3 : raw === 4 ? 4 : 2 });
+      return;
+    }
+    node.content?.forEach(walk);
+  };
+  if (doc) walk(doc);
+  return out;
+}
+
 /* Structure checks ---------------------------------------------------------------- */
 
 const walk = (node: RichNode, visit: (n: RichNode) => void) => {

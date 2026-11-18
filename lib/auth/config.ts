@@ -1,14 +1,18 @@
 /**
  * Admin auth configuration. SERVER-ONLY: never import from a client component.
  *
- * Reads the single admin's credentials from server-side environment variables:
- *   ADMIN_EMAIL          the admin's email address
- *   ADMIN_PASSWORD_HASH  an Argon2id hash (generate with `npm run admin:hash`)
- *   SESSION_SECRET       at least 32 random characters (seals the session cookie)
+ * Server-side environment variables:
+ *   SESSION_SECRET       at least 32 random characters (seals the session cookie). Required.
+ *   ADMIN_EMAIL          BOOTSTRAP ONLY: email for the first admin record in MongoDB.
+ *   ADMIN_PASSWORD_HASH  BOOTSTRAP ONLY: Argon2id hash (generate with `npm run admin:hash`).
  *
- * Missing or malformed values throw AuthConfigError, so login fails closed. Error
- * messages name the variable only, never its value.
+ * ADMIN_EMAIL / ADMIN_PASSWORD_HASH are read only when the `admins` collection has no admin
+ * yet (lib/auth/admin-store.ts). After that MongoDB is the source of truth: changing the
+ * password in Settings updates MongoDB, and these variables are ignored (editing them does
+ * NOT reset the password). Error messages name the variable only, never its value.
  */
+
+import { ARGON2ID_PATTERN } from "./password";
 
 export class AuthConfigError extends Error {
   constructor(message: string) {
@@ -17,19 +21,11 @@ export class AuthConfigError extends Error {
   }
 }
 
-export interface AuthConfig {
-  email: string;
-  passwordHash: string;
-  sessionSecret: string;
-}
-
 const MIN_SECRET_LENGTH = 32;
-/** $argon2id$v=19$m=…,t=…,p=…$<salt>$<hash> */
-const ARGON2ID_PATTERN = /^\$argon2id\$v=\d+\$m=\d+,t=\d+,p=\d+\$[A-Za-z0-9+/]+\$[A-Za-z0-9+/]+$/;
 
 export const normalizeEmail = (value: string) => value.trim().toLowerCase();
 
-/** Session secret alone (used by proxy.ts, which never needs the password hash). */
+/** Session secret (used by the session layer and proxy.ts). */
 export function getSessionSecret(): string {
   const secret = process.env.SESSION_SECRET ?? "";
   if (secret.length < MIN_SECRET_LENGTH) {
@@ -38,24 +34,20 @@ export function getSessionSecret(): string {
   return secret;
 }
 
-export function getAdminEmail(): string {
+/** Initial admin credentials from the environment. Only called when no admin exists in MongoDB. */
+export function getBootstrapCredentials(): { email: string; passwordHash: string } {
   const email = normalizeEmail(process.env.ADMIN_EMAIL ?? "");
-  if (!email || !email.includes("@")) throw new AuthConfigError("ADMIN_EMAIL is missing or invalid.");
-  return email;
-}
+  if (!email || !email.includes("@")) throw new AuthConfigError("ADMIN_EMAIL is missing or invalid (needed to create the first admin).");
 
-export function getAuthConfig(): AuthConfig {
   const passwordHash = (process.env.ADMIN_PASSWORD_HASH ?? "").trim();
-  if (!passwordHash) throw new AuthConfigError("ADMIN_PASSWORD_HASH is missing.");
+  if (!passwordHash) throw new AuthConfigError("ADMIN_PASSWORD_HASH is missing (needed to create the first admin).");
   if (!passwordHash.includes("$")) {
     throw new AuthConfigError(
       "ADMIN_PASSWORD_HASH contains a plain value, not an Argon2id hash. Run `npm run admin:hash -- --write`, then restart.",
     );
   }
   if (!ARGON2ID_PATTERN.test(passwordHash)) {
-    throw new AuthConfigError(
-      "ADMIN_PASSWORD_HASH is not a complete Argon2id hash. In .env files, escape every $ as \\$ (see .env.example).",
-    );
+    throw new AuthConfigError("ADMIN_PASSWORD_HASH is not a complete Argon2id hash. In .env files, escape every $ as \\$ (see .env.example).");
   }
-  return { email: getAdminEmail(), passwordHash, sessionSecret: getSessionSecret() };
+  return { email, passwordHash };
 }

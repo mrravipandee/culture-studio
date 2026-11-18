@@ -1,4 +1,6 @@
 import AdminShell from "@/components/admin/AdminShell";
+import { AdminProfileProvider } from "@/components/admin/AdminProfileContext";
+import { AdminLogoutProvider } from "@/components/admin/AdminLogout";
 import { enquiries } from "@/lib/admin/data";
 import { getNewEnquiries } from "@/lib/admin/enquiry-utils";
 
@@ -8,5 +10,11 @@ import { getNewEnquiries } from "@/lib/admin/enquiry-utils";
  * The Enquiries badge counts NEW records in the (demo) dataset.
  */
 export default function AdminPanelLayout({ children }: { children: React.ReactNode }) {
-  return <AdminShell badges={{ enquiries: getNewEnquiries(enquiries) }}>{children}</AdminShell>;
+  return (
+    <AdminProfileProvider>
+      <AdminLogoutProvider>
+        <AdminShell badges={{ enquiries: getNewEnquiries(enquiries) }}>{children}</AdminShell>
+      </AdminLogoutProvider>
+    </AdminProfileProvider>
+  );
 }

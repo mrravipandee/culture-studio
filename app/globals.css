@@ -1246,6 +1246,14 @@ html.lenis {
 .cs-prose figcaption { margin-top: 0.6em; text-align: center; font-size: 0.8125rem; color: rgb(0 0 0 / 0.56); }
 .cs-prose s { text-decoration-thickness: 1px; }
 
+/* Reading mode (public article page): larger, adjustable text. --reading-scale is set by
+   components/blog/ReadingMode.tsx (A− / A+). The admin preview doesn't set it (scale 1). */
+.cs-reading .cs-prose { font-size: calc(1.125rem * var(--reading-scale, 1)); line-height: 1.8; color: rgb(0 0 0 / 0.84); }
+.cs-reading .cs-prose > p:first-child { font-size: 1.12em; line-height: 1.7; color: #1a0a0c; }
+.cs-reading .cs-prose :is(h2, h3, h4) { scroll-margin-top: 7rem; }
+.cs-reading .cs-prose :is(h2, h3, h4):focus { outline: none; }
+@media (max-width: 47.99rem) { .cs-reading .cs-prose { font-size: calc(1.0625rem * var(--reading-scale, 1)); } }
+
 /* Admin article editor canvas (TipTap). */
 .cs-editor { font-size: 1.0625rem; }
 .cs-editor p.is-editor-empty:first-child::before { content: attr(data-placeholder); color: rgb(0 0 0 / 0.36); float: left; height: 0; pointer-events: none; }

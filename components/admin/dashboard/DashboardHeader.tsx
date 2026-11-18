@@ -8,6 +8,8 @@ interface Props {
   eyebrow?: string;
   title?: string;
   description?: string;
+  /** Signed-in admin's name and email (from MongoDB, via requireAdmin). */
+  name: string;
   email: string;
   /** Today's date, formatted on the server at request time. */
   today: string;
@@ -21,6 +23,7 @@ export default function DashboardHeader({
   eyebrow = "Dashboard",
   title = "Welcome Back",
   description = "Here\u2019s what\u2019s happening at CULT.URE.",
+  name,
   email,
   today,
   todayIso,
@@ -54,7 +57,7 @@ export default function DashboardHeader({
           {newEnquiries > 0 && <span aria-hidden="true" className="absolute right-2.5 top-2.5 size-2 rounded-full bg-[#b3261e] ring-2 ring-[var(--cream)]" />}
         </Link>
         <span aria-hidden="true" className="hidden h-10 w-px bg-black/10 sm:block" />
-        <ProfileMenu email={email} />
+        <ProfileMenu name={name} email={email} />
       </div>
     </header>
   );

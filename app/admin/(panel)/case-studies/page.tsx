@@ -22,7 +22,7 @@ export default function AdminCaseStudiesPage() {
 }
 
 async function CaseStudies() {
-  const { email } = await requireAdmin();
+  const { email, name } = await requireAdmin();
   const now = new Date();
   const today = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" }).format(now);
   const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(now);
@@ -33,6 +33,7 @@ async function CaseStudies() {
         eyebrow="Case studies"
         title="Case Studies"
         description="Manage your projects, case studies and success stories."
+        name={name}
         email={email}
         today={today}
         todayIso={todayIso}

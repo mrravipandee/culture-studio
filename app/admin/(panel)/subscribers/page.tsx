@@ -23,7 +23,7 @@ export default function AdminSubscribersPage() {
 }
 
 async function Subscribers() {
-  const { email } = await requireAdmin();
+  const { email, name } = await requireAdmin();
   const now = new Date();
   const today = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" }).format(now);
   const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(now);
@@ -34,6 +34,7 @@ async function Subscribers() {
         eyebrow="Subscribe emails"
         title="Subscribers"
         description="Manage your newsletter subscribers and grow your audience."
+        name={name}
         email={email}
         today={today}
         todayIso={todayIso}

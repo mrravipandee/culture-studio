@@ -11,8 +11,16 @@
  * AND it has a body (`content`).
  */
 
-import type { RichNode } from "@/lib/rich-text";
+import { countWords, readingTimeLabel, type RichNode } from "@/lib/rich-text";
 import { isBlogPublished } from "./blog-publishing";
+import { contentThatConvertsBody, memorableBrandBody, performanceVsBrandBody, positioningBody } from "./blog-bodies";
+
+/**
+ * The launch articles' copy is awaiting the team's review. While true, article pages are
+ * noindex and left out of the sitemap (they are still readable at /blog/<slug>).
+ * Set to false once the text is approved.
+ */
+export const BLOG_COPY_IN_REVIEW = true;
 
 export type BlogTopicId = "brand-strategy" | "marketing" | "content" | "growth" | "design";
 
@@ -62,7 +70,7 @@ export const featuredArticle: BlogArticle = {
     alt: "A studio wall of framed prints in warm burgundy light",
     position: "50% 40%",
   },
-  content: null,
+  content: memorableBrandBody,
   tags: [],
 };
 
@@ -87,7 +95,7 @@ export const blogArticles: BlogArticle[] = [
     date: "2026-11-10",
     readingTime: "5 min read",
     image: { src: "/images/blog/article-workspace-laptop.jpg", alt: "A laptop on a long desk by tall windows" },
-    content: null,
+    content: positioningBody,
     tags: [],
   },
   {
@@ -98,7 +106,7 @@ export const blogArticles: BlogArticle[] = [
     date: "2026-11-07",
     readingTime: "6 min read",
     image: { src: "/images/blog/article-abstract-burgundy-ivory.jpg", alt: "Abstract burgundy and ivory curves" },
-    content: null,
+    content: performanceVsBrandBody,
     tags: [],
   },
   {
@@ -109,7 +117,7 @@ export const blogArticles: BlogArticle[] = [
     date: "2026-11-03",
     readingTime: "5 min read",
     image: { src: "/images/blog/article-creative-tools.jpg", alt: "A camera and lenses on a dark desk", position: "50% 35%" },
-    content: null,
+    content: contentThatConvertsBody,
     tags: [],
   },
 ];
@@ -132,6 +140,8 @@ export const formatBlogDate = (iso: string) =>
    Public articles: on the publishing list AND with a body.
 ---------------------------------------------------------------- */
 
+/** Reading time from the body when it exists, otherwise the sample label. */
+export const articleReadingTime = (a: BlogArticle) => (a.content ? readingTimeLabel(countWords(a.content)) : a.readingTime);
 
 export const publicBlogArticles = [featuredArticle, ...blogArticles].filter((a) => isBlogPublished(a.slug) && a.content !== null);
 export const isBlogArticlePublic = (slug: string) => publicBlogArticles.some((a) => a.slug === slug);

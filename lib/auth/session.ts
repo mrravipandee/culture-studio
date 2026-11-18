@@ -5,19 +5,33 @@
  * HTTP-only cookie with SESSION_SECRET. Nothing secret reaches the browser in readable
  * form, and nothing is stored in localStorage or sessionStorage.
  *
- * Validity: the seal itself expires after SESSION_TTL_SECONDS, and the stored email must
- * still match ADMIN_EMAIL. Rotating SESSION_SECRET signs every session out at once.
+ * Contents: adminId, sessionVersion, issuedAt and loginId (the login-activity record).
+ * The admin's email is NOT stored, so changing it in Settings keeps the session valid.
+ *
+ * Two levels of checking:
+ *  - hasValidSessionShape(): seal + expiry only, no database. Used by proxy.ts as a cheap
+ *    first gate.
+ *  - lib/auth/require-admin.ts: also loads the admin from MongoDB and requires
+ *    sessionVersion to match, so sessions revoked by a password change stop working.
+ *
+ * Sessions sealed by the previous version (which stored an email) fail the shape check,
+ * so after this upgrade the admin signs in once more.
  */
 
 import { getIronSession, unsealData, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
-import { getAdminEmail, getSessionSecret } from "./config";
+import { getSessionSecret } from "./config";
 
 export interface AdminSession {
-  email?: string;
+  adminId?: string;
+  sessionVersion?: number;
   /** Epoch milliseconds when the admin signed in. */
   issuedAt?: number;
+  /** _id of this sign-in's admin_login_activity record. */
+  loginId?: string;
 }
+
+export type LiveSession = Required<Pick<AdminSession, "adminId" | "sessionVersion" | "issuedAt">> & Pick<AdminSession, "loginId">;
 
 /** 8 hours. */
 export const SESSION_TTL_SECONDS = 60 * 60 * 8;
@@ -44,15 +58,15 @@ export function sessionOptions(): SessionOptions {
   };
 }
 
-/** True when the unsealed data is a live session for the configured admin. */
-export function isValidAdminSession(data: AdminSession): data is Required<AdminSession> {
-  if (typeof data.email !== "string" || typeof data.issuedAt !== "number") return false;
-  if (Date.now() - data.issuedAt > SESSION_TTL_SECONDS * 1000) return false;
-  try {
-    return data.email === getAdminEmail();
-  } catch {
-    return false; // misconfigured: fail closed
-  }
+const OBJECT_ID = /^[a-f0-9]{24}$/;
+
+/** True when the unsealed data has the current shape and has not expired (no database check). */
+export function hasValidSessionShape(data: AdminSession): data is LiveSession {
+  if (typeof data.adminId !== "string" || !OBJECT_ID.test(data.adminId)) return false;
+  if (typeof data.sessionVersion !== "number" || !Number.isInteger(data.sessionVersion) || data.sessionVersion < 1) return false;
+  if (typeof data.issuedAt !== "number" || Date.now() - data.issuedAt > SESSION_TTL_SECONDS * 1000 || data.issuedAt > Date.now() + 60_000) return false;
+  if (data.loginId !== undefined && (typeof data.loginId !== "string" || !OBJECT_ID.test(data.loginId))) return false;
+  return true;
 }
 
 /** Mutable session bound to the request cookies (Route Handlers and Server Components). */
@@ -65,7 +79,7 @@ export async function verifySessionCookie(value: string | undefined): Promise<bo
   if (!value) return false;
   try {
     const data = await unsealData<AdminSession>(value, { password: getSessionSecret(), ttl: SESSION_TTL_SECONDS });
-    return isValidAdminSession(data);
+    return hasValidSessionShape(data);
   } catch {
     return false;
   }

@@ -1,17 +1,20 @@
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { blogTopics, type BlogArticle } from "@/lib/content/blog";
+import { articleReadingTime, blogTopics, isBlogArticlePublic, type BlogArticle } from "@/lib/content/blog";
 import BlogMeta from "./BlogMeta";
 
 /**
- * Article card (sample). Not a link yet: no article pages exist. When real posts are
- * added, wrap the title in a Link stretched over the card (see CaseStudyCard).
+ * Article card. Published articles link to their reading view (/blog/<slug>): the title is
+ * the link, stretched over the whole card so the card is one click target with one
+ * accessible name. Unpublished samples stay plain cards.
  */
 export default function BlogCard({ article, priority = false }: { article: BlogArticle; priority?: boolean }) {
   const topic = blogTopics.find((t) => t.id === article.topic)?.label;
+  const href = isBlogArticlePublic(article.slug) ? `/blog/${article.slug}` : null;
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-white/70">
+    <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-white/70 transition-[box-shadow,border-color] duration-300 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-burgundy hover:border-black/15 hover:shadow-[0_18px_40px_-28px_rgba(36,12,14,0.45)]">
       <div className="relative aspect-[16/7.2] overflow-hidden bg-subtle">
         <Image
           src={article.image.src}
@@ -30,11 +33,19 @@ export default function BlogCard({ article, priority = false }: { article: BlogA
             {topic}
           </span>
         )}
-        <h3 className="mt-3 text-lg font-semibold leading-snug tracking-[-0.01em] text-black">{article.title}</h3>
+        <h3 className="mt-3 text-lg font-semibold leading-snug tracking-[-0.01em] text-black">
+          {href ? (
+            <Link href={href} className="outline-none after:absolute after:inset-0 after:content-['']">
+              {article.title}
+            </Link>
+          ) : (
+            article.title
+          )}
+        </h3>
         <p className="mt-2 mb-5 text-sm leading-relaxed text-ink-2">{article.description}</p>
 
         <div className="mt-auto flex items-center justify-between gap-3">
-          <BlogMeta date={article.date} readingTime={article.readingTime} />
+          <BlogMeta date={article.date} readingTime={articleReadingTime(article)} />
           <ArrowUpRight
             aria-hidden="true"
             size={18}

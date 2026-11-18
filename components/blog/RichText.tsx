@@ -1,5 +1,12 @@
 import type { CSSProperties, ReactNode } from "react";
-import { ALIGNMENTS, isExternalHref, isSafeHref, isSafeImageSrc, type RichMark, type RichNode } from "@/lib/rich-text";
+import { ALIGNMENTS, headingOutline, isExternalHref, isSafeHref, isSafeImageSrc, type RichMark, type RichNode } from "@/lib/rich-text";
+
+/** Render context: blob images allowed (admin preview) and heading ids in document order. */
+interface Ctx {
+  allowBlob: boolean;
+  headingIds: string[];
+  next: number;
+}
 
 /**
  * Renders article JSON (lib/rich-text.ts) as semantic HTML via React — no
@@ -53,12 +60,13 @@ function applyMarks(text: ReactNode, marks: RichMark[] | undefined, key: string)
   }, text);
 }
 
-function renderNodes(nodes: RichNode[] | undefined, key: string, allowBlob: boolean): ReactNode[] {
-  return (nodes ?? []).map((node, i) => renderNode(node, `${key}-${i}`, allowBlob));
+function renderNodes(nodes: RichNode[] | undefined, key: string, ctx: Ctx): ReactNode[] {
+  return (nodes ?? []).map((node, i) => renderNode(node, `${key}-${i}`, ctx));
 }
 
-function renderNode(node: RichNode, key: string, allowBlob: boolean): ReactNode {
-  const children = () => renderNodes(node.content, key, allowBlob);
+function renderNode(node: RichNode, key: string, ctx: Ctx): ReactNode {
+  const { allowBlob } = ctx;
+  const children = () => renderNodes(node.content, key, ctx);
   switch (node.type) {
     case "text":
       return applyMarks(node.text ?? "", node.marks, key);
@@ -73,9 +81,10 @@ function renderNode(node: RichNode, key: string, allowBlob: boolean): ReactNode 
     case "heading": {
       const level = Number(node.attrs?.level);
       const style = alignStyle(node.attrs);
-      if (level === 3) return <h3 key={key} style={style}>{children()}</h3>;
-      if (level === 4) return <h4 key={key} style={style}>{children()}</h4>;
-      return <h2 key={key} style={style}>{children()}</h2>; // 1 and 2 → h2 (single page H1)
+      const id = ctx.headingIds[ctx.next++]; // same order as headingOutline() (table of contents)
+      if (level === 3) return <h3 key={key} id={id} style={style}>{children()}</h3>;
+      if (level === 4) return <h4 key={key} id={id} style={style}>{children()}</h4>;
+      return <h2 key={key} id={id} style={style}>{children()}</h2>; // 1 and 2 → h2 (single page H1)
     }
     case "bulletList":
       return <ul key={key}>{children()}</ul>;
@@ -118,5 +127,6 @@ function renderNode(node: RichNode, key: string, allowBlob: boolean): ReactNode 
 
 export default function RichText({ doc, allowBlobImages = false }: Props) {
   if (!doc || doc.type !== "doc") return null;
-  return <div className="cs-prose">{renderNodes(doc.content, "n", allowBlobImages)}</div>;
+  const ctx: Ctx = { allowBlob: allowBlobImages, headingIds: headingOutline(doc).map((h) => h.id), next: 0 };
+  return <div className="cs-prose">{renderNodes(doc.content, "n", ctx)}</div>;
 }

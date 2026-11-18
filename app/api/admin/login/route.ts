@@ -1,10 +1,12 @@
 import { after, type NextRequest } from "next/server";
+import { Types } from "mongoose";
 import { AuthConfigError } from "@/lib/auth/config";
+import { DatabaseUnavailableError } from "@/lib/auth/admin-store";
 import { verifyAdminCredentials } from "@/lib/auth/credentials";
 import { loginRetryAfter, recordLoginFailure, recordLoginSuccess } from "@/lib/auth/rate-limit";
-import { clientIp, isSameOrigin, json } from "@/lib/auth/request";
+import { clientIp, isSameOrigin, json, trustedClientIp, trustedLocation } from "@/lib/auth/request";
 import { getAdminSession } from "@/lib/auth/session";
-import { recordAdminLogin } from "@/lib/auth/login-log";
+import { recordLoginActivity } from "@/lib/auth/login-log";
 
 const GENERIC_ERROR = "Invalid email or password.";
 const MAX_BODY_BYTES = 2048;
@@ -33,9 +35,9 @@ function parseBody(raw: string): LoginBody | null {
 }
 
 /**
- * POST /api/admin/login — single-admin sign-in.
+ * POST /api/admin/login — single-admin sign-in against the `admins` collection in MongoDB.
  * 200 { ok, redirect } · 400 invalid body · 401 generic failure · 403 cross-site ·
- * 413 too large · 415 not JSON · 429 rate limited · 500 server not configured.
+ * 413 too large · 415 not JSON · 429 rate limited · 500 not configured · 503 database down.
  */
 export async function POST(request: NextRequest) {
   if (!isSameOrigin(request)) return json({ error: "Forbidden." }, 403);
@@ -54,34 +56,49 @@ export async function POST(request: NextRequest) {
   const body = parseBody(raw);
   if (!body) return json({ error: "Enter a valid email address and password." }, 400);
 
-  let valid: boolean;
+  let result;
   try {
-    valid = await verifyAdminCredentials(body.email, body.password);
+    result = await verifyAdminCredentials(body.email, body.password);
   } catch (error) {
     if (error instanceof AuthConfigError) {
       // Names the variable only; never logs credentials or hashes.
       console.error(`[admin-auth] Configuration error: ${error.message}`);
       return json({ error: "Admin sign-in is not configured on the server." }, 500);
     }
+    if (error instanceof DatabaseUnavailableError) {
+      console.error("[admin-auth] Sign-in failed: database unavailable.");
+      return json({ error: "Sign-in is temporarily unavailable. Please try again shortly." }, 503);
+    }
     console.error("[admin-auth] Unexpected error during sign-in.");
     return json({ error: "Something went wrong. Please try again." }, 500);
   }
 
-  if (!valid) {
+  const userAgent = request.headers.get("user-agent") ?? "";
+  const context = { userAgent, ipAddress: trustedClientIp(request), location: trustedLocation(request) };
+
+  if (!result.ok) {
     recordLoginFailure(ip);
+    // A wrong password for the real admin email is security-relevant: log it for that admin.
+    // Unknown emails are not logged (no account to attach them to); the response is identical.
+    if (result.emailMatched) {
+      const { adminId } = result;
+      after(() => recordLoginActivity({ adminId, status: "FAILED", ...context }));
+    }
     return json({ error: GENERIC_ERROR }, 401);
   }
 
   recordLoginSuccess(ip);
-  const email = body.email.trim().toLowerCase();
+  const loginId = new Types.ObjectId();
   const session = await getAdminSession();
-  session.email = email;
+  session.adminId = result.adminId;
+  session.sessionVersion = result.sessionVersion;
   session.issuedAt = Date.now();
+  session.loginId = loginId.toString();
   await session.save();
 
-  // Log the sign-in time in MongoDB after the response is sent (never delays or blocks login).
-  const userAgent = request.headers.get("user-agent") ?? "";
-  after(() => recordAdminLogin({ email, ip, userAgent }));
+  // Record the sign-in after the response is sent (never delays or blocks login).
+  const { adminId } = result;
+  after(() => recordLoginActivity({ id: loginId, adminId, status: "SUCCESS", ...context }));
 
   return json({ ok: true, redirect: "/admin/dashboard" }, 200);
 }

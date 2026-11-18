@@ -22,7 +22,7 @@ export default function AdminEnquiriesPage() {
 }
 
 async function Enquiries() {
-  const { email } = await requireAdmin();
+  const { email, name } = await requireAdmin();
   const now = new Date();
   const today = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" }).format(now);
   const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(now);
@@ -34,6 +34,7 @@ async function Enquiries() {
         eyebrow="Enquiries"
         title="Enquiries"
         description="Manage and respond to project enquiries."
+        name={name}
         email={email}
         today={today}
         todayIso={todayIso}

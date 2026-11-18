@@ -40,7 +40,7 @@ export default function AdminDashboardPage() {
 }
 
 async function Dashboard() {
-  const { email } = await requireAdmin();
+  const { email, name } = await requireAdmin();
 
   const now = new Date();
   const today = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" }).format(now);
@@ -52,7 +52,7 @@ async function Dashboard() {
 
   return (
     <main className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 lg:py-10">
-      <DashboardHeader email={email} today={today} todayIso={todayIso} newEnquiries={newCount} />
+      <DashboardHeader name={name} email={email} today={today} todayIso={todayIso} newEnquiries={newCount} />
 
       <div className="mt-8 space-y-5 lg:mt-10 lg:space-y-6">
         <DashboardStats
