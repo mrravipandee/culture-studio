@@ -138,6 +138,18 @@ export const servicesFaq: FaqItem[] = [
 /** Shown under each service's scope list (from the FAQ answer on fixed deliverables). */
 export const scopeNote = "The final scope is tailored to the requirements of each engagement.";
 
+/**
+ * Chapter photographs for the Services page only (no people; shown in monochrome).
+ * Kept separate from lib/content/disciplines.ts, whose images the Home page uses.
+ * Replace a path to change a chapter image.
+ */
+export const serviceChapterImages: Record<string, { src: string; alt: string }> = {
+  "brand-strategy-communications": { src: "/images/hero/detail.jpg", alt: "A gallery wall of framed prints and posters on white shelves" },
+  "content-creative": { src: "/images/blog/article-creative-tools.jpg", alt: "A camera and lenses on a dark desk" },
+  "digital-marketing-growth": { src: "/images/work/project-03.jpg", alt: "Glass office towers seen from street level" },
+  "technology-automation": { src: "/images/case-studies/linkedin-workspace.jpg", alt: "A laptop on a long desk beside floor-to-ceiling windows" },
+};
+
 export const servicesCta = {
   eyebrow: "START AN ENQUIRY",
   headline: "Tell us what the business needs next.",

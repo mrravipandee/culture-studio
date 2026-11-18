@@ -1,131 +1,81 @@
 import Image from "next/image";
-import { ClipReveal, Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
+import { ClipReveal, Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
+import { editorialSerif } from "@/lib/fonts";
 import { aboutStory } from "@/lib/content/about";
+import { BODY, H2, H3, INDEX, LEAD, META, SMALL } from "@/components/editorial/type";
 
+/**
+ * 04 — Why CULT.URE (warm ivory band).
+ * Top: photograph left (5/12), heading + description + Purpose/Vision right (7/12).
+ * Below, full width: "How It Connects" as a four-step row, so nothing is squeezed.
+ */
 export default function AboutStory() {
-  const { eyebrow, title, lead, purpose, vision, editableNotice, milestones, inPractice, tagline } =
-    aboutStory;
+  const { eyebrow, title, lead, purpose, vision, milestones, image } = aboutStory;
 
   return (
-    <section className="py-24 sm:py-32 bg-white text-black border-b border-black/10">
+    <section aria-labelledby="about-why-title" className="section bg-[var(--cream)]">
       <Container>
-        {/* Section Header */}
-        <div className="flex flex-col gap-4 border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
-            [ {eyebrow} ]
-          </p>
-          <TextMask as="h2" text={title} className="text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1] max-w-4xl" />
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-10 xl:gap-16">
+          <div className="lg:col-span-5">
+            <ClipReveal className="w-full">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--subtle)] sm:aspect-[16/10] lg:aspect-[4/5]">
+                <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 38vw, 100vw" className="object-cover" />
+              </div>
+            </ClipReveal>
+          </div>
+
+          <div className="lg:col-span-7">
+            <Reveal distance={12}>
+              <p className={`${META} flex items-center gap-3`}>
+                <span className="text-burgundy">04</span>
+                <span aria-hidden="true" className="h-px w-8 bg-black/20" />
+                <span>{eyebrow}</span>
+              </p>
+            </Reveal>
+            <Reveal distance={16} className="mt-6">
+              <h2 id="about-why-title" className={`${editorialSerif.className} ${H2} max-w-[20ch]`}>
+                {title}
+              </h2>
+            </Reveal>
+            <Reveal delay={0.08} distance={16} className="mt-8 max-w-[60ch] space-y-5">
+              <p className={LEAD}>{lead[0]}</p>
+              <p className={BODY}>{lead[1]}</p>
+            </Reveal>
+
+            <RevealGroup count={2} className="mt-12 grid grid-cols-1 gap-8 border-t border-black/10 pt-8 sm:grid-cols-2 sm:gap-10 lg:mt-14">
+              <RevealItem>
+                <h3 className="eyebrow text-burgundy">Our Purpose</h3>
+                <p className={`${SMALL} mt-4 text-black/80`}>{purpose}</p>
+              </RevealItem>
+              <RevealItem className="sm:border-l sm:border-black/10 sm:pl-10">
+                <h3 className="eyebrow text-burgundy">Our Vision</h3>
+                <p className={`${SMALL} mt-4 text-black/80`}>{vision}</p>
+              </RevealItem>
+            </RevealGroup>
+          </div>
         </div>
 
-        {/* Story Content & Imagery */}
-        <div className="mt-16 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          {/* Left Column: Narrative, Purpose, Vision */}
-          <div className="lg:col-span-7 space-y-10">
-            <Reveal distance={16} className="grid gap-5">
-              {lead.map((paragraph, i) => (
-                <p
-                  key={i}
-                  className={`${i === 0 ? "text-xl sm:text-2xl" : "text-lg sm:text-xl"} font-light leading-relaxed text-black/85`}
-                >
-                  {paragraph}
+        {/* How It Connects */}
+        <div className="mt-[var(--section-space-sm)] border-t border-black/10 pt-10 lg:pt-12">
+          <Reveal distance={12}>
+            <h3 className={META}>How It Connects</h3>
+          </Reveal>
+          <RevealGroup as="ol" count={4} className="mt-8 grid grid-cols-1 gap-x-8 md:grid-cols-2 lg:mt-10 lg:grid-cols-4">
+            {milestones.map((step, i) => (
+              <RevealItem as="li" key={step.phase} className="border-t border-black/10 py-8 first:border-t-0 md:[&:nth-child(2)]:border-t-0 lg:border-t-0 lg:py-0">
+                <p className={`${INDEX} flex items-center gap-3`}>
+                  <span>{String(i + 1).padStart(2, "0")}</span>
+                  <span aria-hidden="true" className="h-px flex-1 bg-burgundy/25" />
                 </p>
-              ))}
-            </Reveal>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 border-t border-black/10 pt-8">
-              <div>
-                <h3 className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-semibold">
-                  OUR PURPOSE
-                </h3>
-                <p className="mt-3 text-sm sm:text-base font-light leading-relaxed text-black/70">
-                  {purpose}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-semibold">
-                  OUR VISION
-                </h3>
-                <p className="mt-3 text-sm sm:text-base font-light leading-relaxed text-black/70">
-                  {vision}
-                </p>
-              </div>
-            </div>
-
-            {/* Editable notice: only rendered when content provides one */}
-            {editableNotice && (
-            <div className="rounded-lg border border-line bg-subtle p-5">
-              <div className="flex items-center gap-2 text-xs font-mono tracking-wider text-black/60 uppercase">
-                <span className="inline-block w-2 h-2 rounded-full bg-burgundy" />
-                <span>STUDIO TRANSPARENCY NOTE</span>
-              </div>
-              <p className="mt-2 text-xs text-ink-3 font-mono leading-relaxed">
-                {editableNotice}
-              </p>
-            </div>
-            )}
-
-            {/* Evolution Phases */}
-            <div className="border-t border-black/10 pt-8">
-              <h4 className="font-mono text-xs uppercase tracking-eyebrow text-ink-3 mb-6">
-                HOW IT CONNECTS
-              </h4>
-              <RevealGroup count={milestones.length} className="space-y-6">
-                {milestones.map((milestone) => (
-                  <RevealItem
-                    key={milestone.phase}
-                    className="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8 pb-5 border-b border-black/5 last:border-0"
-                  >
-                    <span className="font-mono text-xs font-medium text-ink-3 min-w-20">
-                      {milestone.phase}
-                    </span>
-                    <div>
-                      <h5 className="text-base font-medium text-black">
-                        {milestone.label}
-                      </h5>
-                      <p className="mt-1 text-sm font-light text-black/65">
-                        {milestone.description}
-                      </p>
-                    </div>
-                  </RevealItem>
-                ))}
-              </RevealGroup>
-            </div>
-          </div>
-
-          {/* Right Column: Editorial Framing */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
-            <ClipReveal className="rounded-sm">
-            <div className="relative aspect-[3/4] w-full overflow-hidden rounded-sm bg-subtle shadow-sm border border-black/5">
-              <Image
-                src={inPractice.image.src}
-                alt={inPractice.image.alt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                className="object-cover grayscale contrast-105"
-                style={{ objectPosition: "70% 50%" }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
-              <div className="absolute bottom-5 left-5 right-5 text-white">
-                <p className="font-mono text-xs uppercase tracking-eyebrow text-white/80">
-                  {inPractice.label}
-                </p>
-                <h3 className="text-lg sm:text-xl font-light tracking-tight mt-1">{inPractice.title}</h3>
-              </div>
-            </div>
-            </ClipReveal>
-
-            <Reveal as="p" distance={16} className="text-base font-light leading-relaxed text-black/75">
-              {inPractice.body}
-            </Reveal>
-            <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3 text-center">
-              CULT.URE &mdash; {tagline}
-            </p>
-          </div>
+                <p className="eyebrow mt-6 text-ink-3">{step.phase}</p>
+                <h4 className={`${H3} mt-2`}>{step.label}</h4>
+                <p className={`${SMALL} mt-3`}>{step.description}</p>
+              </RevealItem>
+            ))}
+          </RevealGroup>
         </div>
       </Container>
     </section>
   );
 }
-

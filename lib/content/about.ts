@@ -24,9 +24,10 @@ export const aboutHero = {
   ],
   /** The four service disciplines (exact names). */
   disciplines: disciplines.map((d) => d.name),
+  /** Editorial photograph (replace the file path to change it). */
   image: {
-    src: "/images/hero/detail.jpg",
-    alt: "Gallery wall of framed prints on white shelves",
+    src: "/images/blog/hero-burgundy-architecture.jpg",
+    alt: "Glass office towers seen from below, toned in deep burgundy",
   },
 };
 
@@ -94,6 +95,11 @@ export const aboutStory = {
     "To help B2B businesses communicate their value with greater clarity, build stronger market recognition and make more of their marketing efforts.",
   vision:
     "A business landscape where good work is recognised, expertise is communicated with substance and brands build relevance beyond short-lived attention.",
+  /** Editorial photograph beside "Why CULT.URE" (replace the file path to change it). */
+  image: {
+    src: "/images/case-studies/hero-burgundy-material.jpg",
+    alt: "Folds of burgundy and ivory material catching soft light",
+  },
   /** Optional note shown in the story section. Add confirmed company history, founder or team details here. */
   editableNotice: "",
   /** "How It Connects". */

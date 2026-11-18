@@ -1,63 +1,38 @@
+import { RevealGroup, RevealItem } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
-import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
+import { editorialSerif } from "@/lib/fonts";
 import { aboutPhilosophy } from "@/lib/content/about";
+import SectionHeader from "@/components/editorial/SectionHeader";
+import { HEADER_GAP, INDEX, SMALL, STATEMENT } from "@/components/editorial/type";
 
+/**
+ * 03 — Our Philosophy. Header, then a table-like editorial list separated by thin rules:
+ * number | discipline | statement + description on desktop; stacked on mobile.
+ * The columns align with the section header grid (4 + 8 of 12).
+ */
 export default function AboutPhilosophy() {
   const { eyebrow, title, intro, statements } = aboutPhilosophy;
 
   return (
-    <section className="py-24 sm:py-32 bg-ink text-white relative overflow-hidden">
-      {/* Subtle background ambient light */}
-      <div
-        className="absolute top-0 right-0 w-[500px] h-[500px] bg-burgundy opacity-35 blur-[140px] pointer-events-none"
-        aria-hidden="true"
-      />
-
+    <section aria-labelledby="about-philosophy-title" className="section bg-white pt-0">
       <Container>
-        {/* Section Header */}
-        <div className="border-b border-white/15 pb-8">
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-paper-3">
-            [ {eyebrow} ]
-          </p>
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
-            <Reveal delay={0.15} distance={16} className="lg:col-span-4 grid gap-4">
-              {intro.map((paragraph, i) => (
-                <p key={i} className="text-sm sm:text-base font-light text-white/70 leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
-            </Reveal>
-          </div>
-        </div>
+        <div className="border-t border-black/10 pt-[var(--section-space)]">
+          <SectionHeader index="03" eyebrow={eyebrow} title={title} titleId="about-philosophy-title" intro={intro} />
 
-        {/* Philosophy Statements Grid */}
-        <RevealGroup count={statements.length} className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-          {statements.map((item, index) => (
-            <RevealItem
-              as="article"
-              key={item.domain}
-              className="relative flex flex-col justify-between border-t border-white/20 pt-8 pb-4 group"
-            >
-              <div>
-                <div className="flex items-center justify-between text-xs font-mono tracking-eyebrow text-paper-3 mb-6">
-                  <span>{item.domain}</span>
-                  <span>0{index + 1}</span>
+          <RevealGroup as="ol" count={4} className={`${HEADER_GAP} border-t border-black/10`}>
+            {statements.map((item, i) => (
+              <RevealItem as="li" key={item.domain} className="grid grid-cols-1 gap-4 border-b border-black/10 py-9 sm:grid-cols-[4rem_1fr] lg:grid-cols-12 lg:gap-8 lg:py-12">
+                <p className={`${INDEX} lg:col-span-1`}>{String(i + 1).padStart(2, "0")}</p>
+                <h3 className="eyebrow text-black sm:col-start-2 lg:col-span-3 lg:col-start-2">{item.domain}</h3>
+                <div className="sm:col-start-2 lg:col-span-8 lg:col-start-5">
+                  <p className={`${editorialSerif.className} ${STATEMENT}`}>&ldquo;{item.statement}&rdquo;</p>
+                  <p className={`${SMALL} mt-4 max-w-[60ch]`}>{item.elaboration}</p>
                 </div>
-
-                <blockquote className="text-xl sm:text-2xl lg:text-3xl font-light leading-snug tracking-tight text-white group-hover:text-white transition-colors">
-                  &ldquo;{item.statement}&rdquo;
-                </blockquote>
-              </div>
-
-              <p className="mt-8 text-sm sm:text-base font-light leading-relaxed text-white/60">
-                {item.elaboration}
-              </p>
-            </RevealItem>
-          ))}
-        </RevealGroup>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </div>
       </Container>
     </section>
   );
 }
-

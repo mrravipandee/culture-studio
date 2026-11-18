@@ -1,54 +1,48 @@
+import { RevealGroup, RevealItem } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
-import { RevealGroup, RevealItem, TextMask } from "@/components/motion";
+import { editorialSerif } from "@/lib/fonts";
 import { aboutPrinciples } from "@/lib/content/about";
+import SectionHeader from "@/components/editorial/SectionHeader";
+import { H3, HEADER_GAP, SMALL } from "@/components/editorial/type";
 
+/**
+ * 07 — Our Principles. Four columns with subtle vertical rules on desktop, two on tablet,
+ * stacked on mobile: Roman numeral, short heading, supporting paragraph.
+ */
 export default function AboutPrinciples() {
   const { eyebrow, title, items } = aboutPrinciples;
 
   return (
-    <section className="py-24 sm:py-32 bg-white text-black border-b border-black/10">
+    <section aria-labelledby="about-principles-title" className="section bg-white pt-0">
       <Container>
-        {/* Header */}
-        <div className="border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-ink-3">
-            [ {eyebrow} ]
-          </p>
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
-          </div>
-        </div>
+        <div className="border-t border-black/10 pt-[var(--section-space)]">
+          <SectionHeader index="07" eyebrow={eyebrow} title={title} titleId="about-principles-title" />
 
-        {/* 4 Principles Editorial List */}
-        <RevealGroup count={items.length} className="mt-16 sm:mt-24 divide-y divide-black/10 border-b border-black/10">
-          {items.map((principle) => (
-            <RevealItem
-              as="article"
-              key={principle.number}
-              className="py-12 lg:py-16 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-baseline group"
-            >
-              {/* Roman Numeral */}
-              <div className="md:col-span-2 font-mono text-xl sm:text-2xl font-light text-ink-3 group-hover:text-black transition-colors">
-                {principle.number}
-              </div>
-
-              {/* Principle Title */}
-              <div className="md:col-span-5">
-                <h3 className="text-2xl sm:text-3xl lg:text-4xl font-light tracking-tight text-black">
-                  {principle.title}
-                </h3>
-              </div>
-
-              {/* Detail Narrative */}
-              <div className="md:col-span-5">
-                <p className="text-sm sm:text-base font-light text-black/70 leading-relaxed">
-                  {principle.detail}
+          <RevealGroup as="ol" count={4} className={`${HEADER_GAP} grid grid-cols-1 border-t border-black/10 md:grid-cols-2 lg:grid-cols-4`}>
+            {items.map((item, i) => (
+              <RevealItem
+                as="li"
+                key={item.number}
+                className={[
+                  "border-b border-black/10 py-8 md:py-10 lg:border-b-0 lg:px-8 lg:py-12",
+                  i % 2 === 1 ? "md:border-l md:pl-8" : "md:pr-8",
+                  i > 0 ? "lg:border-l" : "lg:pl-0",
+                  i === 3 ? "lg:pr-0" : "",
+                ].join(" ")}
+              >
+                <p aria-hidden="true" className={`${editorialSerif.className} text-[2rem] italic leading-none text-burgundy`}>
+                  {item.number}
                 </p>
-              </div>
-            </RevealItem>
-          ))}
-        </RevealGroup>
+                <h3 className={`${H3} mt-6`}>
+                  <span className="sr-only">Principle {item.number}: </span>
+                  {item.title}
+                </h3>
+                <p className={`${SMALL} mt-3 max-w-[34ch]`}>{item.detail}</p>
+              </RevealItem>
+            ))}
+          </RevealGroup>
+        </div>
       </Container>
     </section>
   );
 }
-

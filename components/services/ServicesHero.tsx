@@ -1,84 +1,55 @@
-import { servicesHero } from "@/lib/content/services";
-import { serviceCount } from "@/lib/content/disciplines";
-import ScrollCue from "@/components/motion/ScrollCue";
+import { Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
-import { ArchitecturalDialVector, GridCrosshairMarker } from "@/components/home/shared/WorkVectors";
+import { editorialSerif } from "@/lib/fonts";
+import { servicesHero } from "@/lib/content/services";
+import { disciplines, serviceCount } from "@/lib/content/disciplines";
+import { BODY, H1, LEAD, META } from "@/components/editorial/type";
 
+/**
+ * Services hero (same system as About): warm ivory, bracketed meta bar, serif H1 with the
+ * burgundy first line, supporting copy on the left and the engagement facts on the right.
+ */
 export default function ServicesHero() {
   const { eyebrow, headline, supportingCopy, sideLabel, meta } = servicesHero;
-  const [lineOne, lineTwo] = headline.split("\n");
+  const [first, second] = headline.split("\n");
 
   return (
-    <section className="relative overflow-hidden pt-36 pb-20 sm:pt-44 sm:pb-28 lg:pt-52 lg:pb-36 bg-[#FCFBF9] text-ink border-b border-black/10">
-      {/* Background Architectural Vector Graphic */}
-      <div
-        className="pointer-events-none absolute -top-16 -right-20 h-[600px] w-[600px] text-burgundy opacity-[0.12] lg:h-[800px] lg:w-[800px]"
-        aria-hidden="true"
-      >
-        <ArchitecturalDialVector className="h-full w-full" />
-      </div>
+    <section aria-labelledby="services-title" className="bg-[var(--cream)] pt-32 pb-[var(--section-space)] sm:pt-40 lg:pt-44">
+      <Container>
+        <Reveal distance={10} className="flex flex-col gap-3 border-b border-black/10 pb-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="eyebrow text-black">
+            [ {eyebrow} ]{" "}
+            <span className="mt-1 block text-ink-3 sm:mt-0 sm:inline">
+              <span className="hidden sm:inline">· </span>
+              {disciplines.length} disciplines · {serviceCount} services
+            </span>
+          </p>
+          <p className={META}>{sideLabel}</p>
+        </Reveal>
 
-      <Container className="relative z-10">
-        {/* Top Eyebrow & Archival Practice Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-black/10 pb-6 text-xs uppercase tracking-[0.25em] text-ink-3">
-          <div className="flex items-center gap-3">
-            <span className="font-mono text-black font-semibold">
-              [ {eyebrow} ]
-            </span>
-            <span className="h-1 w-1 rounded-full bg-burgundy" />
-            <span className="font-mono text-burgundy font-medium hidden sm:inline">
-              FOUR DISCIPLINES &middot; {serviceCount} SERVICES
-            </span>
+        <div className="mt-12 grid grid-cols-1 gap-12 lg:mt-16 lg:grid-cols-12 lg:items-end lg:gap-10 xl:gap-16">
+          <div className="lg:col-span-7">
+            <Reveal distance={20}>
+              <h1 id="services-title" className={`${editorialSerif.className} ${H1} max-w-[18ch] text-black`}>
+                <span className="text-burgundy">{first}</span> {second}
+              </h1>
+            </Reveal>
+            <Reveal delay={0.12} distance={16} className="mt-8 max-w-[58ch] space-y-5 lg:mt-10">
+              <p className={LEAD}>{supportingCopy[0]}</p>
+              <p className={BODY}>{supportingCopy[1]}</p>
+            </Reveal>
           </div>
 
-          <div className="flex items-center gap-4 font-mono text-xs">
-            <span className="text-burgundy font-semibold">{sideLabel}</span>
-          </div>
-        </div>
-
-        {/* Oversized Asymmetric Display Headline */}
-        <div className="mt-12 lg:mt-18 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-start">
-          <div className="lg:col-span-8 relative">
-            <GridCrosshairMarker className="absolute -top-6 -left-3 text-burgundy" />
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5.5rem] font-light leading-[1.03] tracking-tight text-ink">
-              <span className="text-burgundy">{lineOne}</span>
-              <br />
-              {lineTwo}
-            </h1>
-
-            {supportingCopy.map((paragraph, i) => (
-              <p
-                key={i}
-                className={`${i === 0 ? "mt-8 text-lg sm:text-xl lg:text-2xl" : "mt-5 text-base sm:text-lg"} font-light leading-relaxed text-ink-2 max-w-2xl`}
-              >
-                {paragraph}
-              </p>
+          <RevealGroup delay={0.2} count={3} className="lg:col-span-5">
+            <dl className="border-t border-black/10">
+            {meta.map((m) => (
+              <RevealItem key={m.label} className="grid grid-cols-1 gap-1 border-b border-black/10 py-5 sm:grid-cols-[8.5rem_1fr] sm:gap-6">
+                <dt className={META}>{m.label}</dt>
+                <dd className="text-[0.9375rem] font-medium leading-snug text-black">{m.value}</dd>
+              </RevealItem>
             ))}
-          </div>
-
-          {/* Right Practice Meta Strip & Scroll Cue */}
-          <div className="lg:col-span-4 flex flex-col justify-between gap-12 lg:pt-4">
-            <dl className="divide-y divide-black/8 border-y border-black/10">
-              {meta.map((item) => (
-                <div
-                  key={item.label}
-                  className="py-3 flex items-baseline justify-between text-xs font-mono"
-                >
-                  <dt className="uppercase tracking-[0.2em] text-ink-3">
-                    {item.label}
-                  </dt>
-                  <dd className="font-medium text-ink text-right">
-                    {item.value}
-                  </dd>
-                </div>
-              ))}
             </dl>
-
-            {/* Scroll Indicator */}
-            <div>
-              <ScrollCue label="Scroll to explore the services" />
-            </div>
-          </div>
+          </RevealGroup>
         </div>
       </Container>
     </section>

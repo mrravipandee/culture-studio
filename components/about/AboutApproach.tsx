@@ -1,43 +1,36 @@
+import { RevealGroup, RevealItem } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
-import { Reveal, RevealGroup, RevealItem, TextMask } from "@/components/motion";
 import { aboutApproach } from "@/lib/content/about";
+import SectionHeader from "@/components/editorial/SectionHeader";
+import { H3, HEADER_GAP, INDEX, SMALL } from "@/components/editorial/type";
 
+/**
+ * 02 — Our Approach. Header, then four elements in an editorial row: thin vertical rules
+ * on desktop, two columns on tablet, a stacked list on mobile. No cards.
+ */
 export default function AboutApproach() {
   const { eyebrow, title, lead, cards } = aboutApproach;
 
   return (
-    <section className="py-24 sm:py-32 bg-ink text-white relative">
+    <section aria-labelledby="about-approach-title" className="section bg-white">
       <Container>
-        {/* Header */}
-        <div className="border-b border-white/15 pb-8">
-          <p className="font-mono text-xs uppercase tracking-eyebrow text-paper-3">
-            [ {eyebrow} ]
-          </p>
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <TextMask as="h2" text={title} className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.1]" />
-            <Reveal delay={0.15} distance={16} className="lg:col-span-4 grid gap-4">
-              {lead.map((paragraph, i) => (
-                <p key={i} className="text-base font-light text-white/70 leading-relaxed">
-                  {paragraph}
-                </p>
-              ))}
-            </Reveal>
-          </div>
-        </div>
+        <SectionHeader index="02" eyebrow={eyebrow} title={title} titleId="about-approach-title" intro={lead} />
 
-        {/* Practice · Focus · Engagement · Principle */}
-        <RevealGroup count={cards.length} className="mt-16 sm:mt-24 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <RevealGroup as="ul" count={4} className={`${HEADER_GAP} grid grid-cols-1 border-t border-black/10 md:grid-cols-2 lg:grid-cols-4`}>
           {cards.map((card, i) => (
             <RevealItem
-              as="div"
+              as="li"
               key={card.label}
-              className="border-t border-white/20 pt-8 group hover:border-white transition-colors"
+              className={[
+                "border-b border-black/10 py-8 md:py-10 lg:border-b-0 lg:px-8 lg:py-12",
+                i % 2 === 1 ? "md:border-l md:pl-8" : "md:pr-8",
+                i > 0 ? "lg:border-l" : "lg:pl-0",
+                i === 3 ? "lg:pr-0" : "",
+              ].join(" ")}
             >
-              <span aria-hidden="true" className="font-mono text-xs text-paper-3 tracking-eyebrow uppercase block mb-4">
-                {String(i + 1).padStart(2, "0")}
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-light tracking-tight text-white">{card.label}</h3>
-              <p className="mt-6 text-sm font-light text-white/75 leading-relaxed">{card.text}</p>
+              <p className={INDEX}>{String(i + 1).padStart(2, "0")}</p>
+              <h3 className={`${H3} mt-6`}>{card.label}</h3>
+              <p className={`${SMALL} mt-3 max-w-[34ch]`}>{card.text}</p>
             </RevealItem>
           ))}
         </RevealGroup>
@@ -45,4 +38,3 @@ export default function AboutApproach() {
     </section>
   );
 }
-

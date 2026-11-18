@@ -1,107 +1,62 @@
-import { serviceProcess, servicesProcessIntro } from "@/lib/content/services";
+import { RevealGroup, RevealItem } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
-import { Reveal } from "@/components/motion";
-import { ProcessStepGlyph, GridCrosshairMarker } from "@/components/home/shared/WorkVectors";
+import SectionHeader from "@/components/editorial/SectionHeader";
+import { H3, HEADER_GAP, INDEX, META, SMALL } from "@/components/editorial/type";
+import { serviceProcess, servicesProcessIntro } from "@/lib/content/services";
 
+/** "[ 05 / OUR PROCESS ]" → { index: "05", label: "OUR PROCESS" } (presentation only). */
+export const splitEyebrow = (raw: string) => {
+  const m = raw.match(/^\[\s*(\d+)\s*\/\s*(.+?)\s*\]$/);
+  return m ? { index: m[1], label: m[2] } : { index: "", label: raw };
+};
+
+/**
+ * 05 — Our Process (warm ivory band). Four stages in an editorial row with thin vertical
+ * rules on desktop, two columns on tablet, stacked on mobile; each lists its deliverables.
+ */
 export default function ServicesProcess() {
+  const { index, label } = splitEyebrow(servicesProcessIntro.eyebrow);
 
   return (
-    <section
-      className="relative overflow-hidden py-24 sm:py-32 lg:py-40 bg-[#FCFBF9] text-ink border-b border-black/10"
-    >
+    <section aria-labelledby="services-process-title" className="section bg-[var(--cream)]">
       <Container>
-        {/* Header */}
-        <div className="border-b border-black/10 pb-8">
-          <p className="font-mono text-xs uppercase tracking-[0.25em] text-burgundy font-semibold">
-            {servicesProcessIntro.eyebrow}
-          </p>
-          <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-            <h2 className="lg:col-span-8 text-3xl sm:text-5xl lg:text-6xl font-light tracking-tight leading-[1.08] text-ink">
-              {servicesProcessIntro.title}{" "}
-              <span className="text-burgundy">{servicesProcessIntro.titleAccent}</span>
-            </h2>
-            <p className="lg:col-span-4 text-sm sm:text-base font-light text-ink-2 leading-relaxed">
-              {servicesProcessIntro.description}
-            </p>
-          </div>
-        </div>
+        <SectionHeader
+          index={index}
+          eyebrow={label}
+          title={servicesProcessIntro.title}
+          titleAccent={servicesProcessIntro.titleAccent}
+          titleId="services-process-title"
+          intro={[servicesProcessIntro.description]}
+        />
 
-        {/* Process Timeline Grid */}
-        <div className="mt-16 sm:mt-20 relative">
-          {/* Subtle Horizontal Connector Line on Desktop */}
-          <div
-            className="hidden lg:block absolute top-7 inset-x-8 h-px bg-black/15 z-0"
-            aria-hidden="true"
-          />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-6 relative z-10">
-            {serviceProcess.map((stage, idx) => (
-              <Reveal
-                key={stage.number}
-                as="div"
-                delay={idx * 0.12}
-                distance={20}
-                className="group relative flex flex-col justify-between rounded-xl border border-black/10 bg-white/90 p-6 sm:p-7 backdrop-blur-sm transition-[transform,border-color] duration-500 ease-editorial hover:border-black/30 hover:-translate-y-1"
-              >
-                {/* Precision Corner Crosshair */}
-                <GridCrosshairMarker className="absolute top-2.5 right-2.5 text-black/30 group-hover:text-burgundy transition-colors" />
-
-                <div>
-                  {/* Step Header with Node & Glyph */}
-                  <div className="flex items-center justify-between pb-4 border-b border-black/8">
-                    <div className="flex items-center gap-2.5">
-                      <span className="grid size-7 place-items-center rounded-full bg-black text-white font-mono text-xs font-bold transition-colors group-hover:bg-burgundy">
-                        {stage.number}
-                      </span>
-                    </div>
-
-                    <div className="h-6 w-6 text-black/50 transition-colors duration-300 ease-editorial group-hover:text-burgundy">
-                      <ProcessStepGlyph step={idx + 1} className="h-full w-full" />
-                    </div>
-                  </div>
-
-                  {/* Stage Title & Tagline */}
-                  <h3 className="mt-6 text-2xl font-light text-ink group-hover:text-burgundy transition-colors">
-                    {stage.name}
-                  </h3>
-                  <p className="mt-1 font-mono text-xs uppercase tracking-wider text-burgundy font-medium">
-                    {stage.tagline}
-                  </p>
-
-                  {/* Summary */}
-                  <p className="mt-4 text-xs sm:text-sm font-light leading-relaxed text-ink-2">
-                    {stage.summary}
-                  </p>
-                </div>
-
-                {/* Deliverables Mini-Pills */}
-                <div className="mt-6 pt-4 border-t border-black/6">
-                  <p className="font-mono text-xs uppercase tracking-wider text-ink-3 mb-2">
-                    TYPICAL OUTPUTS
-                  </p>
-                  <ul className="space-y-1.5">
-                    {stage.deliverables.map((item) => (
-                      <li
-                        key={item}
-                        className="flex items-center gap-2 text-xs font-mono text-black/70"
-                      >
-                        <span className="h-1 w-1 rounded-full bg-burgundy/60" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-
-        {/* Footnote */}
-        <div className="mt-12 flex items-center justify-between border-t border-black/10 pt-4 text-xs font-mono text-ink-3">
-          <span>{serviceProcess.map((stage) => stage.name.toUpperCase()).join(" · ")}</span>
-        </div>
+        <RevealGroup as="ol" count={4} className={`${HEADER_GAP} grid grid-cols-1 border-t border-black/10 md:grid-cols-2 lg:grid-cols-4`}>
+          {serviceProcess.map((stage, i) => (
+            <RevealItem
+              as="li"
+              key={stage.number}
+              className={[
+                "border-b border-black/10 py-8 md:py-10 lg:border-b-0 lg:px-8 lg:py-12",
+                i % 2 === 1 ? "md:border-l md:pl-8" : "md:pr-8",
+                i > 0 ? "lg:border-l" : "lg:pl-0",
+                i === 3 ? "lg:pr-0" : "",
+              ].join(" ")}
+            >
+              <p className={INDEX}>{stage.number}</p>
+              <h3 className={`${H3} mt-6`}>{stage.name}</h3>
+              <p className={`${META} mt-2`}>{stage.tagline}</p>
+              <p className={`${SMALL} mt-4`}>{stage.summary}</p>
+              <ul className="mt-6 border-t border-black/10 pt-4" aria-label={`${stage.name} deliverables`}>
+                {stage.deliverables.map((d) => (
+                  <li key={d} className="flex gap-3 py-1.5 text-[0.875rem] leading-snug text-black/80">
+                    <span aria-hidden="true" className="mt-[0.55em] h-px w-3 shrink-0 bg-burgundy" />
+                    {d}
+                  </li>
+                ))}
+              </ul>
+            </RevealItem>
+          ))}
+        </RevealGroup>
       </Container>
     </section>
   );
 }
-

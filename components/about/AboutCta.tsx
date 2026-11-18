@@ -1,55 +1,47 @@
-import { ArrowUpRight } from "lucide-react";
-import { Reveal, TextMask } from "@/components/motion";
-import Link from "next/link";
+import { Reveal } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 import { Button } from "@/components/ui/site-button";
+import { editorialSerif } from "@/lib/fonts";
 import { aboutCta } from "@/lib/content/about";
+import { H2 } from "@/components/editorial/type";
 
+/**
+ * 08 — Start a Conversation. The site's burgundy surface (surface-burgundy) and buttons
+ * (inverse primary + outlined secondary), heading left, lead and actions right.
+ */
 export default function AboutCta() {
   const { eyebrow, lead, primaryAction, secondaryAction, headline } = aboutCta;
 
   return (
-    <section className="py-24 sm:py-36 bg-burgundy text-white relative overflow-hidden">
-      {/* Subtle atmospheric vignette */}
-      <div
-        className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-black/20 via-transparent to-black/40 pointer-events-none"
-        aria-hidden="true"
-      />
-
+    <section aria-labelledby="about-cta-title" className="section surface-burgundy">
       <Container>
-        <div className="relative max-w-4xl mx-auto text-center flex flex-col items-center">
-          {/* Eyebrow */}
-          <span className="font-mono text-xs uppercase tracking-eyebrow text-white/50">
-            [ {eyebrow} ]
-          </span>
-
-          {/* Headline */}
-          <TextMask as="h2" text={headline} className="mt-8 text-4xl sm:text-6xl md:text-7xl font-light tracking-heading leading-[1.08] text-white" />
-
-          {/* Lead */}
-          <Reveal as="p" delay={0.15} distance={16} className="mt-8 max-w-2xl text-base sm:text-lg md:text-xl font-light leading-relaxed text-white/75">
-            {lead}
-          </Reveal>
-
-          {/* Actions */}
-          <div className="mt-12 flex flex-col sm:flex-row items-center gap-4">
-            <Button href={primaryAction.href} variant="inverse" size="lg" icon="badge">
-              {primaryAction.label}
-            </Button>
-
-            <Link
-              href={secondaryAction.href}
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-8 py-4 text-xs uppercase tracking-eyebrow text-white/80 hover:text-white hover:border-white transition-colors"
-            >
-              <span>{secondaryAction.label}</span>
-              <ArrowUpRight aria-hidden="true" size={14} strokeWidth={1.5} />
-            </Link>
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-end lg:gap-8">
+          <div className="lg:col-span-7">
+            <Reveal distance={12}>
+              <p className="eyebrow flex items-center gap-3 text-white/60">
+                <span className="text-white">08</span>
+                <span aria-hidden="true" className="h-px w-8 bg-white/30" />
+                <span>{eyebrow}</span>
+              </p>
+            </Reveal>
+            <Reveal distance={16} className="mt-6">
+              <h2 id="about-cta-title" className={`${editorialSerif.className} ${H2} max-w-[18ch] !text-white`}>
+                {headline}
+              </h2>
+            </Reveal>
           </div>
 
-          {/* Brand Tagline */}
-          <p className="mt-16 font-mono text-xs uppercase tracking-eyebrow text-paper-3 border-t border-white/10 pt-8 w-full max-w-xl">
-            CULT.URE &mdash; Beyond the noise. Into the culture.
-          </p>
+          <Reveal delay={0.1} distance={16} className="lg:col-span-5">
+            <p className="max-w-[46ch] text-base leading-[1.75] text-white/75 sm:text-[1.0625rem]">{lead}</p>
+            <div className="mt-8 flex flex-col gap-3 min-[420px]:flex-row min-[420px]:flex-wrap">
+              <Button href={primaryAction.href} variant="inverse" size="lg" icon="badge">
+                {primaryAction.label}
+              </Button>
+              <Button href={secondaryAction.href} variant="secondary" size="lg" icon="arrow" className="border-white/35 text-white">
+                {secondaryAction.label}
+              </Button>
+            </div>
+          </Reveal>
         </div>
       </Container>
     </section>
