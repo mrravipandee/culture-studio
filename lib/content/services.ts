@@ -145,10 +145,13 @@ export const scopeNote = "The final scope is tailored to the requirements of eac
  */
 export const serviceChapterImages: Record<string, { src: string; alt: string }> = {
   "brand-strategy-communications": { src: "/images/hero/detail.jpg", alt: "A gallery wall of framed prints and posters on white shelves" },
-  "content-creative": { src: "/images/blog/article-creative-tools.jpg", alt: "A camera and lenses on a dark desk" },
-  "digital-marketing-growth": { src: "/images/work/project-03.jpg", alt: "Glass office towers seen from street level" },
-  "technology-automation": { src: "/images/case-studies/linkedin-workspace.jpg", alt: "A laptop on a long desk beside floor-to-ceiling windows" },
+  "content-creative": { src: "/images/case-studies/motion-media-camera.jpg", alt: "A camera and lenses on a dark desk" },
+  "digital-marketing-growth": { src: "/images/case-studies/xlar-media-screens.jpg", alt: "A wall of screens showing video and digital content" },
+  "technology-automation": { src: "/images/blog/article-workspace-laptop.jpg", alt: "A laptop on a long desk beside floor-to-ceiling windows" },
 };
+
+/** Wide photograph under the Services hero (no people). */
+export const servicesHeroImage = { src: "/images/work/project-03.jpg", alt: "Glass office towers seen from street level" };
 
 export const servicesCta = {
   eyebrow: "START AN ENQUIRY",

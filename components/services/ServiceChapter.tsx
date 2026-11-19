@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Plus } from "lucide-react";
 import { enquiryHref, legacyAnchorsFor, type Discipline } from "@/lib/content/disciplines";
 import { scopeNote, serviceChapterImages } from "@/lib/content/services";
 import { ClipReveal, Reveal, RevealGroup, RevealItem } from "@/components/motion";
@@ -29,96 +29,109 @@ function LegacyAnchors({ targetId }: { targetId: string }) {
 
 /**
  * One chapter per discipline.
- * Opener: index, serif name, headline statement, intro and one monochrome photograph.
- * Services: one aligned row each (desktop: name, description and enquiry | scope in two
- * columns), stacked on smaller screens. Every service keeps its anchor (/services#id).
+ * Opener: a two-column split (copy | large photograph), alternating sides chapter to chapter.
+ * Services: a two-column grid of ruled cards (index, name, description, enquiry link). Each
+ * card's scope sits in a native <details> disclosure, so the page stays scannable while all
+ * scope text remains in the document (searchable, indexable, keyboard and screen-reader friendly).
  */
 export default function ServiceChapter({ discipline, index }: ServiceChapterProps) {
   const n = String(index + 1).padStart(2, "0");
   const image = serviceChapterImages[discipline.id] ?? { src: discipline.image.src ?? "", alt: discipline.image.alt };
+  const flip = index % 2 === 1;
+  // Alternates with the index (white) above and Process (ivory) below: ivory, white, ivory, white.
+  const tone = flip ? "bg-white" : "bg-[var(--cream)]";
 
   return (
-    <section id={discipline.id} aria-labelledby={`${discipline.id}-title`} className="section relative scroll-mt-24 bg-white pt-0">
+    <section id={discipline.id} aria-labelledby={`${discipline.id}-title`} className={`section relative scroll-mt-24 ${tone}`}>
       <LegacyAnchors targetId={discipline.id} />
       <Container>
-        <div className="border-t border-black/10 pt-[var(--section-space)]">
-          {/* Opener */}
-          <header className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-end lg:gap-10 xl:gap-16">
-            <div className="lg:col-span-7">
-              <Reveal distance={12}>
-                <p className={`${META} flex items-center gap-3`}>
-                  <span className="text-burgundy">{n}</span>
-                  <span aria-hidden="true" className="h-px w-8 bg-black/20" />
-                  <span>Discipline</span>
-                </p>
-              </Reveal>
-              <Reveal distance={16} className="mt-6">
-                <h2 id={`${discipline.id}-title`} className={`${editorialSerif.className} ${H2} max-w-[16ch]`}>
-                  {discipline.name}
-                </h2>
-              </Reveal>
-              <Reveal delay={0.08} distance={16} className="mt-6 max-w-[58ch]">
-                <p className={`${editorialSerif.className} ${STATEMENT}`}>{discipline.headline}</p>
-                <p className={`${LEAD} mt-5`}>{discipline.intro}</p>
-              </Reveal>
+        {/* Opener */}
+        <header className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-center lg:gap-10 xl:gap-16">
+          <div className={`lg:col-span-6 ${flip ? "lg:order-2" : ""}`}>
+            <Reveal distance={12}>
+              <p className={`${META} flex items-center gap-3`}>
+                <span className="text-burgundy">{n}</span>
+                <span aria-hidden="true" className="h-px w-8 bg-black/20" />
+                <span>Discipline</span>
+                <span aria-hidden="true" className="text-black/25">·</span>
+                <span>{discipline.services.length} services</span>
+              </p>
+            </Reveal>
+            <Reveal distance={16} className="mt-6">
+              <h2 id={`${discipline.id}-title`} className={`${editorialSerif.className} ${H2} max-w-[16ch]`}>
+                {discipline.name}
+              </h2>
+            </Reveal>
+            <Reveal delay={0.08} distance={16} className="mt-6 max-w-[54ch]">
+              <p className={`${editorialSerif.className} ${STATEMENT}`}>{discipline.headline}</p>
+              <p className={`${LEAD} mt-5`}>{discipline.intro}</p>
+            </Reveal>
+          </div>
+          {image.src && (
+            <div className={`lg:col-span-6 ${flip ? "lg:order-1" : ""}`}>
+              <ClipReveal className="w-full">
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-[var(--subtle)]">
+                  <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 46vw, 100vw" className="object-cover grayscale-[0.85] contrast-[1.05]" />
+                </div>
+              </ClipReveal>
             </div>
-            {image.src && (
-              <div className="lg:col-span-5">
-                <ClipReveal className="w-full">
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-[var(--subtle)] lg:aspect-[4/3]">
-                    <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 38vw, 100vw" className="object-cover grayscale-[0.85] contrast-[1.05]" />
-                  </div>
-                </ClipReveal>
-              </div>
-            )}
-          </header>
+          )}
+        </header>
 
-          {/* Services */}
-          <RevealGroup as="div" count={6} className="mt-14 border-t border-black/10 lg:mt-20">
-            {discipline.services.map((service, k) => (
-              <RevealItem
-                as="article"
-                key={service.id}
-                id={service.id}
-                aria-labelledby={`${service.id}-title`}
-                className="relative grid scroll-mt-28 grid-cols-1 gap-8 border-b border-black/10 py-10 lg:grid-cols-12 lg:gap-8 lg:py-12"
-              >
-                <LegacyAnchors targetId={service.id} />
+        {/* Services */}
+        <RevealGroup as="div" count={6} className="mt-16 grid grid-cols-1 gap-x-10 md:grid-cols-2 lg:mt-24 xl:gap-x-16">
+          {discipline.services.map((service, k) => (
+            <RevealItem
+              as="article"
+              key={service.id}
+              id={service.id}
+              aria-labelledby={`${service.id}-title`}
+              className="relative flex scroll-mt-28 flex-col border-t border-black/10 pt-8 pb-10"
+            >
+              <LegacyAnchors targetId={service.id} />
 
-                <div className="lg:col-span-5">
-                  <p className={INDEX}>
-                    {n}.{k + 1}
-                  </p>
-                  <h3 id={`${service.id}-title`} className={`${H3} mt-4 max-w-[24ch]`}>
-                    {service.name}
-                  </h3>
-                  <p className={`${SMALL} mt-3 max-w-[46ch]`}>{service.description}</p>
-                  <Link
-                    href={enquiryHref(discipline.id)}
-                    className="link body-5 mt-4 inline-flex min-h-11 items-center gap-2 text-black"
-                    aria-label={`Enquire about ${service.name}`}
+              <p className={INDEX}>
+                {n}.{k + 1}
+              </p>
+              <h3 id={`${service.id}-title`} className={`${H3} mt-4 max-w-[26ch]`}>
+                {service.name}
+              </h3>
+              <p className={`${SMALL} mt-3 max-w-[52ch]`}>{service.description}</p>
+
+              <details className="group/scope mt-6 border-y border-black/[0.08]">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-4 py-2 text-[0.8125rem] font-medium tracking-[0.04em] text-black transition-colors hover:text-burgundy focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-burgundy [&::-webkit-details-marker]:hidden">
+                  <span>
+                    Scope includes <span className="text-ink-3">({service.scope.length})</span>
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="grid size-7 shrink-0 place-items-center rounded-full border border-black/15 transition-[transform,background-color,border-color,color] duration-300 group-open/scope:rotate-45 group-open/scope:border-burgundy group-open/scope:bg-burgundy group-open/scope:text-white motion-reduce:transition-none"
                   >
-                    Enquire about this service
-                    <ArrowUpRight aria-hidden="true" size={14} strokeWidth={1.6} />
-                  </Link>
-                </div>
+                    <Plus size={13} strokeWidth={1.6} />
+                  </span>
+                </summary>
+                <ul className="grid grid-cols-1 gap-x-6 pb-4 sm:grid-cols-2">
+                  {service.scope.map((item) => (
+                    <li key={item} className="flex gap-3 py-1.5 text-[0.875rem] leading-snug text-ink-2">
+                      <span aria-hidden="true" className="mt-[0.55em] h-px w-3 shrink-0 bg-burgundy" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </details>
 
-                <div className="lg:col-span-7 lg:col-start-6 lg:pt-1">
-                  <h4 className="eyebrow text-burgundy">Scope includes</h4>
-                  <ul className="mt-3 grid grid-cols-1 gap-x-8 sm:grid-cols-2">
-                    {service.scope.map((item) => (
-                      <li key={item} className="flex gap-3 border-b border-black/[0.07] py-2.5 text-[0.875rem] leading-snug text-ink-2">
-                        <span aria-hidden="true" className="mt-[0.55em] h-px w-3 shrink-0 bg-burgundy" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </RevealItem>
-            ))}
-          </RevealGroup>
-          <p className="caption-5 mt-6 text-ink-3">{scopeNote}</p>
-        </div>
+              <Link
+                href={enquiryHref(discipline.id)}
+                className="link body-5 mt-4 inline-flex min-h-11 items-center gap-2 self-start text-black"
+                aria-label={`Enquire about ${service.name}`}
+              >
+                Enquire about this service
+                <ArrowUpRight aria-hidden="true" size={14} strokeWidth={1.6} />
+              </Link>
+            </RevealItem>
+          ))}
+        </RevealGroup>
+        <p className="caption-5 mt-2 text-ink-3">{scopeNote}</p>
       </Container>
     </section>
   );

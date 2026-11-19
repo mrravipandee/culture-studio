@@ -1,7 +1,8 @@
-import { Reveal, RevealGroup, RevealItem } from "@/components/motion";
+import Image from "next/image";
+import { ClipReveal, Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import Container from "@/components/home/shared/Container";
 import { editorialSerif } from "@/lib/fonts";
-import { servicesHero } from "@/lib/content/services";
+import { servicesHero, servicesHeroImage } from "@/lib/content/services";
 import { disciplines, serviceCount } from "@/lib/content/disciplines";
 import { BODY, H1, LEAD, META } from "@/components/editorial/type";
 
@@ -51,6 +52,21 @@ export default function ServicesHero() {
             </dl>
           </RevealGroup>
         </div>
+
+        {/* Wide photograph: anchors the hero visually without competing with the headline */}
+        <ClipReveal className="mt-14 w-full lg:mt-20">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-lg bg-[var(--subtle)] sm:aspect-[21/9]">
+            <Image
+              src={servicesHeroImage.src}
+              alt={servicesHeroImage.alt}
+              fill
+              priority
+              sizes="(min-width: 1440px) 1280px, 100vw"
+              className="object-cover grayscale-[0.85] contrast-[1.05]"
+            />
+            <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent" />
+          </div>
+        </ClipReveal>
       </Container>
     </section>
   );
