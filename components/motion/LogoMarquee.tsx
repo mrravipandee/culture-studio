@@ -17,9 +17,26 @@ export type MarqueeLogo = {
   name: string;
   /** SVG/PNG under /public. While null, a styled wordmark placeholder renders. */
   src: string | null;
-  /** Tile background: the logo's own background colour, so it is shown as supplied. */
+  /** Tile background. Defaults to white; only set it when the logo can't sit on white. */
   bg?: string;
+  /** Pixel size of the (trimmed) file, used for optical sizing. */
+  w?: number;
+  h?: number;
+  /** Optical nudge (default 1): >1 for thin/light marks, <1 for very heavy ones. */
+  scale?: number;
 };
+
+/*
+ * Optical sizing: every logo gets roughly the same visual area inside an identical tile, so
+ * square marks and long wordmarks read as equals. Units are fractions of the tile's inner
+ * width; the inner box is ~0.47 as tall as it is wide (see padding below).
+ */
+const LOGO_AREA = 0.19;
+const MAX_W = 0.9;
+const MAX_H = 0.44;
+function logoWidth(ratio: number, scale = 1) {
+  return Math.min(Math.sqrt(LOGO_AREA * ratio) * scale, MAX_W, MAX_H * ratio);
+}
 
 interface LogoMarqueeProps {
   logos: MarqueeLogo[];
@@ -62,16 +79,17 @@ const WORDMARK = [
 ];
 
 function Logo({ logo, i, hidden }: { logo: MarqueeLogo; i: number; hidden: boolean }) {
-  // Real logo: shown in full colour inside a uniform tile, contained (never stretched or cropped).
+  // Real logo: full colour, centred in an identical tile, sized by its aspect ratio.
   if (logo.src) {
+    const ratio = logo.w && logo.h ? logo.w / logo.h : 2;
     return (
       <li aria-hidden={hidden} className="shrink-0">
         <div
-          className="grid h-24 w-44 place-items-center overflow-hidden rounded-lg border border-black/8 p-2.5 transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 sm:h-28 sm:w-56 sm:p-3"
+          className="flex h-[6.4rem] w-48 items-center justify-center rounded-xl border border-black/[0.06] px-[10%] shadow-[0_1px_2px_rgba(17,17,17,0.04)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:shadow-[0_10px_28px_-12px_rgba(17,17,17,0.18)] sm:h-32 sm:w-60"
           style={{ backgroundColor: logo.bg ?? "#ffffff" }}
         >
-          <div className="relative h-full w-full">
-            <Image src={logo.src} alt={hidden ? "" : logo.name} fill sizes="224px" className="object-contain" />
+          <div className="relative" style={{ width: `${(logoWidth(ratio, logo.scale) * 100).toFixed(1)}%`, aspectRatio: ratio }}>
+            <Image src={logo.src} alt={hidden ? "" : logo.name} fill sizes="240px" className="object-contain" />
           </div>
         </div>
       </li>

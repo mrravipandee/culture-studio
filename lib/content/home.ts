@@ -73,41 +73,45 @@ export const manifesto = {
 ---------------------------------------------------------------- */
 
 /**
- * Client logo strip (Home → Services section). Logos supplied by CULT.URE (Nov 2026),
- * cropped from the supplied files without recolouring (the second batch was cut out of one
- * low-resolution grid screenshot and upscaled, so replace with original files when available); each tile keeps the logo's own
- * background colour. Files: /public/images/clients/. Not linked to individual case studies.
+ * Client logo strip (Home → Services section). Logos supplied by CULT.URE (Nov 2026).
+ * Each file has its background removed and is trimmed tight to the mark (no recolouring), so
+ * every logo sits on the same tile. `w`/`h` are the file's pixel size: the marquee uses
+ * the ratio to give square and wide logos the same visual weight. Logos drawn in white or on a
+ * dark brand colour (Soham, Treepie, Invesics, The Sarathi, Supreemo, SEFS) get a tile in
+ * that colour (`bg`) instead of white. Files: /public/images/clients/.
+ * Order alternates square and wide marks, since the marquee splits even/odd into two rows.
  */
 export const trustedBy = {
-  label: "Brands we\u2019ve worked with",
+  label: "Brands we’ve worked with",
   placeholder: false,
   logos: [
-    { name: "THE DCO Hospitality Advisory", src: "/images/clients/the-dco-logo.png", bg: "#000000" },
-    { name: "XLAR Media Service", src: "/images/clients/xlar-media-logo.png", bg: "#ffffff" },
-    { name: "Pehnavah", src: "/images/clients/pehnavah-logo.png", bg: "#f5d2d9" },
-    { name: "Soham Orthopaedic & General Health Clinic", src: "/images/clients/soham-orthopaedic-logo.png", bg: "#10184e" },
-    { name: "Janani Maternity & Infertility Clinic", src: "/images/clients/janani-clinic-logo.png", bg: "#ffffff" },
-    { name: "Mystic Bloom Healing Center", src: "/images/clients/mystic-bloom-logo.png", bg: "#f5eeea" },
-    { name: "Celife Health Solutions", src: "/images/clients/celife-logo.png", bg: "#f6f5f0" },
-    { name: "Icon Media", src: "/images/clients/icon-media-logo.png", bg: "#ffffff" },
-    { name: "Asian Paints", src: "/images/clients/asian-paints-logo.png", bg: "#ffffff" },
-    { name: "Invesics", src: "/images/clients/invesics-logo.png", bg: "#100f1f" },
-    { name: "Supreemo Dry Cleaners", src: "/images/clients/supreemo-drycleaners-logo.png", bg: "#a3d445" },
-    { name: "RoboProfit 2.0", src: "/images/clients/roboprofit-logo.png", bg: "#ffffff" },
-    { name: "Kraish Group", src: "/images/clients/kraish-group-logo.png", bg: "#ffffff" },
-    { name: "HGIH", src: "/images/clients/hgih-logo.png", bg: "#ffffff" },
-    { name: "Greepie", src: "/images/clients/greepie-logo.png", bg: "#000000" },
-    { name: "T\u00dcV Rheinland NIFE", src: "/images/clients/tuv-rheinland-nife-logo.png", bg: "#ffffff" },
-    { name: "The Sarathi", src: "/images/clients/the-sarathi-logo.png", bg: "#000000" },
-    { name: "Rooh Desi", src: "/images/clients/rooh-desi-logo.png", bg: "#ffffff" },
-    { name: "Songbird", src: "/images/clients/songbird-logo.png", bg: "#efefed" },
-    { name: "Silkaara", src: "/images/clients/silkaara-logo.png", bg: "#ffffff" },
-    { name: "SMDP", src: "/images/clients/smdp-logo.png", bg: "#ffffff" },
-    { name: "Wallberry", src: "/images/clients/wallberry-logo.png", bg: "#ffffff" },
-    { name: "Gibbonte", src: "/images/clients/gibbonte-logo.png", bg: "#ffffff" },
-    { name: "Kr\u00e9me", src: "/images/clients/kreme-logo.png", bg: "#ffffff" },
-    { name: "Wolpin Wallpaper", src: "/images/clients/wolpin-logo.png", bg: "#ffffff" },
-    { name: "PropGems", src: "/images/clients/propgems-logo.png", bg: "#ffffff" },
+    { name: "THE DCO Hospitality Advisory", src: "/images/clients/the-dco-logo.png", w: 670, h: 650, scale: 1.12 },
+    { name: "Asian Paints", src: "/images/clients/asian-paints-logo.png", w: 542, h: 444 },
+    { name: "Pehnavah", src: "/images/clients/pehnavah-logo.png", w: 900, h: 309 },
+    { name: "Songbird", src: "/images/clients/songbird-logo.png", w: 732, h: 394, scale: 1.08 },
+    { name: "Treepie", src: "/images/clients/treepie-logo.png", w: 513, h: 581, bg: "#000000" },
+    { name: "Wallberry", src: "/images/clients/wallberry-logo.png", w: 398, h: 227, scale: 0.9 },
+    { name: "Janani Maternity & Infertility Clinic", src: "/images/clients/janani-clinic-logo.png", w: 900, h: 700 },
+    { name: "Krrish Group", src: "/images/clients/krrish-group-logo.png", w: 900, h: 450 },
+    { name: "Silkaara", src: "/images/clients/silkaara-logo.png", w: 900, h: 329 },
+    { name: "HGIH", src: "/images/clients/hgih-logo.png", w: 754, h: 900, scale: 0.9 },
+    { name: "Gibbonte", src: "/images/clients/gibbonte-logo.png", w: 700, h: 473 },
+    { name: "Invesics", src: "/images/clients/invesics-logo.png", w: 900, h: 498, bg: "#000000" },
+    { name: "Mystic Bloom Healing Center", src: "/images/clients/mystic-bloom-logo.png", w: 900, h: 885, scale: 1.12 },
+    { name: "Kr\u00e9me", src: "/images/clients/kreme-logo.png", w: 384, h: 104, scale: 0.85 },
+    { name: "The Sarathi", src: "/images/clients/the-sarathi-logo.png", w: 652, h: 400, bg: "#000000", scale: 1.1 },
+    { name: "XLAR Media Service", src: "/images/clients/xlar-media-logo.png", w: 900, h: 449 },
+    { name: "T\u00dcV Rheinland NIFE", src: "/images/clients/tuv-rheinland-nife-logo.png", w: 818, h: 222 },
+    { name: "Icon Media", src: "/images/clients/icon-media-logo.png", w: 900, h: 883 },
+    { name: "Raang Desi", src: "/images/clients/raang-desi-logo.png", w: 809, h: 592, scale: 1.05 },
+    { name: "Soham Orthopaedic & General Health Clinic", src: "/images/clients/soham-orthopaedic-logo.png", w: 900, h: 163, bg: "#10184e" },
+    { name: "Supreemo Dry Cleaners", src: "/images/clients/supreemo-drycleaners-logo.png", w: 900, h: 585, bg: "#a4d545" },
+    { name: "PropGems", src: "/images/clients/propgems-logo.png", w: 884, h: 724 },
+    { name: "Celife Health Solutions", src: "/images/clients/celife-logo.png", w: 467, h: 186 },
+    { name: "SMDP", src: "/images/clients/smdp-logo.png", w: 209, h: 283 },
+    { name: "Wolpin Wallpaper", src: "/images/clients/wolpin-logo.png", w: 808, h: 132 },
+    { name: "Swami Educational & Financial Services", src: "/images/clients/sefs-logo.png", w: 900, h: 822, bg: "#000000" },
+    { name: "RoboProfit 2.8", src: "/images/clients/roboprofit-logo.png", w: 900, h: 600 },
   ],
 };
 
