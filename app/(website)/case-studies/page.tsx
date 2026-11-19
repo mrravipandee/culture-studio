@@ -12,6 +12,8 @@ import CaseStudiesExplorer from "@/components/case-studies/CaseStudiesExplorer";
 import CaseStudiesCta from "@/components/case-studies/CaseStudiesCta";
 import { caseStudyFilters, caseStudyGroups, publishedCaseStudies } from "@/lib/content/case-studies";
 import { caseStudiesEnabled } from "@/lib/content/case-studies-publishing";
+import { trustedBy } from "@/lib/content/home";
+import LogoMarquee from "@/components/motion/LogoMarquee";
 
 export const metadata: Metadata = pageMetadata({
   title: "Case Studies",
@@ -43,6 +45,13 @@ export default function CaseStudiesPage() {
 
       <main className="relative z-0">
         <CaseStudiesHero />
+
+        {/* Client logos: same strip and data as the Home page (lib/content/home.ts → trustedBy). */}
+        {!trustedBy.placeholder && (
+          <Container className="mb-16 md:mb-24">
+            <LogoMarquee label={trustedBy.label} logos={trustedBy.logos} speed={70} />
+          </Container>
+        )}
 
         <section aria-labelledby="cs-projects-title" className="pb-20 md:pb-28">
           <Container>
