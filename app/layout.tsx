@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import Script from "next/script";
 import "./globals.css";
 import { MOTION_ARM_SCRIPT } from "@/lib/motion-arm";
 import { defaultDescription, isIndexable, metadataBase, ogImage, siteName } from "@/lib/site";
@@ -60,8 +61,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <head>
-        {/* Arms entrance animations before first paint; see lib/motion-arm.ts. */}
-        <script dangerouslySetInnerHTML={{ __html: MOTION_ARM_SCRIPT }} />
+        {/*
+          Arms entrance animations before first paint; see lib/motion-arm.ts.
+          next/script with beforeInteractive is emitted inline in the server HTML <head> and
+          runs before hydration, without React rendering a <script> element (which React 19
+          reports as an error, since such scripts never run on client renders).
+        */}
+        <Script id="motion-arm" strategy="beforeInteractive" dangerouslySetInnerHTML={{ __html: MOTION_ARM_SCRIPT }} />
       </head>
       {/* Inline margin reset: no layout shift even if the stylesheet arrives after first paint. */}
       <body className="min-h-full flex flex-col" style={{ margin: 0 }}>
