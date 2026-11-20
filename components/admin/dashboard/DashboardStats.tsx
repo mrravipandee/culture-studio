@@ -24,7 +24,7 @@ export default function DashboardStats({ data }: { data: DashboardStatsData }) {
       note: "All time",
     },
     { icon: MailOpen, value: data.newEnquiries, label: "New Enquiries", note: "Status: new (unread)" },
-    { icon: Layers, value: data.publishedCaseStudies, label: "Published Case Studies", note: `of ${data.totalCaseStudies} approved projects` },
+    { icon: Layers, value: data.publishedCaseStudies, label: "Published Case Studies", note: `of ${data.totalCaseStudies} in the admin` },
     { icon: FileText, value: data.publishedBlogs, label: "Published Blogs", note: `${data.draftBlogs} ${data.draftBlogs === 1 ? "draft" : "drafts"}` },
     { icon: Users, value: data.subscribers, label: "Subscribe Emails", note: `${data.activeSubscribers} active` },
   ];

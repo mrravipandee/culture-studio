@@ -50,10 +50,13 @@ interface PageMetaInput {
   /** Exclude this page from search (internal/test pages). */
   noindex?: boolean;
   type?: "website" | "article";
+  /** Page-specific social image (a site path, e.g. a case study cover); defaults to ogImage. */
+  image?: { url: string; alt: string };
 }
 
 /** Consistent per-page metadata: title, description, canonical, Open Graph, Twitter, robots. */
-export function pageMetadata({ title, description, path, absoluteTitle, noindex, type = "website" }: PageMetaInput): Metadata {
+export function pageMetadata({ title, description, path, absoluteTitle, noindex, type = "website", image }: PageMetaInput): Metadata {
+  const images = [image ?? ogImage];
   const fullTitle = absoluteTitle ? title : `${siteName} | ${title}`;
   const index = isIndexable && !noindex;
   return {
@@ -71,13 +74,13 @@ export function pageMetadata({ title, description, path, absoluteTitle, noindex,
       url: isIndexable ? path : undefined,
       // A page-level openGraph replaces the inherited one (including the file-based
       // image), so the same app/opengraph-image.jpg is listed here explicitly.
-      images: [ogImage],
+      images,
     },
     twitter: {
       card: "summary_large_image",
       title: fullTitle,
       description,
-      images: [ogImage],
+      images,
     },
   };
 }

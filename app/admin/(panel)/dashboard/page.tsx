@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { blogs, caseStudies, subscribers } from "@/lib/admin/data";
+import { blogs, subscribers } from "@/lib/admin/data";
+import { mongoCaseStudyRepository } from "@/lib/case-studies/repository";
 import { getEnquiryDashboard } from "@/lib/enquiries/repository";
 import {
   formatDate,
@@ -10,7 +11,6 @@ import {
   getEnquiryPeriodChange,
   getEnquirySeries,
   getPublishedBlogs,
-  getPublishedCaseStudies,
   getRecentBlogs,
   getSubscriberRecordCount,
   toServiceShares,
@@ -27,8 +27,9 @@ export const metadata: Metadata = { title: "Admin Dashboard" };
 /**
  * Admin Dashboard home. Enquiry figures come from MongoDB (one aggregation in
  * lib/enquiries/repository.ts: totals, NEW count, per-service selections, 90 India-time
- * days, 5 most recent; soft-deleted records excluded). Blog, case-study and subscriber
- * figures still come from lib/admin/data.ts until those modules get their backends.
+ * days, 5 most recent; soft-deleted records excluded). Case-study counts come from MongoDB
+ * too (active records; soft-deleted excluded). Blog and subscriber figures still come from
+ * lib/admin/data.ts until those modules get their backends.
  * The session is verified here, in addition to proxy.ts.
  */
 export default function AdminDashboardPage() {
@@ -46,7 +47,7 @@ async function Dashboard() {
   const today = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" }).format(now);
   const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(now);
 
-  const enquiries = await getEnquiryDashboard(now.getTime(), 90);
+  const [enquiries, caseStudyCounts] = await Promise.all([getEnquiryDashboard(now.getTime(), 90), mongoCaseStudyRepository.counts()]);
   const shares = toServiceShares(enquiries.serviceCounts);
   const selections = shares.reduce((n, s) => n + s.count, 0);
 
@@ -60,8 +61,8 @@ async function Dashboard() {
             totalEnquiries: enquiries.total,
             totalChange: getEnquiryPeriodChange(enquiries.daily, 30),
             newEnquiries: enquiries.newCount,
-            publishedCaseStudies: getPublishedCaseStudies(caseStudies),
-            totalCaseStudies: caseStudies.length,
+            publishedCaseStudies: caseStudyCounts.PUBLISHED,
+            totalCaseStudies: caseStudyCounts.all,
             publishedBlogs: getPublishedBlogs(blogs),
             draftBlogs: getDraftBlogs(blogs),
             subscribers: getSubscriberRecordCount(subscribers),
@@ -80,7 +81,7 @@ async function Dashboard() {
         </div>
 
         <p className="pt-2 text-center text-xs text-ink-3">
-          Enquiry figures are live from the database. Subscriber figures are still preview data until the Subscribers backend is connected.
+          Enquiry and case study figures are live from the database. Subscriber figures are still preview data until the Subscribers backend is connected.
         </p>
       </div>
     </main>

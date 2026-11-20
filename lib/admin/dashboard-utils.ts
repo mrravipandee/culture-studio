@@ -1,11 +1,11 @@
 /**
  * Dashboard calculations. Pure functions over data passed in (enquiry figures come from
- * the MongoDB aggregation in lib/enquiries/repository.ts; blog, case-study and subscriber
- * figures still from lib/admin/data.ts). Invalid dates are skipped, empty inputs give zeroes.
+ * the MongoDB aggregation in lib/enquiries/repository.ts, case-study counts from MongoDB;
+ * blog and subscriber figures still from lib/admin/data.ts). Invalid dates are skipped, empty inputs give zeroes.
  */
 
 import type { AdminBlog, Subscriber } from "./data";
-import { serviceLabels, type AdminCaseStudy, type ServiceId } from "./types";
+import { serviceLabels, type ServiceId } from "./types";
 import { getActiveSubscribers } from "./subscriber-utils";
 
 /** One India-time day of enquiries (from the MongoDB aggregation in lib/enquiries/repository.ts). */
@@ -22,7 +22,6 @@ const time = (iso: string | null | undefined) => {
 
 /* KPIs ---------------------------------------------------------- */
 
-export const getPublishedCaseStudies = (list: AdminCaseStudy[]) => list.filter((c) => c.status === "PUBLISHED").length;
 export const getPublishedBlogs = (list: AdminBlog[]) => list.filter((b) => b.status === "PUBLISHED" && time(b.publishedAt) !== null).length;
 export const getDraftBlogs = (list: AdminBlog[]) => list.filter((b) => b.status === "DRAFT").length;
 /** Dashboard card: all subscriber records, with the active count as the note. */

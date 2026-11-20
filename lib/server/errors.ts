@@ -90,6 +90,14 @@ export class DatabaseUnavailableError extends AppError {
   }
 }
 
+/** 503 — an external service (e.g. Cloudinary) couldn't be reached. The cause is never exposed. */
+export class ServiceUnavailableError extends AppError {
+  readonly status = 503;
+  constructor(message = "A required service is unavailable right now. Please try again shortly.") {
+    super("SERVICE_UNAVAILABLE", message);
+  }
+}
+
 /** 500 — the server is missing required configuration (names the problem in logs only). */
 export class ConfigurationError extends AppError {
   readonly status = 500;

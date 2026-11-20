@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { caseStudiesEnabled, isCaseStudyPublished } from "@/lib/content/case-studies-publishing";
+import { caseStudiesEnabled } from "@/lib/content/case-studies-publishing";
 import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/auth/session";
 import { isBlogArticlePublic } from "@/lib/content/blog";
 
@@ -13,15 +13,12 @@ import { isBlogArticlePublic } from "@/lib/content/blog";
  *
  * 3. Blog articles (/blog/<slug>): 404 unless published (lib/content/blog-publishing.ts + a body).
  *
- * 2. Case Studies visibility and real HTTP 404s.
- *    - /case-studies: 404 while no case study is explicitly published.
- *    - /case-studies/<slug>: 404 unless that slug is explicitly published
- *      (lib/content/case-studies-publishing.ts). Unknown and unpublished sample slugs
- *      are treated the same way.
- *    With cacheComponents, `dynamicParams = false` is unavailable and the detail page reads
- *    params inside <Suspense>, so a notFound() there would arrive after a 200 had already
- *    been sent. Rewriting to a path no route matches renders the standard server-side 404
- *    page (status 404, single noindex) before any rendering.
+ * 2. Case Studies section switch: while it is off (lib/content/case-studies-publishing.ts),
+ *    /case-studies and every /case-studies/<slug> get the standard 404. While it is on,
+ *    per-project visibility is decided by MongoDB on the pages themselves: only PUBLISHED
+ *    records render; unknown, draft, archived and deleted slugs get a real HTTP 404 and old
+ *    slugs a 308 (the detail page is ensureStatic = "navigation", so both are decided before
+ *    any HTML is sent). The proxy never queries the database.
  */
 
 const PUBLIC_ADMIN_APIS = new Set(["/api/admin/login", "/api/admin/logout", "/api/admin/session/ended"]);
@@ -67,8 +64,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.rewrite(new URL("/404-not-found", request.url));
   }
 
-  const allowed = slug === undefined || slug === "" ? caseStudiesEnabled : section === "case-studies" && isCaseStudyPublished(slug);
-  if (allowed) return NextResponse.next();
+  // Case Studies: section switch only (see 2).
+  if (section === "case-studies" && caseStudiesEnabled) return NextResponse.next();
   return NextResponse.rewrite(new URL("/404-not-found", request.url));
 }
 

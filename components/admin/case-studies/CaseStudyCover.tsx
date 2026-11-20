@@ -13,13 +13,15 @@ interface Props {
   sizes: string;
   priority?: boolean;
   className?: string;
+  /** The project deliberately uses the branded typographic cover (no photograph). */
+  typographic?: boolean;
 }
 
 /**
- * Cover image with a loading tint and a branded fallback for missing or broken images.
- * Local previews (blob: URLs) bypass the optimiser; nothing is uploaded.
+ * Cover image with a loading tint and a branded fallback for missing or broken images, or
+ * for the deliberate typographic cover. Only existing site images are used (no uploads).
  */
-export default function CaseStudyCover({ src, alt, label, sizes, priority = false, className = "" }: Props) {
+export default function CaseStudyCover({ src, alt, label, sizes, priority = false, className = "", typographic = false }: Props) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   const [loadedSrc, setLoadedSrc] = useState<string | null>(null);
   const failed = src !== null && failedSrc === src;
@@ -35,11 +37,10 @@ export default function CaseStudyCover({ src, alt, label, sizes, priority = fals
           fill
           sizes={sizes}
           priority={priority}
-          unoptimized={src.startsWith("blob:")}
           onLoad={() => setLoadedSrc(src)}
           onError={() => {
             setFailedSrc(src);
-            if (process.env.NODE_ENV !== "production") console.warn(`[admin] Cover image failed to load: ${src.startsWith("blob:") ? "local preview" : src}`);
+            if (process.env.NODE_ENV !== "production") console.warn(`[admin] Cover image failed to load: ${src}`);
           }}
           className={`object-cover transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04] ${loadedSrc === src ? "opacity-100" : "opacity-0"}`}
         />
@@ -48,7 +49,7 @@ export default function CaseStudyCover({ src, alt, label, sizes, priority = fals
           <span className={`${editorialSerif.className} truncate text-2xl leading-none opacity-90`}>{label}</span>
           <span className="flex shrink-0 items-center gap-1.5 text-[0.625rem] uppercase tracking-[0.16em] text-[#F8F5F0]/70">
             <ImageOff size={12} />
-            {failed ? "Image unavailable" : "No cover"}
+            {failed ? "Image unavailable" : typographic ? "Typographic cover" : "No cover"}
           </span>
         </div>
       )}

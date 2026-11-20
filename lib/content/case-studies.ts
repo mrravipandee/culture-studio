@@ -1,36 +1,36 @@
 /**
- * CULT.URE — Case studies (approved projects). SERVER-ONLY DATA.
+ * CULT.URE — Case studies: the nine approved projects (SOURCE CONTENT) and page copy.
  *
- * Source of truth: the client-supplied project list (nine projects). Titles, highlights,
- * overviews, services, scope and results are the client's exact wording. Nothing here
- * adds challenges, strategies, timelines, testimonials or further results.
- *
- * A project is public only if its slug is listed in lib/content/case-studies-publishing.ts.
- * Do not import this file from client components.
+ * Since the Case Studies CMS, MongoDB (collection case_studies) is the source of truth for
+ * what the public website shows: lib/case-studies/public.ts reads PUBLISHED records only.
+ * The `caseStudies` array below is kept as the verified source the migration imports
+ * (scripts/migrate-case-studies.mjs → lib/case-studies/migration.ts). Titles, highlights,
+ * overviews, services, scope and results are the client's exact wording. Nothing here adds
+ * challenges, strategies, timelines, testimonials or further results.
  *
  * Images: no verified project imagery has been supplied. Some projects use TEMPORARY
- * illustrative photographs (cropped from existing site assets into
- * /public/images/case-studies/, `image.temporary: true`); they are not client work and are
- * captioned "Illustrative image" on the detail page. Projects with `src: null` show a
- * branded typographic visual (components/case-studies/ProjectVisual.tsx). To replace an
- * image, drop the approved file into /public/images/case-studies/ and update `image` below.
+ * illustrative photographs (`image.temporary: true`, captioned "Illustrative image");
+ * projects with `src: null` use the branded typographic visual
+ * (components/case-studies/ProjectVisual.tsx).
  *
  * `filters` maps each project to the listing filters, based only on its supplied services.
+ * `discipline` is CULT.URE's editorial mapping to one of the four service disciplines
+ * (shown as the card category); it is not client copy.
  *
- * `discipline` is CULT.URE's editorial mapping of each project to one of the four service
- * disciplines (used as the card category); it is not client copy.
- *
- * Legacy unverified samples live in lib/content/archive/ (not imported anywhere).
+ * Legacy unverified samples live in lib/content/archive/ (never imported or migrated).
  */
 
 import type { DisciplineId } from "./disciplines";
 import { disciplineById } from "./disciplines";
-import { isCaseStudyPublished, publishedCaseStudySlugs } from "./case-studies-publishing";
+import { publishedCaseStudySlugs } from "./case-studies-publishing";
+import { CASE_STUDY_FILTER_IDS, caseStudyFilterLabels, caseStudyGroupLabels, type CaseStudyFilterId, type CaseStudyGroupId } from "@/lib/case-studies/constants";
+
+export type { CaseStudyFilterId };
 
 /** One figure: `value` + " " + `label` reproduces the client's exact line. */
 export type CaseStudyFigure = { value: string; label: string };
 
-export type CaseStudyGroup = "selected" | "growth";
+export type CaseStudyGroup = CaseStudyGroupId;
 
 export interface CaseStudy {
   /** Display number from the client list ("01"–"09"). */
@@ -61,19 +61,12 @@ export interface CaseStudyImage {
   position?: string;
 }
 
-export type CaseStudyFilterId = "branding" | "social-media" | "website-seo" | "performance-marketing";
-
 /** Listing filters, in display order ("All projects" is added by the UI). */
-export const caseStudyFilters: { id: CaseStudyFilterId; label: string }[] = [
-  { id: "branding", label: "Branding" },
-  { id: "social-media", label: "Social Media" },
-  { id: "website-seo", label: "Website & SEO" },
-  { id: "performance-marketing", label: "Performance Marketing" },
-];
+export const caseStudyFilters: { id: CaseStudyFilterId; label: string }[] = CASE_STUDY_FILTER_IDS.map((id) => ({ id, label: caseStudyFilterLabels[id] }));
 
 export const caseStudyGroups: Record<CaseStudyGroup, { title: string }> = {
-  selected: { title: "Selected projects" },
-  growth: { title: "Growth & Performance Marketing" },
+  selected: { title: caseStudyGroupLabels.selected },
+  growth: { title: caseStudyGroupLabels.growth },
 };
 
 const f = (value: string, label: string): CaseStudyFigure => ({ value, label });
@@ -222,20 +215,12 @@ export const caseStudies: CaseStudy[] = [
 /** Category label shown on cards: the mapped discipline's official name. */
 export const caseStudyCategory = (project: CaseStudy) => disciplineById(project.discipline)?.name ?? "";
 
-/* ---------------------------------------------------------------
-   Publishing (see lib/content/case-studies-publishing.ts)
----------------------------------------------------------------- */
-
-// Guard: every approved slug must exist here (fails the build otherwise).
+// Guard: every slug on the approval list must exist in the source content (fails the build otherwise).
 for (const slug of publishedCaseStudySlugs) {
   if (!caseStudies.some((p) => p.slug === slug)) {
-    throw new Error(`Published case study "${slug}" does not exist in lib/content/case-studies.ts.`);
+    throw new Error(`Approved case study "${slug}" does not exist in lib/content/case-studies.ts.`);
   }
 }
-
-/** Only explicitly approved projects, in the client's order. */
-export const publishedCaseStudies: CaseStudy[] = caseStudies.filter((p) => isCaseStudyPublished(p.slug));
-export const publishedInGroup = (group: CaseStudyGroup) => publishedCaseStudies.filter((p) => p.group === group);
 
 /* ---------------------------------------------------------------
    Listing page copy (client brief: Case Studies page)
@@ -254,27 +239,29 @@ export const caseStudiesHero = {
   image: { src: "/images/case-studies/hero-burgundy-material.jpg", temporary: true },
 };
 
-type Highlight = { value: string; label: string; source: string | null };
+export type CaseStudyHighlight = { value: string; label: string; source: string | null };
+
+/** Selected figures shown under the listing hero: [project slug, figure index]. */
+const HIGHLIGHT_FIGURES: [string, number][] = [
+  ["xlar-media", 0],
+  ["fashion-brand-growth", 0],
+  ["marketplace-growth", 1],
+];
 
 /**
- * Performance highlights: selected figures from individual projects, read from the
- * project data above so they never drift. Not averages or combined results.
+ * Performance highlights: the number of published case studies plus selected figures from
+ * individual published projects (read from those projects, so they never drift). Not
+ * averages or combined results; a figure is left out when its project isn't published.
  */
-const figureFrom = (slug: string, index: number): Highlight | null => {
-  const project = publishedCaseStudies.find((p) => p.slug === slug);
-  const figure = project?.figures[index];
-  return project && figure ? { value: figure.value, label: figure.label, source: project.title } : null;
-};
-
-export const caseStudyHighlights = {
-  note: "Selected results from individual projects",
-  items: [
-    { value: String(publishedCaseStudies.length).padStart(2, "0"), label: "Case Studies", source: null },
-    figureFrom("xlar-media", 0),
-    figureFrom("fashion-brand-growth", 0),
-    figureFrom("marketplace-growth", 1),
-  ].filter((item): item is Highlight => item !== null),
-};
+export function buildCaseStudyHighlights(published: readonly Pick<CaseStudy, "slug" | "title" | "figures">[]) {
+  const items: CaseStudyHighlight[] = [{ value: String(published.length).padStart(2, "0"), label: "Case Studies", source: null }];
+  for (const [slug, index] of HIGHLIGHT_FIGURES) {
+    const project = published.find((p) => p.slug === slug);
+    const figure = project?.figures[index];
+    if (project && figure) items.push({ value: figure.value, label: figure.label, source: project.title });
+  }
+  return { note: "Selected results from individual projects", items };
+}
 
 /** Closing CTA (client brief). */
 export const caseStudiesCta = {

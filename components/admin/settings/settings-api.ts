@@ -15,7 +15,7 @@ const UNEXPECTED: ApiErrorBody = { code: "UNEXPECTED_RESPONSE", message: "Someth
  * Never throws: network failures and unreadable responses become friendly errors.
  * A 401 means the session ended (expired or revoked): the browser is sent to sign in again.
  */
-export async function settingsRequest<T>(url: string, init: { method?: "GET" | "PATCH" | "DELETE"; body?: unknown; signal?: AbortSignal } = {}): Promise<ApiResult<T>> {
+export async function settingsRequest<T>(url: string, init: { method?: "GET" | "POST" | "PATCH" | "DELETE"; body?: unknown; signal?: AbortSignal } = {}): Promise<ApiResult<T>> {
   let response: Response;
   try {
     response = await fetch(url, {

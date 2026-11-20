@@ -64,48 +64,11 @@ export const enquiryStatusLabels: Record<EnquiryStatus, string> = {
 export const ENQUIRY_STATUSES: EnquiryStatus[] = ["NEW", "READ", "REPLIED", "CLOSED"];
 
 /* ---------------------------------------------------------------
-   Case studies (admin view of lib/content/case-studies.ts)
+   Case studies: MongoDB-backed (lib/case-studies). Re-exported for admin components.
 ---------------------------------------------------------------- */
 
-export type CaseStudyStatus = "DRAFT" | "PUBLISHED";
-export type CaseStudyFiguresLabel = "Project Scope" | "Results";
-
-export interface AdminCaseStudy {
-  /** Stable id: approved projects use `cs-<slug>`, records created in the admin `local-<n>`. */
-  id: string;
-  slug: string;
-  /** Display number of approved projects ("01"–"09"); null for local records. */
-  number: string | null;
-  title: string;
-  highlight: string;
-  overview: string;
-  services: string[];
-  /** Discipline name, e.g. "Brand Strategy & Communications". */
-  category: string;
-  coverImage: string | null;
-  coverAlt: string;
-  /** Cover is a temporary illustrative image (not client work). */
-  coverIsTemporary: boolean;
-  status: CaseStudyStatus;
-  /** Which heading the public page uses for the figures. */
-  figuresLabel: CaseStudyFiguresLabel;
-  /** Each item is the exact supplied line, e.g. "25% Sales Growth". */
-  scope: string[];
-  results: string[];
-  /** Not recorded for approved projects (null); set for local edits and records. */
-  createdAt: string | null;
-  updatedAt: string | null;
-  /**
-   * The slug under which this project is live on the public website, read from the
-   * publishing allowlist (lib/content/case-studies-publishing.ts); null when not public.
-   * Read-only in the admin: local edits never change it.
-   */
-  publicSlug: string | null;
-  /** Created in this browser tab (not approved content). */
-  isLocal: boolean;
-}
-
-export const caseStudyStatusLabels: Record<CaseStudyStatus, string> = { DRAFT: "Draft", PUBLISHED: "Published" };
+export type { AdminCaseStudy, CaseStudyCounts, CaseStudyListResult, CaseStudyStatusFilter } from "@/lib/case-studies/types";
+export { caseStudyStatusLabels, type CaseStudyStatus } from "@/lib/case-studies/constants";
 
 /* ---------------------------------------------------------------
    Blog posts (admin view of lib/content/blog.ts)

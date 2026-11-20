@@ -43,6 +43,10 @@ export const RATE_LIMITS = {
   /** Public enquiry form: every submission counts (not just failures). */
   enquiryIp: { limit: 5, windowMs: 15 * MINUTES },
   enquiryEmail: { limit: 3, windowMs: 15 * MINUTES },
+  /** Admin case study writes (create, update, delete, status actions): every write counts. */
+  caseStudyWrite: { limit: 120, windowMs: 15 * MINUTES },
+  /** Cloudinary upload signatures (one per uploaded image). */
+  mediaSignature: { limit: 60, windowMs: 15 * MINUTES },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 const hashed = (value: string) => createHash("sha256").update(value).digest("hex").slice(0, 32);
@@ -54,6 +58,8 @@ export const rateLimitKeys = {
   passwordCheck: (adminId: string) => `password-check:${adminId}`,
   enquiryIp: (ip: string) => `enquiry:ip:${hashed(ip)}`,
   enquiryEmail: (email: string) => `enquiry:email:${hashed(email)}`,
+  caseStudyWrite: (adminId: string) => `case-study:write:${adminId}`,
+  mediaSignature: (adminId: string) => `media:signature:${adminId}`,
 };
 
 /** Seconds until the bucket allows another attempt, or 0 when allowed. */

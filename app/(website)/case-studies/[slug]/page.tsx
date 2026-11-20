@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
+import Image from "next/image";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { pageMetadata } from "@/lib/site";
 import Navbar from "@/components/navigation/Navbar";
@@ -11,58 +11,57 @@ import Container from "@/components/home/shared/Container";
 import { ClipReveal, Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import ProjectVisual from "@/components/case-studies/ProjectVisual";
 import CaseStudiesCta from "@/components/case-studies/CaseStudiesCta";
-import { caseStudyCategory, caseStudyGroups, publishedCaseStudies } from "@/lib/content/case-studies";
-
-/** Only explicitly published case studies (lib/content/case-studies-publishing.ts). */
-const allProjects = publishedCaseStudies;
+import { caseStudyCategory, caseStudyGroups } from "@/lib/content/case-studies";
+import { getCaseStudyPage, getPublishedCaseStudies } from "@/lib/case-studies/public";
 
 /**
- * Every published slug is prerendered. cacheComponents requires at least one param, so
- * if nothing is published a non-project placeholder slug is returned instead (it renders
- * a 404). Unknown and unpublished slugs never reach this page: proxy.ts answers them with
- * a real HTTP 404.
+ * The complete page must be static (prerendered or generated on first request, then cached):
+ * this is what gives unknown, draft, archived and deleted slugs a real HTTP 404 and old slugs
+ * a real 308, decided before any HTML is sent. All data comes from `'use cache'` reads of
+ * PUBLISHED records only (lib/case-studies/public.ts), invalidated on every publishing change.
+ */
+export const ensureStatic = "navigation";
+
+/**
+ * Every published slug is prerendered. Cache Components needs at least one param, so when
+ * nothing is published a reserved, never-valid slug is returned (it renders the 404).
  */
 export async function generateStaticParams() {
-  return allProjects.length > 0 ? allProjects.map((project) => ({ slug: project.slug })) : [{ slug: "unpublished" }];
+  const all = await getPublishedCaseStudies();
+  return all.length > 0 ? all.map((project) => ({ slug: project.slug })) : [{ slug: "unpublished" }];
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+type Params = { params: Promise<{ slug: string }> };
+
+export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
-  const project = allProjects.find((p) => p.slug === slug);
-  // Unknown slug: the 404 page supplies the title; Next.js adds the single noindex tag.
-  if (!project) notFound();
+  const result = await getCaseStudyPage(slug);
+  // Old slug: the page redirects; unknown: the 404 page supplies the title + noindex.
+  if (result.kind === "redirect") permanentRedirect(`/case-studies/${result.slug}`);
+  if (result.kind === "missing") notFound();
+  const { project } = result;
 
   return pageMetadata({
-    title: `${project.title} — Case Study`,
+    title: project.seo.title,
     path: `/case-studies/${project.slug}`,
-    description: project.highlight,
+    description: project.seo.description,
     type: "article",
+    ...(project.seo.ogImage ? { image: { url: project.seo.ogImage, alt: project.image.alt || project.title } } : {}),
   });
-}
-
-export default function CaseStudyDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-  // Route params are read inside Suspense so navigation can show the shell instantly.
-  // Every published slug is prerendered via generateStaticParams, so the HTML is complete.
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-white" aria-hidden="true" />}>
-      <CaseStudyDetail params={params} />
-    </Suspense>
-  );
 }
 
 /**
  * Presents only the supplied content: title, highlight, image, overview, services, the
- * project's scope or results, next project and the contact CTA. No challenge, strategy, process, solution or testimonial
- * sections, because no such content has been supplied.
+ * project's scope and/or results, optional gallery, next project and the contact CTA.
  */
-async function CaseStudyDetail({ params }: { params: Promise<{ slug: string }> }) {
+export default async function CaseStudyDetailPage({ params }: Params) {
   const { slug } = await params;
-  const projectIndex = allProjects.findIndex((p) => p.slug === slug);
-  if (projectIndex === -1) notFound();
+  const result = await getCaseStudyPage(slug);
+  if (result.kind === "redirect") permanentRedirect(`/case-studies/${result.slug}`);
+  if (result.kind === "missing") notFound();
 
-  const project = allProjects[projectIndex];
-  const nextProject = allProjects[(projectIndex + 1) % allProjects.length];
-  const total = String(allProjects.length).padStart(2, "0");
+  const { project, next: nextProject } = result;
+  const total = String(result.total).padStart(2, "0");
 
   return (
     <div className="relative min-h-screen bg-[var(--cream)] selection:bg-burgundy selection:text-white">
@@ -132,13 +131,13 @@ async function CaseStudyDetail({ params }: { params: Promise<{ slug: string }> }
                 <h2 id="overview-title" className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
                   [ Overview ]
                 </h2>
-                <p className="mt-6 text-xl sm:text-2xl font-light leading-relaxed text-black">{project.overview}</p>
+                <p className="mt-6 whitespace-pre-line text-xl sm:text-2xl font-light leading-relaxed text-black">{project.overview}</p>
               </Reveal>
 
               <div className="lg:col-span-4">
                 <h2 className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">[ Services ]</h2>
                 <ul className="mt-6 space-y-3">
-                  {project.services.map((service) => (
+                  {project.services.map((service: string) => (
                     <li key={service} className="flex items-center gap-3 border-b border-black/5 pb-3 text-sm font-light text-ink">
                       <span aria-hidden="true" className="h-1 w-1 shrink-0 rounded-full bg-burgundy" />
                       <span>{service}</span>
@@ -150,32 +149,56 @@ async function CaseStudyDetail({ params }: { params: Promise<{ slug: string }> }
           </Container>
         </section>
 
-        {/* Scope or results */}
-        <section aria-labelledby="figures-title" className="py-20 md:py-28">
-          <Container>
-            <h2 id="figures-title" className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
-              [ {project.figuresLabel} ]
-            </h2>
-            <RevealGroup
-              as="ul"
-              count={project.figures.length}
-              className="mt-8 grid grid-cols-1 border-t border-black/10 sm:grid-cols-3"
-            >
-              {project.figures.map((figure) => (
-                <RevealItem
-                  as="li"
-                  key={figure.label}
-                  className="border-b border-black/10 py-8 sm:border-b-0 sm:pr-8 sm:[&:not(:first-child)]:border-l sm:[&:not(:first-child)]:pl-8"
-                >
-                  <span className="block text-5xl md:text-6xl lg:text-7xl font-light tracking-heading text-burgundy">{figure.value}</span>{" "}
-                  <span className="mt-3 block font-mono text-xs uppercase tracking-eyebrow text-ink-3">{figure.label}</span>
-                </RevealItem>
-              ))}
-            </RevealGroup>
-          </Container>
-        </section>
+        {/* Scope and / or results (only what was supplied) */}
+        {project.figureSections.map((section, sectionIndex) => (
+          <section key={section.label} aria-labelledby={`figures-${sectionIndex}`} className={sectionIndex === 0 ? "py-20 md:py-28" : "pb-20 md:pb-28"}>
+            <Container>
+              <h2 id={`figures-${sectionIndex}`} className="font-mono text-xs uppercase tracking-eyebrow text-burgundy font-medium">
+                [ {section.label} ]
+              </h2>
+              <RevealGroup as="ul" count={section.items.length} className="mt-8 grid grid-cols-1 border-t border-black/10 sm:grid-cols-3">
+                {section.items.map((figure) => (
+                  <RevealItem
+                    as="li"
+                    key={`${figure.value}-${figure.label}`}
+                    className="border-b border-black/10 py-8 sm:border-b-0 sm:pr-8 sm:[&:not(:first-child)]:border-l sm:[&:not(:first-child)]:pl-8"
+                  >
+                    {figure.value && (
+                      <>
+                        <span className="block text-5xl md:text-6xl lg:text-7xl font-light tracking-heading text-burgundy">{figure.value}</span>{" "}
+                      </>
+                    )}
+                    <span className={`block font-mono text-xs uppercase tracking-eyebrow text-ink-3 ${figure.value ? "mt-3" : ""}`}>{figure.label}</span>
+                    {figure.description && <span className="mt-2 block text-sm font-light leading-relaxed text-ink-2">{figure.description}</span>}
+                  </RevealItem>
+                ))}
+              </RevealGroup>
+            </Container>
+          </section>
+        ))}
+        {project.figureSections.length === 0 && <div className="pb-20 md:pb-28" />}
+
+        {/* Gallery (only when images were added) */}
+        {project.gallery.length > 0 && (
+          <section aria-label="Gallery" className="pb-20 md:pb-28">
+            <Container>
+              <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6">
+                {project.gallery.map((image) => (
+                  <li key={image.src}>
+                    <ClipReveal className="rounded-xl">
+                      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-[var(--subtle)]">
+                        <Image src={image.src} alt={image.alt} fill sizes="(min-width: 640px) 50vw, 100vw" className="object-cover" />
+                      </div>
+                    </ClipReveal>
+                  </li>
+                ))}
+              </ul>
+            </Container>
+          </section>
+        )}
 
         {/* Next project */}
+        {nextProject && (
         <section aria-label="Next project" className="pb-20 md:pb-28">
           <Container>
             <div className="pt-12 border-t border-black/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
@@ -194,6 +217,7 @@ async function CaseStudyDetail({ params }: { params: Promise<{ slug: string }> }
             </div>
           </Container>
         </section>
+        )}
 
         <CaseStudiesCta />
       </main>

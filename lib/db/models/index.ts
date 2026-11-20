@@ -11,7 +11,9 @@ import { AdminLoginActivityModel } from "./AdminLoginActivity";
 import { AdminSessionModel } from "./AdminSession";
 import { RateLimitModel } from "./RateLimit";
 import { EnquiryModel } from "./Enquiry";
+import { CaseStudyModel } from "./CaseStudy";
+import { AuditLogModel } from "./AuditLog";
 
-export { AdminModel, AdminLoginActivityModel, AdminSessionModel, RateLimitModel, EnquiryModel };
+export { AdminModel, AdminLoginActivityModel, AdminSessionModel, RateLimitModel, EnquiryModel, CaseStudyModel, AuditLogModel };
 
-export const ALL_MODELS = [AdminModel, AdminLoginActivityModel, AdminSessionModel, RateLimitModel, EnquiryModel] as const;
+export const ALL_MODELS = [AdminModel, AdminLoginActivityModel, AdminSessionModel, RateLimitModel, EnquiryModel, CaseStudyModel, AuditLogModel] as const;

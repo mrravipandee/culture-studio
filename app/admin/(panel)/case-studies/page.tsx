@@ -2,16 +2,17 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { countNewEnquiries } from "@/lib/enquiries/repository";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { caseStudies, caseStudyCategoryOptions, caseStudyServiceOptions } from "@/lib/admin/data";
 import { editorialSerif } from "@/lib/fonts";
 import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
 import CaseStudiesWorkspace from "@/components/admin/case-studies/CaseStudiesWorkspace";
+import { isCloudinaryConfigured } from "@/lib/media/cloudinary";
 
 export const metadata: Metadata = { title: "Case Studies" };
 
 /**
- * /admin/case-studies — manage the approved case studies (lib/content/case-studies.ts).
- * Admin changes are a local preview: the public website keeps using the publishing allowlist.
+ * /admin/case-studies — the Case Studies CMS. Records live in MongoDB and are loaded by the
+ * workspace from /api/admin/case-studies (create, edit, publish, unpublish, archive, delete,
+ * restore). Published records are what the public website shows.
  */
 export default function AdminCaseStudiesPage() {
   return (
@@ -41,12 +42,7 @@ async function CaseStudies() {
         showDemoBadge={false}
       />
       <div className="mt-8 lg:mt-10">
-        <CaseStudiesWorkspace
-          initial={caseStudies}
-          categoryOptions={caseStudyCategoryOptions}
-          serviceOptions={caseStudyServiceOptions}
-          serifClassName={editorialSerif.className}
-        />
+        <CaseStudiesWorkspace serifClassName={editorialSerif.className} uploadsEnabled={isCloudinaryConfigured()} />
       </div>
     </main>
   );

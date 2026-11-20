@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { caseStudiesHero, caseStudyHighlights } from "@/lib/content/case-studies";
+import { caseStudiesHero, type CaseStudyHighlight } from "@/lib/content/case-studies";
 import Container from "@/components/home/shared/Container";
 import { ClipReveal, Reveal, RevealGroup, RevealItem } from "@/components/motion";
 import { editorialSerif } from "@/lib/fonts";
@@ -8,8 +8,11 @@ import { editorialSerif } from "@/lib/fonts";
 /** Deep burgundy-black used for the editorial headline and figures. */
 const HEADLINE = "text-[#240c0e]";
 
-/** Section 02 (hero) and 03 (performance highlights) of the Case Studies page. */
-export default function CaseStudiesHero() {
+/**
+ * Section 02 (hero) and 03 (performance highlights) of the Case Studies page.
+ * `highlights` is built from the published records (lib/content/case-studies.ts → buildCaseStudyHighlights).
+ */
+export default function CaseStudiesHero({ highlights: caseStudyHighlights }: { highlights: { note: string; items: CaseStudyHighlight[] } }) {
   return (
     <>
       <section aria-labelledby="cs-hero-title" className="relative overflow-hidden pt-28 pb-10 sm:pt-32 lg:pt-36 lg:pb-14">

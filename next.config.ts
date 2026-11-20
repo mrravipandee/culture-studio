@@ -13,8 +13,20 @@ const securityHeaders = [
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()" },
 ];
 
+/**
+ * Uploaded case study images (lib/media/cloudinary.ts) are served by Cloudinary. Only this
+ * account's upload paths are allowed through the image optimiser, and only when
+ * CLOUDINARY_CLOUD_NAME is set (read at build / dev-server start).
+ */
+const cloudinaryCloud = process.env.CLOUDINARY_CLOUD_NAME?.trim();
+const remotePatterns: NonNullable<NonNullable<NextConfig["images"]>["remotePatterns"]> =
+  cloudinaryCloud && /^[a-z0-9_-]{1,64}$/.test(cloudinaryCloud)
+    ? [{ protocol: "https", hostname: "res.cloudinary.com", pathname: `/${cloudinaryCloud}/image/upload/**` }]
+    : [];
+
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  images: { remotePatterns },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

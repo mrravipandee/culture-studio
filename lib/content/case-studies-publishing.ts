@@ -1,18 +1,18 @@
 /**
- * CULT.URE — Case Studies publishing switch (explicit approval list).
+ * CULT.URE — Case Studies: section switch and the client's approval list.
  *
- * A case study is public ONLY if its slug is listed here. Add a slug only once the
- * client has explicitly approved the project's content for publication.
+ * Per-project visibility now lives in MongoDB (status PUBLISHED, managed in
+ * /admin/case-studies). This module keeps two things:
  *
- * While this list is empty:
- *  - /case-studies and every /case-studies/<slug> return HTTP 404 (proxy.ts + pages)
- *  - Case Studies is removed from the Navbar, mobile menu, Footer and 404 page
- *  - the Home "Selected Work" section is hidden and Home sections are renumbered
- *  - /case-studies is excluded from the sitemap
- * With at least one slug listed, all of the above is restored automatically.
+ *  - `caseStudiesEnabled`: the SECTION switch. While false, /case-studies and every
+ *    /case-studies/<slug> return 404 (proxy.ts), and Case Studies is removed from the Navbar,
+ *    mobile menu, Footer, 404 page, sitemap and the Home "Selected Work" section.
+ *  - `publishedCaseStudySlugs`: the client's explicit approval of the nine original projects.
+ *    The migration (scripts/migrate-case-studies.mjs) creates these as PUBLISHED and any other
+ *    source project as DRAFT. Changing this list does not change the live site any more.
  *
- * This module deliberately contains no project data, so client components (Navbar)
- * can import it without bundling project content into public JavaScript.
+ * It contains no project data, so client components (Navbar) can import it without bundling
+ * project content into public JavaScript.
  */
 
 /** Approved by the client for publication (nine projects). */
@@ -28,7 +28,5 @@ export const publishedCaseStudySlugs: readonly string[] = [
   "marketplace-growth",
 ];
 
-/** True when at least one case study has been explicitly approved and published. */
-export const caseStudiesEnabled = publishedCaseStudySlugs.length > 0;
-
-export const isCaseStudyPublished = (slug: string) => publishedCaseStudySlugs.includes(slug);
+/** Case Studies section switch (navigation, routes, sitemap, Home section). */
+export const caseStudiesEnabled = true;

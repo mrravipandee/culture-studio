@@ -10,7 +10,8 @@ import CaseStudiesHero from "@/components/case-studies/CaseStudiesHero";
 import CaseStudyCard from "@/components/case-studies/CaseStudyCard";
 import CaseStudiesExplorer from "@/components/case-studies/CaseStudiesExplorer";
 import CaseStudiesCta from "@/components/case-studies/CaseStudiesCta";
-import { caseStudyFilters, caseStudyGroups, publishedCaseStudies } from "@/lib/content/case-studies";
+import { buildCaseStudyHighlights, caseStudyFilters, caseStudyGroups } from "@/lib/content/case-studies";
+import { getPublishedCaseStudies } from "@/lib/case-studies/public";
 import { caseStudiesEnabled } from "@/lib/content/case-studies-publishing";
 import { trustedBy } from "@/lib/content/home";
 import LogoMarquee from "@/components/motion/LogoMarquee";
@@ -23,12 +24,15 @@ export const metadata: Metadata = pageMetadata({
 });
 
 /**
- * Case Studies listing: published projects only (lib/content/case-studies-publishing.ts).
- * Returns HTTP 404 while nothing is published (proxy.ts rewrites it as well).
- * Sections: hero · performance highlights · filters + project grid · contact CTA.
+ * Case Studies listing: PUBLISHED records from MongoDB only (lib/case-studies/public.ts,
+ * cached and invalidated on every publishing change). Drafts, archived and deleted records
+ * never appear. HTTP 404 while the section is switched off or nothing is published.
+ * Sections: hero · performance highlights · client logos · filters + project grid · CTA.
  */
-export default function CaseStudiesPage() {
+export default async function CaseStudiesPage() {
   if (!caseStudiesEnabled) notFound();
+  const publishedCaseStudies = await getPublishedCaseStudies();
+  if (publishedCaseStudies.length === 0) notFound();
 
   const filters = caseStudyFilters.filter((f) => publishedCaseStudies.some((p) => p.filters.includes(f.id)));
   const items = publishedCaseStudies.map((project, i) => ({
@@ -44,7 +48,7 @@ export default function CaseStudiesPage() {
       <Navbar />
 
       <main className="relative z-0">
-        <CaseStudiesHero />
+        <CaseStudiesHero highlights={buildCaseStudyHighlights(publishedCaseStudies)} />
 
         {/* Client logos: same strip and data as the Home page (lib/content/home.ts → trustedBy). */}
         {!trustedBy.placeholder && (

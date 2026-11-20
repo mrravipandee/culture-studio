@@ -1,23 +1,19 @@
-import { CheckCircle2, ImageIcon, Layers, PenLine, type LucideIcon } from "lucide-react";
+import { Archive, CheckCircle2, Layers, PenLine, type LucideIcon } from "lucide-react";
 import { editorialSerif } from "@/lib/fonts";
-import type { AdminCaseStudy } from "@/lib/admin/types";
-import { getDraftCount, getPublishedCount, getTotalCaseStudies, getWithCoverCount } from "@/lib/admin/case-study-utils";
+import type { CaseStudyCounts } from "@/lib/admin/types";
 
-/**
- * KPI cards, recalculated from the current records. The reference's "Total Views" card is
- * replaced by "With Cover Image": there is no view analytics source, so no views are shown.
- */
-export default function CaseStudyStats({ items }: { items: AdminCaseStudy[] }) {
-  const total = getTotalCaseStudies(items);
+/** KPI cards from the database counts (active records; soft-deleted ones are excluded). No view analytics exist, so none are shown. */
+export default function CaseStudyStats({ counts }: { counts: CaseStudyCounts | null }) {
+  const show = (n: number | undefined) => (counts ? String(n) : "—");
   const cards: { icon: LucideIcon; value: string; label: string; highlight?: boolean }[] = [
-    { icon: Layers, value: String(total), label: "Total Case Studies" },
-    { icon: CheckCircle2, value: String(getPublishedCount(items)), label: "Published", highlight: true },
-    { icon: PenLine, value: String(getDraftCount(items)), label: "Drafts" },
-    { icon: ImageIcon, value: `${getWithCoverCount(items)}/${total}`, label: "With Cover Image" },
+    { icon: Layers, value: show(counts?.all), label: "Total Case Studies" },
+    { icon: CheckCircle2, value: show(counts?.PUBLISHED), label: "Published", highlight: true },
+    { icon: PenLine, value: show(counts?.DRAFT), label: "Drafts" },
+    { icon: Archive, value: show(counts?.ARCHIVED), label: "Archived" },
   ];
 
   return (
-    <section aria-label="Case study summary">
+    <section aria-label="Case study summary" aria-busy={counts === null}>
       <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {cards.map(({ icon: Icon, value, label, highlight }, i) => (
           <li key={label}>

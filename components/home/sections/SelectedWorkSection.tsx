@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowUpRight } from "@/components/ui/Arrow";
 import { Button } from "@/components/ui/site-button";
 import { selectedWork } from "@/lib/content/selected-work";
-import { caseStudyCategory, publishedCaseStudies, type CaseStudy } from "@/lib/content/case-studies";
+import { caseStudyCategory, type CaseStudy } from "@/lib/content/case-studies";
+import { getPublishedCaseStudies } from "@/lib/case-studies/public";
 import ProjectVisual from "@/components/case-studies/ProjectVisual";
 import Container from "../shared/Container";
 import SectionHeading from "../shared/SectionHeading";
@@ -114,16 +115,18 @@ function ProjectCard({
   );
 }
 
+/** Home shows at most this many featured projects (cards 01 and 04 are wide). */
+const MAX_FEATURED = 4;
+
 /**
- * 03 — Selected work: a selection of the approved case studies (lib/content/selected-work.ts).
- * Rendered by the Home page only while at least one case study is published.
+ * 03 — Selected work: PUBLISHED case studies marked "featured" in the admin, in site order
+ * (MongoDB, cached; lib/case-studies/public.ts). Drafts, archived and deleted records never
+ * appear. Rendered by the Home page only while the Case Studies section is switched on.
  */
-export default function SelectedWorkSection() {
-  // Client rule: only verified client projects appear here (explicitly published only).
-  const projects = selectedWork.slugs
-    .map((slug) => publishedCaseStudies.find((p) => p.slug === slug))
-    .filter((p): p is CaseStudy => p !== undefined);
-  const total = String(publishedCaseStudies.length).padStart(2, "0");
+export default async function SelectedWorkSection() {
+  const published = await getPublishedCaseStudies();
+  const projects: CaseStudy[] = published.filter((p) => p.featured).slice(0, MAX_FEATURED);
+  const total = String(published.length).padStart(2, "0");
 
   return (
     <section id="work" aria-labelledby="work-title" className="relative overflow-hidden py-24 sm:py-32 lg:py-36 bg-[#FCFBF9] text-ink">

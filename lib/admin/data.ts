@@ -10,15 +10,11 @@ import "server-only";
  * Replace each collection with a MongoDB/API query later; the dashboard reads only the
  * exported collections through lib/admin/dashboard-utils.ts.
  *
- * Case studies are NOT demo data and are not duplicated here: `caseStudies` maps the real,
- * approved projects (lib/content/case-studies.ts) and reads their public visibility from the
- * publishing allowlist (lib/content/case-studies-publishing.ts), which stays the only source
- * of truth for the public website.
+ * Case studies are NOT here: they are MongoDB records (lib/case-studies, collection
+ * case_studies), managed in /admin/case-studies and migrated from the approved content by
+ * scripts/migrate-case-studies.mjs.
  */
 
-import { caseStudies as approvedCaseStudies, caseStudyCategory } from "@/lib/content/case-studies";
-import { disciplines } from "@/lib/content/disciplines";
-import { isCaseStudyPublished } from "@/lib/content/case-studies-publishing";
 import { blogArticles, featuredArticle } from "@/lib/content/blog";
 
 export const IS_DEMO_DATA = true;
@@ -28,10 +24,10 @@ export const IS_DEMO_DATA = true;
    Types
 ---------------------------------------------------------------- */
 
-import { BLOG_DEFAULT_AUTHOR, type AdminCaseStudy, type BlogPost, type Subscriber } from "./types";
+import { BLOG_DEFAULT_AUTHOR, type BlogPost, type Subscriber } from "./types";
 import { emptyDoc } from "@/lib/rich-text";
 import { isBlogPublished } from "@/lib/content/blog-publishing";
-export type { AdminCaseStudy, BlogPost, BlogStatus, Subscriber, SubscriberSource, SubscriberStatus } from "./types";
+export type { BlogPost, BlogStatus, Subscriber, SubscriberSource, SubscriberStatus } from "./types";
 
 /** Dashboard name for blog records (same type as the Blog admin). */
 export type AdminBlog = BlogPost;
@@ -41,43 +37,6 @@ export type AdminBlog = BlogPost;
 
 /* Enquiries: no longer here. Real enquiries live in MongoDB (lib/enquiries/repository.ts);
    the fictional demo set moved to the dev-only seed script scripts/seed-dev-enquiries.mjs. */
-
-/* ---------------------------------------------------------------
-   Case studies (real, approved projects; not duplicated)
----------------------------------------------------------------- */
-
-export const caseStudies: AdminCaseStudy[] = approvedCaseStudies.map((project) => {
-  const lines = project.figures.map((f) => `${f.value} ${f.label}`);
-  const isPublic = isCaseStudyPublished(project.slug);
-  return {
-    id: `cs-${project.slug}`,
-    slug: project.slug,
-    number: project.number,
-    title: project.title,
-    highlight: project.highlight,
-    overview: project.overview,
-    services: [...project.services],
-    category: caseStudyCategory(project),
-    coverImage: project.image.src,
-    coverAlt: project.image.alt,
-    coverIsTemporary: project.image.temporary === true,
-    status: isPublic ? "PUBLISHED" : "DRAFT",
-    figuresLabel: project.figuresLabel,
-    scope: project.figuresLabel === "Project Scope" ? lines : [],
-    results: project.figuresLabel === "Results" ? lines : [],
-    createdAt: null,
-    updatedAt: null,
-    publicSlug: isPublic ? project.slug : null,
-    isLocal: false,
-  };
-});
-
-/** Options for the admin case study form: the four disciplines, and every service name in
- *  the CULT.URE taxonomy plus the labels already used by approved projects. */
-export const caseStudyCategoryOptions = disciplines.map((d) => d.name);
-export const caseStudyServiceOptions = [
-  ...new Set([...disciplines.flatMap((d) => d.services.map((s) => s.name)), ...approvedCaseStudies.flatMap((p) => p.services)]),
-].sort((a, b) => a.localeCompare(b));
 
 /* ---------------------------------------------------------------
    Blogs (the Blog page sample articles; DRAFT unless on the blog publishing list with a body)

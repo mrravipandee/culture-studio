@@ -52,3 +52,19 @@ export function parseWith<S extends z.ZodType>(schema: S, input: unknown): Parse
   }
   return { ok: false, fields };
 }
+
+/**
+ * Like parseWith, but keeps the full path of nested issues ("results.1.value"), for forms
+ * with repeatable groups. Unknown keys anywhere are reported under "form".
+ */
+export function parseNestedWith<S extends z.ZodType>(schema: S, input: unknown): ParseResult<z.output<S>> {
+  const result = schema.safeParse(input);
+  if (result.success) return { ok: true, data: result.data };
+  const fields: FieldErrors = {};
+  for (const issue of result.error.issues) {
+    const unknown = issue.code === "unrecognized_keys";
+    const key = unknown || issue.path.length === 0 ? "form" : issue.path.map(String).join(".");
+    if (!fields[key]) fields[key] = unknown ? "The request contains fields that can't be changed." : issue.message;
+  }
+  return { ok: false, fields };
+}

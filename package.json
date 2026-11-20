@@ -12,7 +12,10 @@
     "admin:test-auth": "node --env-file=.env scripts/test-admin-auth.mjs",
     "admin:account": "node --env-file=.env scripts/admin-account.mjs",
     "db:indexes": "node --env-file=.env --experimental-strip-types --import ./scripts/lib/ts-runtime.mjs scripts/db-indexes.mjs",
-    "seed:dev-enquiries": "node --env-file=.env scripts/seed-dev-enquiries.mjs"
+    "seed:dev-enquiries": "node --env-file=.env scripts/seed-dev-enquiries.mjs",
+    "cs:migrate": "node --env-file=.env --experimental-strip-types --import ./scripts/lib/ts-runtime.mjs scripts/migrate-case-studies.mjs",
+    "test:case-studies": "node --experimental-strip-types --import ./scripts/lib/ts-runtime.mjs --test tests/case-studies/service.test.mts tests/case-studies/media.test.mts",
+    "test:case-studies:db": "node --env-file=.env --experimental-strip-types --import ./scripts/lib/ts-runtime.mjs scripts/test-case-studies-db.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
