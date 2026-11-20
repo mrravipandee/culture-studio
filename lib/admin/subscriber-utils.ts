@@ -135,7 +135,8 @@ export interface SubscriberEvent {
 
 /** Timeline from recorded fields only; nothing is inferred. */
 export function subscriberEvents(s: Subscriber): SubscriberEvent[] {
-  const events: SubscriberEvent[] = [{ kind: s.isLocal ? "added" : "subscribed", label: s.isLocal ? "Added manually (local preview)" : "Subscribed to newsletter", at: s.subscribedAt }];
+  const manual = s.source === "MANUAL";
+  const events: SubscriberEvent[] = [{ kind: manual ? "added" : "subscribed", label: manual ? "Added manually" : "Subscribed to newsletter", at: s.subscribedAt }];
   if (s.verifiedAt) events.push({ kind: "verified", label: "Email verified", at: s.verifiedAt });
   if (s.unsubscribedAt) events.push({ kind: "unsubscribed", label: "Unsubscribed", at: s.unsubscribedAt });
   if (s.reactivatedAt) events.push({ kind: "reactivated", label: "Reactivated", at: s.reactivatedAt });

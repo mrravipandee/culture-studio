@@ -8,19 +8,22 @@ import { normaliseEmail, validateNewSubscriber, type NewSubscriberErrors, type N
 interface Props {
   open: boolean;
   existingEmails: string[];
-  onSubmit: (values: NewSubscriberValues) => void;
+  /** Saves the subscriber; resolves with server field errors on failure (dialog stays open). */
+  onSubmit: (values: NewSubscriberValues) => Promise<{ ok: true } | { ok: false; message: string; fields?: NewSubscriberErrors }>;
   onClose: () => void;
 }
 
 const initial: NewSubscriberValues = { name: "", email: "", source: "MANUAL", status: "ACTIVE" };
 
-/** Add a subscriber by hand (local preview record; no email is sent, no consent recorded). */
+/** Add a subscriber by hand (saved to MongoDB; no email is sent, no consent recorded). */
 export default function AddSubscriberDialog({ open, existingEmails, onSubmit, onClose }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const lock = useRef(false);
   const [values, setValues] = useState<NewSubscriberValues>(initial);
   const [errors, setErrors] = useState<NewSubscriberErrors>({});
   const [tried, setTried] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
   const id = useId();
 
   useEffect(() => {
@@ -39,7 +42,7 @@ export default function AddSubscriberDialog({ open, existingEmails, onSubmit, on
     if (tried) setErrors(validateNewSubscriber(next, existingEmails));
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (lock.current) return;
     setTried(true);
     const found = validateNewSubscriber(values, existingEmails);
@@ -49,7 +52,15 @@ export default function AddSubscriberDialog({ open, existingEmails, onSubmit, on
       return;
     }
     lock.current = true;
-    onSubmit({ ...values, name: values.name.replace(/\s+/g, " ").trim(), email: normaliseEmail(values.email) });
+    setSaving(true);
+    setFormError(null);
+    const result = await onSubmit({ ...values, name: values.name.replace(/\s+/g, " ").trim(), email: normaliseEmail(values.email) });
+    lock.current = false;
+    setSaving(false);
+    if (!result.ok) {
+      setErrors(result.fields ?? {});
+      setFormError(result.fields && Object.keys(result.fields).length ? null : result.message);
+    }
   };
 
   const field = "mt-1.5 h-11 w-full rounded-lg border bg-white px-3.5 text-sm text-ink focus-visible:outline-2 focus-visible:outline-burgundy";
@@ -70,7 +81,7 @@ export default function AddSubscriberDialog({ open, existingEmails, onSubmit, on
           className="max-h-[88vh] overflow-y-auto p-6"
           onSubmit={(e) => {
             e.preventDefault();
-            submit();
+            void submit();
           }}
         >
           <h2 id={`${id}-title`} className="flex items-center gap-2 text-lg font-semibold text-[#1a0a0c]">
@@ -78,7 +89,7 @@ export default function AddSubscriberDialog({ open, existingEmails, onSubmit, on
           </h2>
           <p className="mt-3 flex gap-2 rounded-lg border border-[#c08a2d]/25 bg-[#c08a2d]/[0.07] p-3 text-xs leading-relaxed text-[#6b4a12]">
             <Info aria-hidden="true" size={15} className="mt-px shrink-0" />
-            A local preview record, kept in this tab only. No confirmation email is sent and no consent or verification is recorded. Only add people who asked to subscribe.
+            Saved to the subscriber list. No confirmation email is sent and no consent or verification is recorded, so only add people who asked to subscribe.
           </p>
 
           <label htmlFor={`${id}-email`} className="mt-5 block text-sm font-medium text-ink">
@@ -158,12 +169,18 @@ export default function AddSubscriberDialog({ open, existingEmails, onSubmit, on
             </div>
           </div>
 
+          {formError && (
+            <p role="alert" className="mt-4 flex items-center gap-1.5 text-sm text-[#a3242f]">
+              <AlertCircle aria-hidden="true" size={15} /> {formError}
+            </p>
+          )}
+
           <div className="mt-6 flex justify-end gap-2.5">
-            <button type="button" onClick={onClose} className="h-11 rounded-md border border-black/20 px-4 text-sm font-medium text-ink hover:border-black/40 focus-visible:outline-2 focus-visible:outline-burgundy">
+            <button type="button" onClick={onClose} disabled={saving} className="h-11 rounded-md border border-black/20 px-4 text-sm font-medium text-ink hover:border-black/40 focus-visible:outline-2 focus-visible:outline-burgundy">
               Cancel
             </button>
-            <button type="submit" className="h-11 rounded-md bg-[#5a0c14] px-4 text-sm font-medium text-white hover:bg-[#6b111b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy">
-              Add Subscriber
+            <button type="submit" disabled={saving} className="h-11 rounded-md bg-[#5a0c14] px-4 text-sm font-medium text-white hover:bg-[#6b111b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy disabled:opacity-60">
+              {saving ? "Adding…" : "Add Subscriber"}
             </button>
           </div>
         </form>

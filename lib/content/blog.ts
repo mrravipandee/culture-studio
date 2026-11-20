@@ -128,8 +128,8 @@ export const blogNewsletter = {
   description: "Get our latest articles on brand, marketing and growth.",
   placeholder: "Enter your email",
   button: "Subscribe",
-  /** Shown on submit: nothing is sent. */
-  notConnected: "Newsletter sign-up isn’t connected yet, so nothing was sent. Please check back soon.",
+  /** Shown after a successful sign-up (the address is saved; no email is sent). */
+  success: { title: "Thank you for subscribing.", body: "Your email has been added to the CULT.URE list." },
 };
 
 /** "Nov 14, 2026" */

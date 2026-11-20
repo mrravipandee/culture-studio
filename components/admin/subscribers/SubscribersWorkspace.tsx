@@ -20,6 +20,7 @@ import {
   type SubscriberFilters,
 } from "@/lib/admin/subscriber-utils";
 import ConfirmDialog from "../ConfirmDialog";
+import { adminRequest } from "../settings/settings-api";
 import EnquiryPagination from "../enquiries/EnquiryPagination";
 import SubscriberStats from "./SubscriberStats";
 import SubscriberToolbar from "./SubscriberToolbar";
@@ -29,8 +30,9 @@ import AddSubscriberDialog from "./AddSubscriberDialog";
 
 /**
  * Subscribers workspace: single source of truth for the page's UI state.
- * Every change (add / unsubscribe / reactivate / delete) is TEMPORARY — this browser tab only.
- * Nothing is persisted, no email is sent and no mailing-list service is involved.
+ * Records come from MongoDB (the page loads them on the server); add / unsubscribe /
+ * reactivate / delete call /api/admin/subscribers and update the list from the response.
+ * No email is sent and no mailing-list service is involved.
  */
 
 const DESKTOP = "(min-width: 1280px)";
@@ -138,47 +140,68 @@ export default function SubscribersWorkspace({ initial, serifClassName }: { init
     onDelete: (id) => ask({ kind: "delete", ids: [id] }),
   };
 
-  const confirm = () => {
+  const [busy, setBusy] = useState(false);
+
+  /** Reloads the list from the server (after bulk actions, or when something changed elsewhere). */
+  const reload = useCallback(async () => {
+    const result = await adminRequest<{ items: Subscriber[]; truncated: boolean }>("/api/admin/subscribers");
+    if (result.ok) {
+      setItems(result.data.items);
+      setNow(Date.now());
+    } else notify(result.error.message);
+  }, [notify]);
+
+  const confirm = async () => {
     if (!pending || confirmLock.current) return;
     confirmLock.current = true;
+    setBusy(true);
     const ids = new Set(pending.ids);
-    const at = Date.now();
-    const stamp = new Date(at).toISOString();
-    setNow(at);
-    const isBulk = pending.bulk === true;
+    const isBulk = pending.bulk === true || pending.ids.length > 1;
 
-    if (pending.kind === "delete") {
-      if (selectedId && ids.has(selectedId)) {
-        const index = filtered.findIndex((s) => s.id === selectedId);
-        const remaining = filtered.filter((s) => !ids.has(s.id));
-        const next = remaining[Math.min(index, remaining.length - 1)] ?? null;
-        setSelectedId(next?.id ?? null);
-        if (!next) setDrawerOpen(false);
-      }
-      setItems((list) => list.filter((s) => !ids.has(s.id)));
-      notify(`${ids.size === 1 ? "Subscriber" : `${ids.size} subscribers`} deleted from this preview (not saved).`);
+    let ok = false;
+    if (isBulk) {
+      const action = pending.kind === "delete" ? "delete" : "unsubscribe";
+      const result = await adminRequest<{ changed: string[] }>("/api/admin/subscribers/bulk", { method: "POST", body: { action, ids: pending.ids } });
+      if (result.ok) {
+        ok = true;
+        const n = result.data.changed.length;
+        notify(n === 0 ? "No changes were needed." : `${n === 1 ? "Subscriber" : `${n} subscribers`} ${action === "delete" ? "deleted" : "unsubscribed"}.`);
+        await reload();
+      } else notify(result.error.message);
     } else {
-      const target = pending.kind === "unsubscribe" ? "UNSUBSCRIBED" : "ACTIVE";
-      const changing = items.filter((s) => ids.has(s.id) && s.status !== target);
-      const change = new Set(changing.map((s) => s.id));
-      setItems((list) =>
-        list.map((s) =>
-          change.has(s.id)
-            ? target === "UNSUBSCRIBED"
-              ? { ...s, status: "UNSUBSCRIBED", unsubscribedAt: stamp, updatedAt: stamp }
-              : { ...s, status: "ACTIVE", reactivatedAt: stamp, updatedAt: stamp }
-            : s,
-        ),
-      );
-      const verb = target === "UNSUBSCRIBED" ? "unsubscribed" : "reactivated";
-      notify(
-        change.size === 0
-          ? `No changes: the selected subscribers are already ${subscriberStatusLabels[target].toLowerCase()}.`
-          : `${change.size === 1 ? "Subscriber" : `${change.size} subscribers`} ${verb} in this preview (not saved).`,
-      );
+      const [id] = pending.ids;
+      if (pending.kind === "delete") {
+        const result = await adminRequest<{ deleted: true }>(`/api/admin/subscribers/${encodeURIComponent(id)}`, { method: "DELETE" });
+        if (result.ok || result.status === 404) {
+          ok = true;
+          setItems((list) => list.filter((s) => s.id !== id));
+          notify(result.ok ? "Subscriber deleted." : "That subscriber was already removed.");
+        } else notify(result.error.message);
+      } else {
+        const status = pending.kind === "unsubscribe" ? "UNSUBSCRIBED" : "ACTIVE";
+        const result = await adminRequest<{ subscriber: Subscriber; changed: boolean }>(`/api/admin/subscribers/${encodeURIComponent(id)}`, { method: "PATCH", body: { status } });
+        if (result.ok) {
+          ok = true;
+          setItems((list) => list.map((s) => (s.id === id ? result.data.subscriber : s)));
+          notify(result.data.changed ? `Subscriber ${status === "UNSUBSCRIBED" ? "unsubscribed" : "reactivated"}.` : `No change: already ${subscriberStatusLabels[status].toLowerCase()}.`);
+        } else {
+          notify(result.error.message);
+          if (result.status === 404) await reload();
+        }
+      }
     }
-    if (isBulk) setChecked(new Set());
-    else setChecked((prev) => new Set([...prev].filter((id) => !(pending.kind === "delete" && ids.has(id)))));
+    setNow(Date.now());
+
+    if (ok && pending.kind === "delete" && selectedId && ids.has(selectedId)) {
+      const index = filtered.findIndex((s) => s.id === selectedId);
+      const remaining = filtered.filter((s) => !ids.has(s.id));
+      const next = remaining[Math.min(index, remaining.length - 1)] ?? null;
+      setSelectedId(next?.id ?? null);
+      if (!next) setDrawerOpen(false);
+    }
+    if (ok) setChecked(isBulk ? new Set() : (prev) => new Set([...prev].filter((x) => !(pending.kind === "delete" && ids.has(x)))));
+    setBusy(false);
+    confirmLock.current = false;
     setPending(null);
   };
 
@@ -192,31 +215,20 @@ export default function SubscribersWorkspace({ initial, serifClassName }: { init
     ask({ kind, ids: targets.map((s) => s.id), bulk: true });
   };
 
-  /* Add */
-  const add = (v: NewSubscriberValues) => {
-    const at = Date.now();
-    const stamp = new Date(at).toISOString();
-    setNow(at);
-    const record: Subscriber = {
-      id: `local-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
-      ...(v.name ? { name: v.name } : {}),
-      email: v.email,
-      source: v.source,
-      status: v.status,
-      subscribedAt: stamp,
-      ...(v.status === "UNSUBSCRIBED" ? { unsubscribedAt: stamp } : {}),
-      createdAt: stamp,
-      updatedAt: stamp,
-      isLocal: true,
-    };
-    setItems((list) => [record, ...list]);
+  /* Add (saved to MongoDB; the dialog stays open with field errors on failure) */
+  const add = async (v: NewSubscriberValues) => {
+    const result = await adminRequest<Subscriber>("/api/admin/subscribers", { method: "POST", body: { email: v.email, ...(v.name ? { name: v.name } : {}), source: v.source, status: v.status } });
+    if (!result.ok) return { ok: false as const, message: result.error.message, fields: result.error.fields };
+    setNow(Date.now());
+    setItems((list) => [result.data, ...list.filter((s) => s.id !== result.data.id)]);
     setAdding(false);
-    setSelectedId(record.id);
+    setSelectedId(result.data.id);
     // Make the new record visible: clear filters and go to page 1.
     setFilters(emptySubscriberFilters);
     setPage(1);
     setChecked(new Set());
-    notify("Subscriber added to this preview only (not saved, no email sent).");
+    notify("Subscriber added.");
+    return { ok: true as const };
   };
 
   /* Export: the full filtered set, not just the current page. */
@@ -258,8 +270,7 @@ export default function SubscribersWorkspace({ initial, serifClassName }: { init
 
   /* Empty-state copy */
   const empty = (() => {
-    if (initial.length === 0 && items.length === 0) return { icon: Users, text: "No subscribers yet. Add one, or they'll appear here once the newsletter form is connected." };
-    if (items.length === 0) return { icon: Users, text: "All subscribers were deleted in this preview. Reload the page to restore the demo data." };
+    if (items.length === 0) return { icon: Users, text: "No subscribers yet. Sign-ups from the blog newsletter form appear here, or add one by hand." };
     if (filters.search.trim()) return { icon: SearchX, text: `No subscribers match “${filters.search.trim()}”.` };
     if (filters.status === "UNSUBSCRIBED" && filters.source === "all" && filters.range === "all") return { icon: SearchX, text: "No one has unsubscribed." };
     if (filters.status === "ACTIVE" && filters.source === "all" && filters.range === "all") return { icon: SearchX, text: "No active subscribers." };
@@ -281,7 +292,7 @@ export default function SubscribersWorkspace({ initial, serifClassName }: { init
     if (pending.kind === "delete")
       return {
         title: n === 1 ? "Delete subscriber?" : `Delete ${n} subscribers?`,
-        description: <>This removes {who} from this preview. It isn&rsquo;t saved anywhere and reloading the page restores the demo data.</>,
+        description: <>This permanently removes {who} from the subscriber list. It can&rsquo;t be undone.</>,
         confirmLabel: "Delete",
         tone: "danger" as const,
         icon: <Trash2 aria-hidden="true" size={20} />,
@@ -289,14 +300,14 @@ export default function SubscribersWorkspace({ initial, serifClassName }: { init
     if (pending.kind === "unsubscribe")
       return {
         title: n === 1 ? "Unsubscribe this person?" : `Unsubscribe ${n} subscribers?`,
-        description: <>{who} will be marked as unsubscribed with today&rsquo;s date. Preview only: no email is sent and no mailing list is updated.</>,
+        description: <>{who} will be marked as unsubscribed with today&rsquo;s date. No email is sent.</>,
         confirmLabel: "Unsubscribe",
         tone: "danger" as const,
         icon: <MailX aria-hidden="true" size={20} />,
       };
     return {
       title: "Reactivate subscriber?",
-      description: <>{who} will be marked active again. Only do this if they asked to rejoin. Preview only: nothing is saved or sent.</>,
+      description: <>{who} will be marked active again. Only do this if they asked to rejoin. No email is sent.</>,
       confirmLabel: "Reactivate",
       tone: "primary" as const,
       icon: <RotateCcw aria-hidden="true" size={20} />,
@@ -391,7 +402,8 @@ export default function SubscribersWorkspace({ initial, serifClassName }: { init
         confirmLabel={dialog?.confirmLabel ?? "Confirm"}
         tone={dialog?.tone}
         icon={dialog?.icon}
-        onConfirm={confirm}
+        busy={busy}
+        onConfirm={() => void confirm()}
         onCancel={() => setPending(null)}
       />
 

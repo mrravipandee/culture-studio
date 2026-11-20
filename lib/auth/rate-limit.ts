@@ -47,6 +47,11 @@ export const RATE_LIMITS = {
   caseStudyWrite: { limit: 120, windowMs: 15 * MINUTES },
   /** Cloudinary upload signatures (one per uploaded image). */
   mediaSignature: { limit: 60, windowMs: 15 * MINUTES },
+  /** Public newsletter sign-up: every submission counts. */
+  subscribeIp: { limit: 6, windowMs: 15 * MINUTES },
+  subscribeEmail: { limit: 3, windowMs: 15 * MINUTES },
+  /** Admin subscriber writes. */
+  subscriberWrite: { limit: 120, windowMs: 15 * MINUTES },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 const hashed = (value: string) => createHash("sha256").update(value).digest("hex").slice(0, 32);
@@ -60,6 +65,9 @@ export const rateLimitKeys = {
   enquiryEmail: (email: string) => `enquiry:email:${hashed(email)}`,
   caseStudyWrite: (adminId: string) => `case-study:write:${adminId}`,
   mediaSignature: (adminId: string) => `media:signature:${adminId}`,
+  subscribeIp: (ip: string) => `subscribe:ip:${hashed(ip)}`,
+  subscribeEmail: (email: string) => `subscribe:email:${hashed(email)}`,
+  subscriberWrite: (adminId: string) => `subscriber:write:${adminId}`,
 };
 
 /** Seconds until the bucket allows another attempt, or 0 when allowed. */

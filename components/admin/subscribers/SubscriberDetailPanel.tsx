@@ -83,7 +83,7 @@ export default function SubscriberDetailPanel({
             </div>
           ))}
         </dl>
-        {s.isLocal && <p className="border-t border-black/[0.06] px-4 py-2.5 text-xs text-ink-3 sm:px-5">Added manually in this preview. Consent and verification are not recorded.</p>}
+        {s.source === "MANUAL" && <p className="border-t border-black/[0.06] px-4 py-2.5 text-xs text-ink-3 sm:px-5">Added manually by an admin. Consent and verification are not recorded.</p>}
       </div>
 
       <section aria-labelledby="subscriber-activity-title" className="rounded-xl border border-black/[0.08] bg-white p-4 sm:p-5">
