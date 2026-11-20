@@ -1,7 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { caseStudiesEnabled } from "@/lib/content/case-studies-publishing";
 import { SESSION_COOKIE_NAME, verifySessionCookie } from "@/lib/auth/session";
-import { isBlogArticlePublic } from "@/lib/content/blog";
 
 /**
  * 1. Admin gate (/admin/*, /api/admin/*)
@@ -11,7 +10,9 @@ import { isBlogArticlePublic } from "@/lib/content/blog";
  *    Pages and handlers re-check the session themselves (lib/auth/require-admin.ts),
  *    so this is the first line of defence, not the only one.
  *
- * 3. Blog articles (/blog/<slug>): 404 unless published (lib/content/blog-publishing.ts + a body).
+ * 3. Blog articles: decided by MongoDB on the page itself (lib/blog/public.ts; the page is
+ *    ensureStatic = "navigation", so unknown / draft / deleted slugs get a real 404 and old
+ *    slugs a 308 before any HTML is sent). The proxy never queries the database.
  *
  * 2. Case Studies section switch: while it is off (lib/content/case-studies-publishing.ts),
  *    /case-studies and every /case-studies/<slug> get the standard 404. While it is on,
@@ -56,13 +57,7 @@ export async function proxy(request: NextRequest) {
     return adminGate(request, pathname);
   }
 
-  const [, section, slug] = pathname.split("/");
-
-  // 3. Blog articles: only published ones (publishing list + body). Drafts are never public.
-  if (section === "blog") {
-    if (slug && isBlogArticlePublic(slug)) return NextResponse.next();
-    return NextResponse.rewrite(new URL("/404-not-found", request.url));
-  }
+  const [, section] = pathname.split("/");
 
   // Case Studies: section switch only (see 2).
   if (section === "case-studies" && caseStudiesEnabled) return NextResponse.next();
@@ -70,5 +65,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/case-studies", "/case-studies/:slug", "/blog/:slug", "/admin", "/admin/:path*", "/api/admin/:path*"],
+  matcher: ["/case-studies", "/case-studies/:slug", "/admin", "/admin/:path*", "/api/admin/:path*"],
 };

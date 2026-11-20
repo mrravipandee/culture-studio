@@ -4,7 +4,7 @@
  * blog and subscriber figures still from lib/admin/data.ts). Invalid dates are skipped, empty inputs give zeroes.
  */
 
-import type { AdminBlog, Subscriber } from "./data";
+import type { BlogSummary, Subscriber } from "./types";
 import { serviceLabels, type ServiceId } from "./types";
 import { getActiveSubscribers } from "./subscriber-utils";
 
@@ -22,8 +22,8 @@ const time = (iso: string | null | undefined) => {
 
 /* KPIs ---------------------------------------------------------- */
 
-export const getPublishedBlogs = (list: AdminBlog[]) => list.filter((b) => b.status === "PUBLISHED" && time(b.publishedAt) !== null).length;
-export const getDraftBlogs = (list: AdminBlog[]) => list.filter((b) => b.status === "DRAFT").length;
+export const getPublishedBlogs = (list: BlogSummary[]) => list.filter((b) => b.status === "PUBLISHED" && time(b.publishedAt) !== null).length;
+export const getDraftBlogs = (list: BlogSummary[]) => list.filter((b) => b.status === "DRAFT").length;
 /** Dashboard card: all subscriber records, with the active count as the note. */
 export const getSubscriberRecordCount = (list: Subscriber[]) => list.length;
 export const getActiveSubscriberCount = (list: Subscriber[]) => getActiveSubscribers(list).length;
@@ -87,9 +87,9 @@ export function toServiceShares(counts: Record<ServiceId, number>): ServiceShare
 /* Recent ----------------------------------------------------------- */
 
 /** Published posts by publish date, drafts by last update; newest first. */
-export const blogActivityDate = (b: AdminBlog) => (b.status === "PUBLISHED" ? b.publishedAt : b.updatedAt) ?? b.updatedAt;
+export const blogActivityDate = (b: BlogSummary) => (b.status === "PUBLISHED" ? b.publishedAt : b.updatedAt) ?? b.updatedAt;
 
-export const getRecentBlogs = (list: AdminBlog[], limit = 3) =>
+export const getRecentBlogs = (list: BlogSummary[], limit = 3) =>
   list
     .filter((b) => time(blogActivityDate(b)) !== null)
     .sort((a, b) => (time(blogActivityDate(b)) ?? 0) - (time(blogActivityDate(a)) ?? 0))

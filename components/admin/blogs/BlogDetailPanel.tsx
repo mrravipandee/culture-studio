@@ -2,20 +2,20 @@
 
 import Link from "next/link";
 import { ArrowLeft, CalendarDays, Clock3, ExternalLink, Eye, FileText, Globe, Info, Link2, Pencil, RefreshCw, Trash2, X } from "lucide-react";
-import type { BlogPost } from "@/lib/admin/types";
-import { blogStats, formatBlogAdminDate } from "@/lib/admin/blog-utils";
+import type { BlogSummary } from "@/lib/admin/types";
+import { formatBlogAdminDate } from "@/lib/admin/blog-utils";
+import { readingTimeLabel } from "@/lib/rich-text";
 import CaseStudyCover from "../case-studies/CaseStudyCover";
 import CaseStudyStatusBadge from "../case-studies/CaseStudyStatusBadge";
 import { blogPublicUrl, isBlogLive, type BlogRowActions } from "./BlogTable";
 
-function visibilityNote(b: BlogPost) {
-  if (b.isLocal) return "Created in this preview only. It is not on the public website and is lost on reload.";
-  if (b.status === "PUBLISHED" && !b.publicSlug) return "Published in this preview only. The public website has not changed.";
-  if (b.status === "DRAFT" && b.publicSlug) return "Unpublished in this preview only. It is still live on the public website.";
+function visibilityNote(b: BlogSummary) {
+  if (b.status === "DRAFT") return b.firstPublishedAt ? "Unpublished: not on the website. Publish it again when it's ready." : "Draft: not on the website until it is published.";
+  if (b.previousSlugs.length) return `Old addresses redirect here: ${b.previousSlugs.map((s) => `/blog/${s}`).join(", ")}.`;
   return null;
 }
 
-export default function BlogDetailPanel({ post, actions, onClose, variant = "panel", serifClassName }: { post: BlogPost | null; actions: BlogRowActions; onClose: () => void; variant?: "panel" | "drawer"; serifClassName: string }) {
+export default function BlogDetailPanel({ post, actions, onClose, variant = "panel", serifClassName }: { post: BlogSummary | null; actions: BlogRowActions; onClose: () => void; variant?: "panel" | "drawer"; serifClassName: string }) {
   if (!post) {
     return (
       <div className="grid min-h-[20rem] place-items-center p-8 text-center">
@@ -26,7 +26,8 @@ export default function BlogDetailPanel({ post, actions, onClose, variant = "pan
       </div>
     );
   }
-  const { words, readingTime } = blogStats(post.content);
+  const words = post.wordCount;
+  const readingTime = words ? readingTimeLabel(words) : "—";
   const note = visibilityNote(post);
   const live = isBlogLive(post);
   const rows = [
@@ -53,7 +54,6 @@ export default function BlogDetailPanel({ post, actions, onClose, variant = "pan
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <CaseStudyStatusBadge status={post.status} />
-        {post.isLocal && <span className="rounded-full bg-black/[0.05] px-2.5 py-0.5 text-xs text-ink-2 ring-1 ring-inset ring-black/10">Local preview</span>}
       </div>
       <h2 id="blog-detail-title" className={`${serifClassName} mt-2.5 text-[1.875rem] font-medium leading-[1.08] text-[#1a0a0c]`}>
         {post.title}

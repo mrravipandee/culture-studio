@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { articleReadingTime, isBlogArticlePublic, type BlogArticle } from "@/lib/content/blog";
+import { articleReadingTime, type BlogArticle } from "@/lib/content/blog";
 import { editorialSerif } from "@/lib/fonts";
 import Container from "@/components/home/shared/Container";
 import { ClipReveal, Reveal } from "@/components/motion";
@@ -12,7 +12,8 @@ import BlogMeta from "./BlogMeta";
  * stretched over the whole block (image included).
  */
 export default function FeaturedArticle({ article }: { article: BlogArticle }) {
-  const href = isBlogArticlePublic(article.slug) ? `/blog/${article.slug}` : null;
+  // Only published articles reach this component (lib/blog/public.ts).
+  const href: string | null = `/blog/${article.slug}`;
   const cover = (
     <div className="relative aspect-[16/9] overflow-hidden rounded-xl bg-burgundy md:aspect-[2.2/1]">
       <Image

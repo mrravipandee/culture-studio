@@ -83,13 +83,20 @@ export interface ExistingMigrated {
   deleted: boolean;
 }
 
-export type MigrationStep =
-  | { kind: "insert"; record: MigrationRecord }
-  | { kind: "update"; record: MigrationRecord; id: string }
-  | { kind: "skip-unchanged"; record: MigrationRecord; id: string }
-  | { kind: "skip-edited"; record: MigrationRecord; id: string }
-  | { kind: "skip-deleted"; record: MigrationRecord; id: string }
-  | { kind: "conflict"; record: MigrationRecord; reason: string };
+/** What the planner needs from a record (case studies and blog posts both fit). */
+export interface PlannableRecord {
+  key: string;
+  hash: string;
+  content: { slug: string };
+}
+
+export type MigrationStep<R extends PlannableRecord = MigrationRecord> =
+  | { kind: "insert"; record: R }
+  | { kind: "update"; record: R; id: string }
+  | { kind: "skip-unchanged"; record: R; id: string }
+  | { kind: "skip-edited"; record: R; id: string }
+  | { kind: "skip-deleted"; record: R; id: string }
+  | { kind: "conflict"; record: R; reason: string };
 
 /** A record counts as edited when it changed more than a second after the migration wrote it. */
 const EDIT_TOLERANCE_MS = 1000;
@@ -99,8 +106,8 @@ const EDIT_TOLERANCE_MS = 1000;
  * @param existingByKey records already created by this migration (deleted ones included)
  * @param activeSlugs  slugs used by active records NOT created by this migration
  */
-export function planMigration(records: MigrationRecord[], existingByKey: Map<string, ExistingMigrated>, activeSlugs: Set<string>): MigrationStep[] {
-  return records.map((record): MigrationStep => {
+export function planMigration<R extends PlannableRecord>(records: R[], existingByKey: Map<string, ExistingMigrated>, activeSlugs: Set<string>): MigrationStep<R>[] {
+  return records.map((record): MigrationStep<R> => {
     const existing = existingByKey.get(record.key);
     if (existing) {
       if (existing.deleted) return { kind: "skip-deleted", record, id: existing.id };
@@ -113,8 +120,8 @@ export function planMigration(records: MigrationRecord[], existingByKey: Map<str
   });
 }
 
-export function summarize(steps: MigrationStep[]) {
-  const count = (kind: MigrationStep["kind"]) => steps.filter((s) => s.kind === kind).length;
+export function summarize(steps: MigrationStep<PlannableRecord>[]) {
+  const count = (kind: MigrationStep<PlannableRecord>["kind"]) => steps.filter((s) => s.kind === kind).length;
   return {
     insert: count("insert"),
     update: count("update"),

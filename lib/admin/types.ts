@@ -71,7 +71,7 @@ export type { AdminCaseStudy, CaseStudyCounts, CaseStudyListResult, CaseStudySta
 export { caseStudyStatusLabels, type CaseStudyStatus } from "@/lib/case-studies/constants";
 
 /* ---------------------------------------------------------------
-   Blog posts (admin view of lib/content/blog.ts)
+   Blog posts (MongoDB: lib/blog; admin API /api/admin/blogs)
 ---------------------------------------------------------------- */
 
 export type BlogStatus = "DRAFT" | "PUBLISHED";
@@ -79,17 +79,20 @@ export type BlogStatus = "DRAFT" | "PUBLISHED";
 export const BLOG_CATEGORIES = ["Brand Strategy", "Marketing", "Content", "Growth", "Design"] as const;
 export const BLOG_DEFAULT_AUTHOR = "CULT.URE";
 
+/** Full admin record (editor). Dates are ISO 8601. */
 export interface BlogPost {
-  /** Stable id: `blog-<slug>` for existing articles, `local-…` for records created in the admin. */
   id: string;
   title: string;
   slug: string;
   excerpt: string;
-  /** Body as rich-text JSON (lib/rich-text.ts). Empty doc when not written yet. */
+  /** Body as rich-text JSON (lib/rich-text.ts), sanitised on the server. */
   content: RichNode;
   coverImage: string | null;
+  /** Cloudinary public id when the cover was uploaded; null for site images. */
+  coverImagePublicId: string | null;
   coverImageAlt: string;
   coverCaption: string;
+  /** One of BLOG_CATEGORIES, or "" when not chosen yet. */
   category: string;
   tags: string[];
   author: string;
@@ -97,14 +100,24 @@ export interface BlogPost {
   /** Empty = use the title / excerpt. */
   seoTitle: string;
   seoDescription: string;
+  /** Date shown on the site (YYYY-MM-DD) when set by the editor; otherwise the publish date. */
+  displayDate: string | null;
+  /** Start of the current publication; null while a draft. */
   publishedAt: string | null;
+  /** First publication ever (kept through unpublish / republish). */
+  firstPublishedAt: string | null;
+  /** Earlier public slugs that redirect (308) to `slug`. */
+  previousSlugs: string[];
+  wordCount: number;
+  readingMinutes: number;
   createdAt: string;
   updatedAt: string;
-  /** Slug under which the article is live (lib/content/blog-publishing.ts); null when not public. Read-only. */
+  /** Live address slug (= slug while PUBLISHED), else null. */
   publicSlug: string | null;
-  /** Created in this browser tab. */
-  isLocal: boolean;
 }
+
+/** List row: everything except the body (kept small). */
+export type BlogSummary = Omit<BlogPost, "content">;
 
 export const blogStatusLabels: Record<BlogStatus, string> = { DRAFT: "Draft", PUBLISHED: "Published" };
 

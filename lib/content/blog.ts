@@ -1,18 +1,13 @@
 /**
- * CULT.URE — Blog (UI preview). MOCK DATA ONLY.
+ * CULT.URE — Blog: page copy, shared types, and the four launch articles (SOURCE CONTENT).
  *
- * Everything here is temporary sample content for the Blog page design: the articles
- * are not published, topic counts and the page count are illustrative, and images are
- * temporary graded crops of existing site photos (/public/images/blog/), not article
- * photography. Replace this file with CMS data later; the components only read from it.
- *
- * The page is noindex and left out of the sitemap while this is sample content.
- * An article is public at /blog/<slug> only when its slug is in lib/content/blog-publishing.ts
- * AND it has a body (`content`).
+ * Since the Blog CMS, MongoDB (collection blog_posts) is the source of truth for what the
+ * site shows: lib/blog/public.ts reads PUBLISHED posts only. The launch articles below are
+ * kept as the source the migration imports (scripts/migrate-blog.mjs → lib/blog/migration.ts).
+ * Their cover images are temporary graded crops of existing site photos (/public/images/blog/).
  */
 
 import { countWords, readingTimeLabel, type RichNode } from "@/lib/rich-text";
-import { isBlogPublished } from "./blog-publishing";
 import { contentThatConvertsBody, memorableBrandBody, performanceVsBrandBody, positioningBody } from "./blog-bodies";
 
 /**
@@ -74,17 +69,20 @@ export const featuredArticle: BlogArticle = {
   tags: [],
 };
 
-/** Illustrative topic list and counts (UI preview; replace with real counts). */
-export const blogTopics: { id: BlogTopicId; label: string; count: number }[] = [
-  { id: "brand-strategy", label: "Brand Strategy", count: 6 },
-  { id: "marketing", label: "Marketing", count: 5 },
-  { id: "content", label: "Content", count: 4 },
-  { id: "growth", label: "Growth", count: 4 },
-  { id: "design", label: "Design", count: 3 },
+/** Topics in display order (the admin categories). Counts are computed from published posts. */
+export const blogTopics: { id: BlogTopicId; label: string }[] = [
+  { id: "brand-strategy", label: "Brand Strategy" },
+  { id: "marketing", label: "Marketing" },
+  { id: "content", label: "Content" },
+  { id: "growth", label: "Growth" },
+  { id: "design", label: "Design" },
 ];
 
-/** Illustrative totals for the "All Posts" chip and pagination. */
-export const blogTotals = { posts: 24, pages: 8 };
+export const blogTopicLabel = (id: string) => blogTopics.find((t) => t.id === id)?.label ?? "";
+
+/** Topic chips with real counts (only topics that have articles). */
+export const topicCounts = (articles: readonly Pick<BlogArticle, "topic">[]) =>
+  blogTopics.map((t) => ({ ...t, count: articles.filter((a) => a.topic === t.id).length })).filter((t) => t.count > 0);
 
 export const blogArticles: BlogArticle[] = [
   {
@@ -136,12 +134,5 @@ export const blogNewsletter = {
 export const formatBlogDate = (iso: string) =>
   new Date(`${iso}T00:00:00Z`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" });
 
-/* ---------------------------------------------------------------
-   Public articles: on the publishing list AND with a body.
----------------------------------------------------------------- */
-
-/** Reading time from the body when it exists, otherwise the sample label. */
-export const articleReadingTime = (a: BlogArticle) => (a.content ? readingTimeLabel(countWords(a.content)) : a.readingTime);
-
-export const publicBlogArticles = [featuredArticle, ...blogArticles].filter((a) => isBlogPublished(a.slug) && a.content !== null);
-export const isBlogArticlePublic = (slug: string) => publicBlogArticles.some((a) => a.slug === slug);
+/** Reading time from the body when it exists, otherwise the stored label. */
+export const articleReadingTime = (a: Pick<BlogArticle, "content" | "readingTime">) => (a.content ? readingTimeLabel(countWords(a.content)) : a.readingTime);

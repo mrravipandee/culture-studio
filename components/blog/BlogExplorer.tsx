@@ -5,9 +5,9 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 /**
- * "Explore by Topic" filters + article grid + pagination. UI only: cards are rendered on
- * the server and passed in; counts and the page total are illustrative mock values
- * (lib/content/blog.ts). Pages after 1 have no sample articles yet.
+ * "Explore by Topic" filters + article grid + pagination. Cards are rendered on the server
+ * (published articles from MongoDB) and passed in; topic counts and pages are computed from
+ * them, `pageSize` cards per page.
  */
 
 interface Topic {
@@ -24,10 +24,9 @@ interface Item {
 
 interface Props {
   topics: Topic[];
-  totalPosts: number;
-  totalPages: number;
   items: Item[];
   headingClassName: string;
+  pageSize?: number;
 }
 
 const ALL = "all";
@@ -40,16 +39,18 @@ function pageList(current: number, total: number): (number | "gap")[] {
   return [1, "gap", current, "gap", total];
 }
 
-export default function BlogExplorer({ topics, totalPosts, totalPages, items, headingClassName }: Props) {
+export default function BlogExplorer({ topics, items, headingClassName, pageSize = 9 }: Props) {
   const [topic, setTopic] = useState(ALL);
   const [page, setPage] = useState(1);
   const reduce = useReducedMotion();
   const headingId = useId();
 
   const filtered = topic === ALL ? items : items.filter((item) => item.topic === topic);
-  const visible = page === 1 ? filtered : [];
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const current = Math.min(page, totalPages);
+  const visible = filtered.slice((current - 1) * pageSize, current * pageSize);
   const transition = reduce ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const };
-  const chips = [{ id: ALL, label: "All Posts", count: totalPosts }, ...topics];
+  const chips = [{ id: ALL, label: "All Posts", count: items.length }, ...topics];
 
   const choose = (id: string) => {
     setTopic(id);
@@ -106,22 +107,23 @@ export default function BlogExplorer({ topics, totalPosts, totalPages, items, he
       </ul>
       {visible.length === 0 && (
         <p className="rounded-xl border border-dashed border-black/15 px-6 py-14 text-center text-sm text-ink-2">
-          More articles are on the way.
+          {items.length === 0 ? "New articles are on the way." : "No articles in this topic yet."}
         </p>
       )}
 
-      {/* Pagination (local UI state only) */}
+      {/* Pagination (only when there is more than one page) */}
+      {totalPages > 1 && (
       <nav aria-label="Pagination" className="mt-8 flex items-center justify-center gap-1 sm:gap-2">
         <button
           type="button"
           aria-label="Previous page"
-          disabled={page === 1}
+          disabled={current === 1}
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           className="grid size-10 place-items-center rounded-full text-ink transition-colors hover:text-burgundy disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-burgundy"
         >
           <ArrowLeft size={20} strokeWidth={1.5} aria-hidden="true" />
         </button>
-        {pageList(page, totalPages).map((entry, i) =>
+        {pageList(current, totalPages).map((entry, i) =>
           entry === "gap" ? (
             <span key={`gap-${i}`} aria-hidden="true" className="w-8 text-center text-sm text-ink-3">
               …
@@ -131,10 +133,10 @@ export default function BlogExplorer({ topics, totalPosts, totalPages, items, he
               key={entry}
               type="button"
               aria-label={`Page ${entry}`}
-              aria-current={page === entry ? "page" : undefined}
+              aria-current={current === entry ? "page" : undefined}
               onClick={() => setPage(entry)}
               className={`grid size-10 place-items-center rounded-full text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy ${
-                page === entry ? "bg-[#4a121a] text-white" : "text-ink hover:text-burgundy"
+                current === entry ? "bg-[#4a121a] text-white" : "text-ink hover:text-burgundy"
               }`}
             >
               {entry}
@@ -144,13 +146,14 @@ export default function BlogExplorer({ topics, totalPosts, totalPages, items, he
         <button
           type="button"
           aria-label="Next page"
-          disabled={page === totalPages}
+          disabled={current === totalPages}
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           className="grid size-10 place-items-center rounded-full text-ink transition-colors hover:text-burgundy disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-burgundy"
         >
           <ArrowRight size={20} strokeWidth={1.5} aria-hidden="true" />
         </button>
       </nav>
+      )}
     </section>
   );
 }

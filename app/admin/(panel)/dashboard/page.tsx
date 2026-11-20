@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { blogs } from "@/lib/admin/data";
 import { countSubscribers } from "@/lib/subscribers/repository";
+import { countBlogPosts, recentBlogPosts } from "@/lib/blog/repository";
+import { toBlogSummary } from "@/lib/blog/rules";
 import { mongoCaseStudyRepository } from "@/lib/case-studies/repository";
 import { getEnquiryDashboard } from "@/lib/enquiries/repository";
 import {
   formatDate,
-  getDraftBlogs,
   getEnquiryPeriodChange,
   getEnquirySeries,
-  getPublishedBlogs,
-  getRecentBlogs,
   toServiceShares,
 } from "@/lib/admin/dashboard-utils";
 import DashboardHeader from "@/components/admin/dashboard/DashboardHeader";
@@ -28,7 +26,7 @@ export const metadata: Metadata = { title: "Admin Dashboard" };
  * lib/enquiries/repository.ts: totals, NEW count, per-service selections, 90 India-time
  * days, 5 most recent; soft-deleted records excluded). Case-study counts come from MongoDB
  * too (active records; soft-deleted excluded), and subscriber counts (all / ACTIVE) from the
- * subscribers collection. Blog figures still come from lib/admin/data.ts.
+ * subscribers collection, and blog counts / recent posts from blog_posts (no bodies loaded).
  * The session is verified here, in addition to proxy.ts.
  */
 export default function AdminDashboardPage() {
@@ -46,7 +44,13 @@ async function Dashboard() {
   const today = new Intl.DateTimeFormat("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: "Asia/Kolkata" }).format(now);
   const todayIso = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(now);
 
-  const [enquiries, caseStudyCounts, subscriberCounts] = await Promise.all([getEnquiryDashboard(now.getTime(), 90), mongoCaseStudyRepository.counts(), countSubscribers()]);
+  const [enquiries, caseStudyCounts, subscriberCounts, blogCounts, recentPosts] = await Promise.all([
+    getEnquiryDashboard(now.getTime(), 90),
+    mongoCaseStudyRepository.counts(),
+    countSubscribers(),
+    countBlogPosts(),
+    recentBlogPosts(3),
+  ]);
   const shares = toServiceShares(enquiries.serviceCounts);
   const selections = shares.reduce((n, s) => n + s.count, 0);
 
@@ -62,8 +66,8 @@ async function Dashboard() {
             newEnquiries: enquiries.newCount,
             publishedCaseStudies: caseStudyCounts.PUBLISHED,
             totalCaseStudies: caseStudyCounts.all,
-            publishedBlogs: getPublishedBlogs(blogs),
-            draftBlogs: getDraftBlogs(blogs),
+            publishedBlogs: blogCounts.published,
+            draftBlogs: blogCounts.drafts,
             subscribers: subscriberCounts.total,
             activeSubscribers: subscriberCounts.active,
           }}
@@ -76,11 +80,11 @@ async function Dashboard() {
 
         <div className="grid grid-cols-1 gap-5 lg:gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
           <RecentEnquiries items={enquiries.recent} />
-          <RecentBlogs items={getRecentBlogs(blogs, 3)} />
+          <RecentBlogs items={recentPosts.map(toBlogSummary)} />
         </div>
 
         <p className="pt-2 text-center text-xs text-ink-3">
-          Enquiry, case study and subscriber figures are live from the database. Blog figures are still preview data.
+          All figures are live from the database.
         </p>
       </div>
     </main>

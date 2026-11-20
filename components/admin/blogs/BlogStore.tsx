@@ -1,29 +1,28 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { BlogPost, BlogStatus } from "@/lib/admin/types";
-import { normaliseBlogForm, type BlogFormValues } from "@/lib/admin/blog-utils";
+import type { BlogSummary } from "@/lib/admin/types";
+import { fetchBlogList } from "./blog-api";
 
 /**
- * Blog admin store, shared by /admin/blogs, /new and /[id]/edit (it lives in their layout,
- * so it survives navigation between them).
- *
- * LOCAL ONLY: every change is kept in this browser tab and resets on reload. Nothing is
- * persisted, uploaded or published to the public website (that is controlled by
- * lib/content/blog-publishing.ts). Swap these functions for API calls later.
+ * Blog admin list store, shared by /admin/blogs, /new and /[id]/edit (it lives in their
+ * layout). Holds the article list from MongoDB (GET /api/admin/blogs, no bodies) plus the
+ * toast. Pages call the API through ./blog-api and then `upsert` / `drop` / `reload`, so the
+ * list always reflects what is stored.
  */
 
 interface BlogStore {
-  items: BlogPost[];
-  find: (id: string) => BlogPost | undefined;
-  create: (values: BlogFormValues, status: BlogStatus) => BlogPost;
-  update: (id: string, values: BlogFormValues, status: BlogStatus) => BlogPost | null;
-  setStatus: (id: string, status: BlogStatus) => boolean;
-  remove: (ids: string[]) => number;
-  /** Register a local preview (blob:) URL so it can be released later. */
-  trackPreview: (url: string) => void;
-  toast: string | null;
-  notify: (message: string) => void;
+  items: BlogSummary[];
+  status: "loading" | "ready" | "error";
+  error: string | null;
+  truncated: boolean;
+  reload: () => Promise<void>;
+  /** Insert or replace one record (after a save). */
+  upsert: (post: BlogSummary) => void;
+  /** Remove records (after a delete). */
+  drop: (ids: string[]) => void;
+  toast: { text: string; tone: "ok" | "error" } | null;
+  notify: (text: string, tone?: "ok" | "error") => void;
 }
 
 const Ctx = createContext<BlogStore | null>(null);
@@ -34,103 +33,76 @@ export function useBlogStore() {
   return store;
 }
 
-const publishedAtFor = (values: BlogFormValues, status: BlogStatus, previous: string | null, now: string) => {
-  if (status !== "PUBLISHED") return previous && values.publishDate ? previous : null;
-  if (values.publishDate) {
-    const keepsTime = previous && previous.slice(0, 10) === values.publishDate;
-    return keepsTime ? previous : `${values.publishDate}T10:00:00+05:30`;
-  }
-  return previous ?? now;
+/** Strips the body if a full record is passed in, so the list stays small. */
+const summary = (post: BlogSummary & { content?: unknown }): BlogSummary => {
+  const { content: _content, ...rest } = post;
+  void _content;
+  return rest;
 };
 
-export default function BlogStoreProvider({ initial, children }: { initial: BlogPost[]; children: ReactNode }) {
-  const [items, setItems] = useState<BlogPost[]>(initial);
-  const [toast, setToast] = useState<string | null>(null);
+export default function BlogStoreProvider({ children }: { children: ReactNode }) {
+  const [items, setItems] = useState<BlogSummary[]>([]);
+  const [status, setStatus] = useState<BlogStore["status"]>("loading");
+  const [error, setError] = useState<string | null>(null);
+  const [truncated, setTruncated] = useState(false);
+  const [toast, setToast] = useState<BlogStore["toast"]>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const previews = useRef<Set<string>>(new Set());
-  const counter = useRef(0);
-  // Mirror for synchronous reads inside callbacks (prevents acting on stale state).
-  const itemsRef = useRef(items);
-  useEffect(() => {
-    itemsRef.current = items;
-  }, [items]);
+
+  const reload = useCallback(async () => {
+    const result = await fetchBlogList();
+    if (result.ok) {
+      setItems(result.data.items);
+      setTruncated(result.data.truncated);
+      setError(null);
+      setStatus("ready");
+    } else {
+      setError(result.error.message);
+      setStatus((s) => (s === "ready" ? "ready" : "error"));
+    }
+  }, []);
 
   useEffect(() => {
-    const urls = previews.current;
+    let alive = true;
+    void fetchBlogList().then((result) => {
+      if (!alive) return;
+      if (result.ok) {
+        setItems(result.data.items);
+        setTruncated(result.data.truncated);
+        setStatus("ready");
+      } else {
+        setError(result.error.message);
+        setStatus("error");
+      }
+    });
     return () => {
+      alive = false;
       if (timer.current) clearTimeout(timer.current);
-      urls.forEach((u) => URL.revokeObjectURL(u));
     };
   }, []);
 
-  const notify = useCallback((message: string) => {
-    setToast(message);
+  const notify = useCallback((text: string, tone: "ok" | "error" = "ok") => {
+    setToast({ text, tone });
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setToast(null), 4500);
   }, []);
 
-  const find = useCallback((id: string) => itemsRef.current.find((b) => b.id === id), []);
-
-  const create = useCallback((raw: BlogFormValues, status: BlogStatus) => {
-    const v = normaliseBlogForm(raw);
-    const now = new Date().toISOString();
-    counter.current += 1;
-    const post: BlogPost = {
-      ...v,
-      id: `local-${Date.now().toString(36)}-${counter.current}`,
-      status,
-      publishedAt: publishedAtFor(v, status, null, now),
-      createdAt: now,
-      updatedAt: now,
-      publicSlug: null,
-      isLocal: true,
-    };
-    itemsRef.current = [post, ...itemsRef.current];
-    setItems(itemsRef.current);
-    return post;
+  const upsert = useCallback((post: BlogSummary) => {
+    const next = summary(post);
+    setItems((list) => [next, ...list.filter((b) => b.id !== next.id)]);
   }, []);
 
-  const update = useCallback((id: string, raw: BlogFormValues, status: BlogStatus) => {
-    const current = itemsRef.current.find((b) => b.id === id);
-    if (!current) return null;
-    const v = normaliseBlogForm(raw);
-    const now = new Date().toISOString();
-    const next: BlogPost = { ...current, ...v, status, publishedAt: publishedAtFor(v, status, current.publishedAt, now), updatedAt: now };
-    itemsRef.current = itemsRef.current.map((b) => (b.id === id ? next : b));
-    setItems(itemsRef.current);
-    return next;
-  }, []);
-
-  const setStatus = useCallback((id: string, status: BlogStatus) => {
-    const current = itemsRef.current.find((b) => b.id === id);
-    if (!current || current.status === status) return false;
-    const now = new Date().toISOString();
-    itemsRef.current = itemsRef.current.map((b) =>
-      b.id === id ? { ...b, status, publishedAt: status === "PUBLISHED" ? b.publishedAt ?? now : b.publishedAt, updatedAt: now } : b,
-    );
-    setItems(itemsRef.current);
-    return true;
-  }, []);
-
-  const remove = useCallback((ids: string[]) => {
+  const drop = useCallback((ids: string[]) => {
     const set = new Set(ids);
-    const before = itemsRef.current.length;
-    itemsRef.current = itemsRef.current.filter((b) => !set.has(b.id));
-    setItems(itemsRef.current);
-    return before - itemsRef.current.length;
+    setItems((list) => list.filter((b) => !set.has(b.id)));
   }, []);
 
-  const trackPreview = useCallback((url: string) => {
-    previews.current.add(url);
-  }, []);
-
-  const value = useMemo(() => ({ items, find, create, update, setStatus, remove, trackPreview, toast, notify }), [items, find, create, update, setStatus, remove, trackPreview, toast, notify]);
+  const value = useMemo(() => ({ items, status, error, truncated, reload, upsert, drop, toast, notify }), [items, status, error, truncated, reload, upsert, drop, toast, notify]);
 
   return (
     <Ctx.Provider value={value}>
       {children}
       <div aria-live="polite" className="pointer-events-none fixed inset-x-0 bottom-5 z-[90] flex justify-center px-4">
-        {toast && <p className="admin-pop max-w-lg rounded-lg bg-[#240C0E] px-4 py-2.5 text-center text-sm text-[#F8F5F0] shadow-lg">{toast}</p>}
+        {toast && <p className={`admin-pop max-w-lg rounded-lg px-4 py-2.5 text-center text-sm shadow-lg ${toast.tone === "error" ? "bg-[#7a1f2b] text-white" : "bg-[#240C0E] text-[#F8F5F0]"}`}>{toast.text}</p>}
       </div>
     </Ctx.Provider>
   );

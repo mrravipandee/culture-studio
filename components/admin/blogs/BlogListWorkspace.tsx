@@ -3,9 +3,9 @@
 import { useEffect, useId, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ChevronDown, Eye, EyeOff, FileText, Info, Plus, Search, SearchX, SlidersHorizontal, Trash2, X } from "lucide-react";
+import { AlertCircle, AlertTriangle, ChevronDown, Eye, EyeOff, FileText, Plus, Search, SearchX, SlidersHorizontal, Trash2, X } from "lucide-react";
 import { BLOG_CATEGORIES, blogStatusLabels, type BlogStatus } from "@/lib/admin/types";
-import { BLOG_PAGE_SIZE, blogToForm, emptyBlogFilters, filterBlogs, hasBlogErrors, hasBlogFilters, validateBlog, type BlogFilters } from "@/lib/admin/blog-utils";
+import { BLOG_PAGE_SIZE, emptyBlogFilters, filterBlogs, hasBlogFilters, type BlogFilters } from "@/lib/admin/blog-utils";
 import { pageCount, paginate } from "@/lib/admin/enquiry-utils";
 import ConfirmDialog from "../ConfirmDialog";
 import EnquiryPagination from "../enquiries/EnquiryPagination";
@@ -13,6 +13,7 @@ import { useBlogStore } from "./BlogStore";
 import BlogStats from "./BlogStats";
 import { BlogMobileList, BlogTable, isBlogLive, type BlogRowActions } from "./BlogTable";
 import BlogDetailPanel from "./BlogDetailPanel";
+import { deleteBlog, deleteBlogs, publishBlog, unpublishBlog } from "./blog-api";
 
 const DESKTOP = "(min-width: 1280px)";
 const subscribe = (cb: () => void) => {
@@ -35,6 +36,7 @@ export default function BlogListWorkspace({ serifClassName }: { serifClassName: 
   const [checked, setChecked] = useState<Set<string>>(() => new Set());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [confirm, setConfirm] = useState<Confirm>(null);
+  const [busy, setBusy] = useState(false);
   const lock = useRef(false);
   const drawerRef = useRef<HTMLDivElement>(null);
   const isDesktop = useSyncExternalStore(subscribe, () => window.matchMedia(DESKTOP).matches, () => true);
@@ -61,38 +63,58 @@ export default function BlogListWorkspace({ serifClassName }: { serifClassName: 
       setDrawerOpen(true);
     },
     onTogglePublish: (id) => {
-      const post = store.find(id);
+      const post = store.items.find((b) => b.id === id);
       if (!post) return;
-      if (post.status === "PUBLISHED") return ask({ kind: "unpublish", id });
-      // Never publish incomplete content: run the full publishing validation first.
-      const errors = validateBlog(blogToForm(post), { takenSlugs: store.items.filter((b) => b.id !== id).map((b) => b.slug), intent: "publish" });
-      if (hasBlogErrors(errors)) return ask({ kind: "incomplete", id, reasons: Object.values(errors) as string[] });
-      ask({ kind: "publish", id });
+      // The server runs the full publishing validation; missing pieces come back as reasons.
+      ask({ kind: post.status === "PUBLISHED" ? "unpublish" : "publish", id });
     },
     onDelete: (id) => ask({ kind: "delete", ids: [id] }),
   };
 
-  const run = () => {
+  const run = async () => {
     if (!confirm || lock.current) return;
     lock.current = true;
     if (confirm.kind === "incomplete") {
+      setConfirm(null);
       router.push(`/admin/blogs/${confirm.id}/edit`);
-    } else if (confirm.kind === "delete") {
-      if (selectedId && confirm.ids.includes(selectedId)) {
-        const index = filtered.findIndex((b) => b.id === selectedId);
-        const remaining = filtered.filter((b) => !confirm.ids.includes(b.id));
-        const next = remaining[Math.min(Math.max(index, 0), remaining.length - 1)] ?? null;
-        setSelectedId(next?.id ?? null);
-        if (!next) setDrawerOpen(false);
-      }
-      const n = store.remove(confirm.ids);
-      setChecked((prev) => new Set([...prev].filter((id) => !confirm.ids.includes(id))));
-      store.notify(`${n === 1 ? "Article" : `${n} articles`} removed from this preview. Nothing was deleted from the site.`);
-    } else {
-      const status: BlogStatus = confirm.kind === "publish" ? "PUBLISHED" : "DRAFT";
-      if (store.setStatus(confirm.id, status)) store.notify(`${confirm.kind === "publish" ? "Published" : "Unpublished"} in this preview only. The public website has not changed.`);
+      return;
     }
-    setConfirm(null);
+    setBusy(true);
+    if (confirm.kind === "delete") {
+      const ids = confirm.ids;
+      const result = ids.length === 1 ? await deleteBlog(ids[0]) : await deleteBlogs(ids);
+      const deleted = result.ok ? ("changed" in result.data ? result.data.changed : ids) : result.status === 404 ? ids : [];
+      if (deleted.length) {
+        if (selectedId && deleted.includes(selectedId)) {
+          const index = filtered.findIndex((b) => b.id === selectedId);
+          const remaining = filtered.filter((b) => !deleted.includes(b.id));
+          const next = remaining[Math.min(Math.max(index, 0), remaining.length - 1)] ?? null;
+          setSelectedId(next?.id ?? null);
+          if (!next) setDrawerOpen(false);
+        }
+        store.drop(deleted);
+        setChecked((prev) => new Set([...prev].filter((id) => !deleted.includes(id))));
+        store.notify(`${deleted.length === 1 ? "Article" : `${deleted.length} articles`} deleted.`);
+      } else if (!result.ok) store.notify(result.error.message, "error");
+      setConfirm(null);
+    } else {
+      const post = store.items.find((b) => b.id === confirm.id);
+      const result = confirm.kind === "publish" ? await publishBlog(confirm.id, post?.updatedAt) : await unpublishBlog(confirm.id, post?.updatedAt);
+      if (result.ok) {
+        store.upsert(result.data);
+        store.notify(confirm.kind === "publish" ? `“${result.data.title}” is live on the website.` : `“${result.data.title}” was removed from the website and is a draft again.`);
+        setConfirm(null);
+      } else if (result.error.code === "PUBLISH_VALIDATION") {
+        lock.current = false;
+        setConfirm({ kind: "incomplete", id: confirm.id, reasons: Object.values(result.error.fields ?? {}).length ? Object.values(result.error.fields ?? {}) : [result.error.message] });
+      } else {
+        store.notify(result.error.code === "STALE_RECORD" ? "It was changed elsewhere. The list has been refreshed; try again." : result.error.message, "error");
+        if (["STALE_RECORD", "NOT_FOUND", "INVALID_TRANSITION"].includes(String(result.error.code))) void store.reload();
+        setConfirm(null);
+      }
+    }
+    setBusy(false);
+    lock.current = false;
   };
 
   /* Drawer below 1280px */
@@ -125,11 +147,16 @@ export default function BlogListWorkspace({ serifClassName }: { serifClassName: 
 
   return (
     <>
-      <BlogStats items={store.items} />
-      <p className="mt-4 flex gap-2 rounded-lg border border-[#c08a2d]/20 bg-[#c08a2d]/[0.06] px-3.5 py-2.5 text-xs leading-relaxed text-[#6b4a12]">
-        <Info aria-hidden="true" size={15} className="mt-px shrink-0" />
-        Sample articles from the Blog page. Changes are kept in this tab only: they are not saved to a server, images are not uploaded, and the public website keeps using its publishing list.
-      </p>
+      <BlogStats items={store.status === "loading" ? null : store.items} />
+      {store.status === "error" && (
+        <p role="alert" className="mt-4 flex items-center gap-2 rounded-lg border border-[#a3242f]/25 bg-[#a3242f]/[0.05] px-3.5 py-2.5 text-sm text-[#a3242f]">
+          <AlertTriangle aria-hidden="true" size={16} className="shrink-0" />
+          <span className="mr-auto">{store.error ?? "Couldn't load the articles."}</span>
+          <button type="button" onClick={() => void store.reload()} className="font-medium underline focus-visible:outline-2 focus-visible:outline-burgundy">
+            Try again
+          </button>
+        </p>
+      )}
 
       <div className="mt-5 grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(19rem,22rem)] xl:gap-6">
         <section aria-label="Articles" className="@container admin-fade-up min-w-0 rounded-xl border border-black/[0.08] bg-white/80 p-4 [animation-delay:320ms] sm:p-5">
@@ -214,12 +241,18 @@ export default function BlogListWorkspace({ serifClassName }: { serifClassName: 
           )}
 
           <div className="mt-4">
-            {rows.length === 0 ? (
+            {store.status === "loading" ? (
+              <ul aria-label="Loading articles" className="space-y-2">
+                {[0, 1, 2, 3].map((i) => (
+                  <li key={i} className="h-16 animate-pulse rounded-lg bg-black/[0.04] motion-reduce:animate-none" />
+                ))}
+              </ul>
+            ) : rows.length === 0 ? (
               <div className="admin-row-in grid place-items-center rounded-lg border border-dashed border-black/15 px-6 py-14 text-center">
                 {store.items.length === 0 ? <FileText aria-hidden="true" size={28} strokeWidth={1.4} className="text-ink-3" /> : <SearchX aria-hidden="true" size={28} strokeWidth={1.4} className="text-ink-3" />}
                 <p className="mt-3 max-w-sm text-sm text-ink-2">
                   {store.items.length === 0
-                    ? "No articles in this preview yet."
+                    ? "No articles yet. Write the first one, or run the launch-article migration (npm run blog:migrate)."
                     : filters.search.trim()
                       ? `No articles match “${filters.search.trim()}”.`
                       : "No articles match these filters."}
@@ -286,22 +319,24 @@ export default function BlogListWorkspace({ serifClassName }: { serifClassName: 
         tone="danger"
         icon={<Trash2 size={20} strokeWidth={1.75} />}
         title={confirm?.kind === "delete" && confirm.ids.length > 1 ? `Delete ${confirm.ids.length} articles?` : `Delete “${confirm?.kind === "delete" ? store.items.find((b) => b.id === confirm.ids[0])?.title ?? "" : ""}”?`}
-        description="Removed from this preview only. The public website and image files are not changed, and it returns on reload."
+        description="It is removed from the website and the admin list. The record is kept in the database (soft delete)."
         confirmLabel="Delete"
-        onConfirm={run}
+        busy={busy}
+        onConfirm={() => void run()}
         onCancel={() => setConfirm(null)}
       />
       <ConfirmDialog
         open={(confirm?.kind === "publish" || confirm?.kind === "unpublish") && !!confirmPost}
         icon={confirm?.kind === "unpublish" ? <EyeOff size={20} strokeWidth={1.75} /> : <Eye size={20} strokeWidth={1.75} />}
-        title={`${confirm?.kind === "unpublish" ? "Unpublish" : "Publish"} “${confirmPost?.title ?? ""}” in this preview?`}
+        title={`${confirm?.kind === "unpublish" ? "Unpublish" : "Publish"} “${confirmPost?.title ?? ""}”?`}
         description={
           confirm?.kind === "unpublish" && confirmPost && isBlogLive(confirmPost)
-            ? "It will show as a draft here, but stays live on the public website until the publishing list changes."
-            : "This changes its status in the admin only. The public website is not changed."
+            ? "It is removed from the website immediately and becomes a draft. Its content is kept."
+            : "It goes live on the Blog page and at its own address straight away."
         }
         confirmLabel={confirm?.kind === "unpublish" ? "Unpublish" : "Publish"}
-        onConfirm={run}
+        busy={busy}
+        onConfirm={() => void run()}
         onCancel={() => setConfirm(null)}
       />
       <ConfirmDialog
@@ -315,7 +350,7 @@ export default function BlogListWorkspace({ serifClassName }: { serifClassName: 
         }
         confirmLabel="Open editor"
         cancelLabel="Close"
-        onConfirm={run}
+        onConfirm={() => void run()}
         onCancel={() => setConfirm(null)}
       />
     </>

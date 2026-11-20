@@ -1,13 +1,14 @@
 import { CheckCircle2, FileText, PenLine, Type, type LucideIcon } from "lucide-react";
 import { editorialSerif } from "@/lib/fonts";
-import type { BlogPost } from "@/lib/admin/types";
+import type { BlogSummary } from "@/lib/admin/types";
 import { getBlogsWithBody, getDraftBlogCount, getPublishedBlogCount, getTotalBlogs } from "@/lib/admin/blog-utils";
 
 /**
- * KPI cards from the current records. There is no analytics source, so the reference's
- * "Total Views" is replaced by "With Body" (articles that have content written).
+ * KPI cards from the stored articles (MongoDB). There is no analytics source, so the
+ * reference's "Total Views" is replaced by "Articles Written" (posts with body text).
  */
-export default function BlogStats({ items }: { items: BlogPost[] }) {
+export default function BlogStats({ items }: { items: BlogSummary[] | null }) {
+  if (!items) return <BlogStatsSkeleton />;
   const total = getTotalBlogs(items);
   const cards: { icon: LucideIcon; value: string; label: string; highlight?: boolean }[] = [
     { icon: FileText, value: String(total), label: "Total Blogs" },
@@ -33,6 +34,18 @@ export default function BlogStats({ items }: { items: BlogPost[] }) {
               </div>
             </article>
           </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function BlogStatsSkeleton() {
+  return (
+    <section aria-label="Blog summary" aria-busy="true">
+      <ul className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+        {[0, 1, 2, 3].map((i) => (
+          <li key={i} className="h-[6.5rem] animate-pulse rounded-xl border border-black/[0.06] bg-black/[0.04] motion-reduce:animate-none sm:h-[7.75rem]" />
         ))}
       </ul>
     </section>

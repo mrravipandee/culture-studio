@@ -1,6 +1,6 @@
 "use client";
 
-import { CLOUDINARY_IMAGE_PATTERN, MEDIA_UPLOAD } from "@/lib/case-studies/constants";
+import { CLOUDINARY_IMAGE_PATTERN, MEDIA_FOLDERS, MEDIA_UPLOAD, type MediaPurpose } from "@/lib/case-studies/constants";
 import { validateImageFile } from "@/lib/admin/case-study-utils";
 import { adminRequest } from "../settings/settings-api";
 
@@ -22,11 +22,12 @@ interface SignatureResponse {
 
 export type UploadResult = { ok: true; url: string; publicId: string } | { ok: false; message: string };
 
-export async function uploadImageToCloudinary(file: File, options: { signal?: AbortSignal; onProgress?: (fraction: number) => void } = {}): Promise<UploadResult> {
+export async function uploadImageToCloudinary(file: File, options: { signal?: AbortSignal; onProgress?: (fraction: number) => void; purpose?: MediaPurpose } = {}): Promise<UploadResult> {
+  const purpose = options.purpose ?? "case-study";
   const problem = validateImageFile(file, MEDIA_UPLOAD.maxBytes);
   if (problem) return { ok: false, message: problem };
 
-  const signed = await adminRequest<SignatureResponse>("/api/admin/media/cloudinary-signature", { method: "POST", body: {}, signal: options.signal });
+  const signed = await adminRequest<SignatureResponse>("/api/admin/media/cloudinary-signature", { method: "POST", body: { purpose }, signal: options.signal });
   if (!signed.ok) return { ok: false, message: signed.error.message };
   const s = signed.data;
 
@@ -65,7 +66,7 @@ export async function uploadImageToCloudinary(file: File, options: { signal?: Ab
   }
   const url = typeof body.secure_url === "string" ? body.secure_url : "";
   const publicId = typeof body.public_id === "string" ? body.public_id : "";
-  if (!CLOUDINARY_IMAGE_PATTERN.test(url) || !publicId.startsWith(`${MEDIA_UPLOAD.folder}/`)) {
+  if (!CLOUDINARY_IMAGE_PATTERN.test(url) || !publicId.startsWith(`${MEDIA_FOLDERS[purpose]}/`)) {
     return { ok: false, message: "Cloudinary returned an unexpected image address. Please try again." };
   }
   return { ok: true, url, publicId };

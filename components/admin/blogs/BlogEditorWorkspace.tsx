@@ -4,8 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { Editor } from "@tiptap/react";
-import { AlertCircle, ArrowLeft, Check, Eye, EyeOff, FileWarning, Info, Pencil, Send, Trash2 } from "lucide-react";
-import type { BlogStatus } from "@/lib/admin/types";
+import { AlertCircle, ArrowLeft, Check, Eye, EyeOff, FileWarning, Info, Loader2, Pencil, Send, Trash2 } from "lucide-react";
+import type { BlogPost, BlogStatus } from "@/lib/admin/types";
 import {
   BLOG_LIMITS,
   blogStats,
@@ -19,6 +19,7 @@ import {
   type BlogFormValues,
 } from "@/lib/admin/blog-utils";
 import { readingTimeLabel, type RichNode } from "@/lib/rich-text";
+import type { ApiResult } from "../settings/settings-api";
 import ConfirmDialog from "../ConfirmDialog";
 import CaseStudyCover from "../case-studies/CaseStudyCover";
 import BlogArticle from "@/components/blog/BlogArticle";
@@ -26,6 +27,7 @@ import { useBlogStore } from "./BlogStore";
 import ImagePicker, { type LibraryImage } from "./ImagePicker";
 import RichTextEditor from "./editor/RichTextEditor";
 import { FieldError, PublishingPanel, SeoPanel } from "./BlogSidePanels";
+import { createBlog, deleteBlog, fetchBlog, publishBlog, toFormErrors, unpublishBlog, updateBlog } from "./blog-api";
 
 interface Props {
   mode: "create" | "edit";
@@ -33,23 +35,52 @@ interface Props {
   siteUrl: string;
   today: string;
   library: LibraryImage[];
+  /** Cloudinary is configured on the server: show Upload buttons. */
+  uploadsEnabled: boolean;
   serifClassName: string;
   startInPreview?: boolean;
 }
 
 type Confirm = { kind: "publish" | "update" | "unpublish" | "delete" } | { kind: "leave"; href: string } | null;
+type Load = { state: "loading" } | { state: "missing" } | { state: "error"; message: string } | { state: "ready"; post: BlogPost | undefined };
 
+/**
+ * Article editor. Edit mode loads the latest stored version from /api/admin/blogs/[id]; every
+ * save goes to the API (create, PATCH of the changed fields, publish, unpublish, delete).
+ * The server re-validates and sanitises everything; its field errors are shown in place.
+ */
 export default function BlogEditorWorkspace(props: Props) {
-  const store = useBlogStore();
-  const post = props.postId ? store.items.find((b) => b.id === props.postId) : undefined;
+  const [load, setLoad] = useState<Load>(props.mode === "create" ? { state: "ready", post: undefined } : { state: "loading" });
 
-  if (props.mode === "edit" && !post) {
+  useEffect(() => {
+    if (props.mode !== "edit" || !props.postId) return;
+    const controller = new AbortController();
+    fetchBlog(props.postId, controller.signal)
+      .then((result) => {
+        if (result.ok) setLoad({ state: "ready", post: result.data });
+        else if (result.status === 404 || result.status === 400) setLoad({ state: "missing" });
+        else setLoad({ state: "error", message: result.error.message });
+      })
+      .catch(() => undefined); // aborted
+    return () => controller.abort();
+  }, [props.mode, props.postId]);
+
+  if (load.state === "loading") {
+    return (
+      <div className="grid min-h-[60vh] place-items-center" aria-busy="true">
+        <p className="inline-flex items-center gap-2 text-sm text-ink-2">
+          <Loader2 aria-hidden="true" size={16} className="animate-spin motion-reduce:animate-none" /> Loading the article…
+        </p>
+      </div>
+    );
+  }
+  if (load.state === "missing" || load.state === "error") {
     return (
       <div className="grid min-h-[60vh] place-items-center px-6 text-center">
         <div>
           <FileWarning aria-hidden="true" size={32} strokeWidth={1.4} className="mx-auto text-ink-3" />
-          <h1 className={`${props.serifClassName} mt-4 text-3xl text-[#1a0a0c]`}>Article not found</h1>
-          <p className="mt-2 max-w-sm text-sm text-ink-2">It may have been deleted in this preview, or the link is wrong. Preview changes reset when the page reloads.</p>
+          <h1 className={`${props.serifClassName} mt-4 text-3xl text-[#1a0a0c]`}>{load.state === "missing" ? "Article not found" : "Couldn't load the article"}</h1>
+          <p className="mt-2 max-w-sm text-sm text-ink-2">{load.state === "missing" ? "It may have been deleted, or the link is wrong." : load.message}</p>
           <Link href="/admin/blogs" className="mt-6 inline-flex h-11 items-center gap-2 rounded-md bg-[#5a0c14] px-4 text-sm font-medium text-white hover:bg-[#6b111b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy">
             <ArrowLeft aria-hidden="true" size={16} /> All articles
           </Link>
@@ -58,31 +89,33 @@ export default function BlogEditorWorkspace(props: Props) {
     );
   }
   // Remount when switching records so all state starts from that record.
-  return <EditorForm key={post?.id ?? "new"} {...props} />;
+  return <EditorForm key={load.post?.id ?? "new"} {...props} initialPost={load.post} />;
 }
 
-function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, startInPreview = false }: Props) {
+function EditorForm({ mode, siteUrl, today, library, uploadsEnabled, serifClassName, startInPreview = false, initialPost }: Props & { initialPost: BlogPost | undefined }) {
   const store = useBlogStore();
   const router = useRouter();
-  const post = postId ? store.items.find((b) => b.id === postId) : undefined;
-  const status: BlogStatus | "NEW" = post?.status ?? "NEW";
+  /** The last version the server confirmed (concurrency token + status). */
+  const [saved, setSaved] = useState<BlogPost | undefined>(initialPost);
+  const status: BlogStatus | "NEW" = saved?.status ?? "NEW";
 
-  const [baseline, setBaseline] = useState<BlogFormValues>(() => (post ? blogToForm(post) : emptyBlogForm()));
+  const [baseline, setBaseline] = useState<BlogFormValues>(() => (initialPost ? blogToForm(initialPost) : emptyBlogForm()));
   const [values, setValues] = useState<BlogFormValues>(baseline);
   const [errors, setErrors] = useState<BlogFormErrors>({});
+  const [serverMessage, setServerMessage] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState<"draft" | "publish" | null>(null);
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
-  const [savedAt, setSavedAt] = useState<string | null>(post?.updatedAt ?? null);
   const [confirm, setConfirm] = useState<Confirm>(null);
   const [preview, setPreview] = useState(startInPreview);
   const editorRef = useRef<Editor | null>(null);
   const lock = useRef(false);
   const allowLeave = useRef(false);
 
+  const savedAt = saved?.updatedAt ?? null;
   const dirty = useMemo(() => JSON.stringify(values) !== JSON.stringify(baseline), [values, baseline]);
   const { words, readingTime } = blogStats(values.content);
-  const takenSlugs = useMemo(() => store.items.filter((b) => b.id !== postId).map((b) => b.slug), [store.items, postId]);
+  const takenSlugs = useMemo(() => store.items.filter((b) => b.id !== saved?.id).map((b) => b.slug), [store.items, saved?.id]);
 
   /** Latest values, including editor content that is still inside the debounce window. */
   const current = useCallback((): BlogFormValues => {
@@ -122,11 +155,12 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
     };
   }, [dirty]);
 
-  /* Saving */
+  /* Validation (client copy of the server rules, for instant feedback) */
   const validate = (intent: "draft" | "publish") => {
     const v = current();
     setValues(v);
     setSubmitted(intent);
+    setServerMessage(null);
     const found = validateBlog(v, { takenSlugs, intent, today });
     setErrors(found);
     if (hasBlogErrors(found)) {
@@ -136,45 +170,89 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
     return v;
   };
 
-  const commit = (v: BlogFormValues, nextStatus: BlogStatus, message: string) => {
+  /** Shows a failed API call in the form (field messages + banner). Values are kept. */
+  const showFailure = (result: Extract<ApiResult<unknown>, { ok: false }>) => {
+    const fields = toFormErrors(result.error.fields);
+    setErrors(fields);
+    setServerMessage(
+      result.error.code === "STALE_RECORD"
+        ? "Someone else changed this article. Copy your edits, then reload the page to get the latest version."
+        : result.error.fields?.slugSuggestion
+          ? `${result.error.message} Try “${result.error.fields.slugSuggestion}”.`
+          : result.error.message,
+    );
+    requestAnimationFrame(() => document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus());
+  };
+
+  /** Saves the content (create or PATCH). Returns the stored post, or null after showing the error. */
+  const save = async (v: BlogFormValues): Promise<BlogPost | null> => {
+    const result = saved ? await updateBlog(saved, baseline, v) : await createBlog(v);
+    if (!result.ok) {
+      showFailure(result);
+      return null;
+    }
+    setSaved(result.data);
+    setBaseline(v);
+    store.upsert(result.data);
+    return result.data;
+  };
+
+  /** Runs one editor action end to end; a second click while it runs is ignored. */
+  const commit = async (v: BlogFormValues, action: "draft" | "publish" | "update" | "unpublish") => {
     if (lock.current) return;
     lock.current = true;
     setSaveState("saving");
-    const saved = post ? store.update(post.id, v, nextStatus) : store.create(v, nextStatus);
-    if (!saved) {
-      store.notify("This article no longer exists in the preview, so it could not be saved.");
+    let post = await save(v);
+    if (post && action === "publish") {
+      const result = await publishBlog(post.id, post.updatedAt);
+      if (result.ok) post = result.data;
+      else {
+        showFailure(result);
+        post = null;
+      }
+    }
+    if (post && action === "unpublish") {
+      const result = await unpublishBlog(post.id, post.updatedAt);
+      if (result.ok) post = result.data;
+      else {
+        showFailure(result);
+        post = null;
+      }
+    }
+    lock.current = false;
+    if (!post) {
       setSaveState("idle");
-      lock.current = false;
       return;
     }
-    setBaseline(v);
-    setValues(v);
-    setSavedAt(saved.updatedAt);
+    setSaved(post);
+    store.upsert(post);
     setSaveState("saved");
     setErrors({});
     setSubmitted(null);
-    store.notify(message);
-    if (!post) {
+    setServerMessage(null);
+    store.notify(
+      action === "publish"
+        ? "Published: it's live on the website."
+        : action === "update"
+          ? "Changes saved and live on the website."
+          : action === "unpublish"
+            ? "Unpublished: removed from the website, kept as a draft."
+            : "Draft saved.",
+    );
+    if (!initialPost && mode === "create") {
       allowLeave.current = true;
-      router.replace(`/admin/blogs/${saved.id}/edit`);
+      router.replace(`/admin/blogs/${post.id}/edit`);
     }
-    // Release after this tick so a second click on the same button is ignored.
-    setTimeout(() => {
-      lock.current = false;
-    }, 0);
   };
 
   const saveDraft = () => {
     const v = validate("draft");
-    if (v) commit(v, "DRAFT", "Draft saved locally in this tab (not on a server).");
+    if (v) void commit(v, "draft");
   };
   const askPublish = (kind: "publish" | "update") => {
-    if (validate("publish")) {
-      lock.current = false;
-      setConfirm({ kind });
-    }
+    if (validate("publish")) setConfirm({ kind });
   };
-  const runConfirm = () => {
+  const runConfirm = async () => {
     if (!confirm) return;
     const c = confirm;
     setConfirm(null);
@@ -184,19 +262,26 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
       return;
     }
     if (c.kind === "delete") {
-      if (post) store.remove([post.id]);
-      store.notify("Article removed from this preview. Nothing was deleted from the site.");
+      if (!saved || lock.current) return;
+      lock.current = true;
+      const result = await deleteBlog(saved.id);
+      lock.current = false;
+      if (!result.ok && result.status !== 404) {
+        store.notify(result.error.message, "error");
+        return;
+      }
+      store.drop([saved.id]);
+      store.notify("Article deleted.");
       allowLeave.current = true;
       router.push("/admin/blogs");
       return;
     }
     if (c.kind === "unpublish") {
       const v = validate("draft");
-      if (v) commit(v, "DRAFT", "Unpublished in this preview. The public website has not changed.");
+      if (v) await commit(v, "unpublish");
       return;
     }
-    const v = current();
-    commit(v, "PUBLISHED", c.kind === "publish" ? "Published in this preview only. The public website has not changed." : "Published article updated in this preview (not on a server).");
+    await commit(current(), c.kind === "publish" ? "publish" : "update");
   };
 
   const openPreview = () => {
@@ -207,15 +292,16 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
 
   const stateLabel =
     saveState === "saving"
-      ? "Saving locally…"
+      ? "Saving…"
       : dirty
         ? "Unsaved changes"
         : saveState === "saved" && savedAt
-          ? `Saved locally · ${formatBlogAdminDate(savedAt, true)}`
+          ? `Saved · ${formatBlogAdminDate(savedAt, true)}`
           : savedAt
             ? `Last updated ${formatBlogAdminDate(savedAt, true)}`
             : "Not saved yet";
-  const errorList = Object.values(errors).filter(Boolean) as string[];
+  const busy = saveState === "saving";
+  const errorList = [...new Set([...(serverMessage ? [serverMessage] : []), ...(Object.values(errors).filter(Boolean) as string[])])];
   const ids = { title: "blog-title", slug: "blog-slug", excerpt: "blog-excerpt", content: "blog-content-error", alt: "blog-cover-alt", caption: "blog-cover-caption" };
 
   return (
@@ -241,19 +327,19 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
           )}
           {status === "PUBLISHED" ? (
             <>
-              <button type="button" onClick={() => setConfirm({ kind: "unpublish" })} className="inline-flex h-10 items-center gap-2 rounded-md border border-black/20 bg-white px-3.5 text-sm font-medium text-ink hover:border-black/40 focus-visible:outline-2 focus-visible:outline-burgundy">
+              <button type="button" onClick={() => setConfirm({ kind: "unpublish" })} disabled={busy} className="disabled:opacity-50 inline-flex h-10 items-center gap-2 rounded-md border border-black/20 bg-white px-3.5 text-sm font-medium text-ink hover:border-black/40 focus-visible:outline-2 focus-visible:outline-burgundy">
                 <EyeOff aria-hidden="true" size={15} /> Unpublish
               </button>
-              <button type="button" onClick={() => askPublish("update")} className="inline-flex h-10 items-center gap-2 rounded-md bg-[#5a0c14] px-4 text-sm font-medium text-white hover:bg-[#6b111b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy">
+              <button type="button" onClick={() => askPublish("update")} disabled={busy} className="disabled:opacity-60 inline-flex h-10 items-center gap-2 rounded-md bg-[#5a0c14] px-4 text-sm font-medium text-white hover:bg-[#6b111b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy">
                 <Send aria-hidden="true" size={15} /> Update
               </button>
             </>
           ) : (
             <>
-              <button type="button" onClick={saveDraft} className="inline-flex h-10 items-center gap-2 rounded-md border border-black/20 bg-white px-3.5 text-sm font-medium text-ink hover:border-black/40 focus-visible:outline-2 focus-visible:outline-burgundy">
+              <button type="button" onClick={saveDraft} disabled={busy} className="disabled:opacity-50 inline-flex h-10 items-center gap-2 rounded-md border border-black/20 bg-white px-3.5 text-sm font-medium text-ink hover:border-black/40 focus-visible:outline-2 focus-visible:outline-burgundy">
                 Save Draft
               </button>
-              <button type="button" onClick={() => askPublish("publish")} className="inline-flex h-10 items-center gap-2 rounded-md bg-[#5a0c14] px-4 text-sm font-medium text-white hover:bg-[#6b111b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy">
+              <button type="button" onClick={() => askPublish("publish")} disabled={busy} className="disabled:opacity-60 inline-flex h-10 items-center gap-2 rounded-md bg-[#5a0c14] px-4 text-sm font-medium text-white hover:bg-[#6b111b] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy">
                 <Send aria-hidden="true" size={15} /> Publish
               </button>
             </>
@@ -269,13 +355,12 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
             Private preview inside the admin, styled like the public article page. It is not available on the public website.
           </p>
           <BlogArticle
-            allowBlobImages
             article={{
               title: values.title || "Untitled article",
               category: values.category || "No category",
               excerpt: values.excerpt,
               author: values.author || "CULT.URE",
-              dateLabel: formatBlogAdminDate(values.publishDate ? `${values.publishDate}T10:00:00+05:30` : post?.publishedAt ?? new Date().toISOString()) ?? "",
+              dateLabel: formatBlogAdminDate(values.publishDate ? `${values.publishDate}T10:00:00+05:30` : saved?.publishedAt ?? new Date().toISOString()) ?? "",
               dateIso: values.publishDate || null,
               readingTime: words ? readingTimeLabel(words) : "No content yet",
               coverImage: values.coverImage,
@@ -291,14 +376,14 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
       <div hidden={preview} className="mx-auto max-w-[1500px] px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
         <p className="mb-5 flex items-start gap-2 text-xs text-ink-3">
           <Info aria-hidden="true" size={14} className="mt-px shrink-0" />
-          {mode === "create" ? "New article." : `Editing “${baseline.title}”.`} Changes are kept in this browser tab only; nothing is uploaded or published to the website.
+          {saved ? `Editing “${baseline.title || saved.title}”.` : "New article."} Saved to the database; only published articles appear on the website.
         </p>
 
         {errorList.length > 0 && (
           <div role="alert" className="mb-6 rounded-lg border border-[#a3242f]/25 bg-[#a3242f]/[0.05] p-4 text-sm text-[#a3242f]">
             <p className="flex items-center gap-2 font-medium">
               <AlertCircle aria-hidden="true" size={16} />
-              {submitted === "publish" ? "Not ready to publish yet:" : "Please fix:"}
+              {serverMessage && !submitted ? "Couldn't save:" : submitted === "publish" ? "Not ready to publish yet:" : "Please fix:"}
             </p>
             <ul className="mt-2 list-disc space-y-1 pl-6">
               {errorList.map((e) => (
@@ -406,10 +491,10 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
               <FieldError id="blog-cover-error" error={errors.coverImage} />
               <div className="mt-3 flex flex-wrap items-start gap-2">
                 <div className="min-w-0 flex-1">
-                  <ImagePicker library={library} selected={values.coverImage} onPreviewUrl={store.trackPreview} label={values.coverImage ? "Replace image" : "Choose a file"} onPick={(src, alt) => patch({ coverImage: src, coverImageAlt: values.coverImageAlt || alt })} />
+                  <ImagePicker library={library} selected={values.coverImage} uploadsEnabled={uploadsEnabled} label={values.coverImage ? "Replace image" : "Upload image"} onPick={(src, alt, publicId) => patch({ coverImage: src, coverImagePublicId: publicId ?? null, coverImageAlt: values.coverImageAlt || alt })} />
                 </div>
                 {values.coverImage && (
-                  <button type="button" onClick={() => patch({ coverImage: null, coverImageAlt: "", coverCaption: "" })} className="inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-[#a3242f] hover:bg-[#a3242f]/5 focus-visible:outline-2 focus-visible:outline-burgundy">
+                  <button type="button" onClick={() => patch({ coverImage: null, coverImagePublicId: null, coverImageAlt: "", coverCaption: "" })} className="inline-flex h-10 items-center gap-1.5 rounded-md px-3 text-sm font-medium text-[#a3242f] hover:bg-[#a3242f]/5 focus-visible:outline-2 focus-visible:outline-burgundy">
                     <Trash2 aria-hidden="true" size={15} /> Remove
                   </button>
                 )}
@@ -454,7 +539,7 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
                 onChange={(doc) => patch({ content: doc })}
                 editorRef={editorRef}
                 library={library}
-                onPreviewUrl={store.trackPreview}
+                uploadsEnabled={uploadsEnabled}
                 invalid={Boolean(errors.content)}
                 describedBy={errors.content ? ids.content : undefined}
               />
@@ -467,8 +552,8 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
           <aside aria-label="Article settings" className="admin-fade-up space-y-4 [animation-delay:120ms] lg:sticky lg:top-24">
             <PublishingPanel values={values} errors={errors} patch={patch} status={status} words={words} readingTime={readingTime} today={today} />
             <SeoPanel values={values} errors={errors} patch={patch} siteUrl={siteUrl} />
-            {post && (
-              <button type="button" onClick={() => setConfirm({ kind: "delete" })} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-[#a3242f]/25 bg-[#a3242f]/[0.04] text-sm font-medium text-[#a3242f] hover:bg-[#a3242f]/10 focus-visible:outline-2 focus-visible:outline-[#a3242f]">
+            {saved && (
+              <button type="button" onClick={() => setConfirm({ kind: "delete" })} disabled={busy} className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-md border border-[#a3242f]/25 bg-[#a3242f]/[0.04] text-sm font-medium text-[#a3242f] hover:bg-[#a3242f]/10 focus-visible:outline-2 focus-visible:outline-[#a3242f]">
                 <Trash2 aria-hidden="true" size={16} /> Delete article
               </button>
             )}
@@ -480,18 +565,20 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
         open={confirm?.kind === "publish" || confirm?.kind === "update"}
         icon={<Send size={20} strokeWidth={1.75} />}
         title={confirm?.kind === "update" ? "Update the published article?" : "Publish this article?"}
-        description="It will show as Published in the admin. The public website does not change: going live needs the blog publishing list or the future backend."
+        description={confirm?.kind === "update" ? "Your changes will be saved and go live on the website straight away." : "It will be saved and go live on the Blog page and at its own address straight away."}
         confirmLabel={confirm?.kind === "update" ? "Update" : "Publish"}
-        onConfirm={runConfirm}
+        busy={busy}
+        onConfirm={() => void runConfirm()}
         onCancel={() => setConfirm(null)}
       />
       <ConfirmDialog
         open={confirm?.kind === "unpublish"}
         icon={<EyeOff size={20} strokeWidth={1.75} />}
         title="Unpublish this article?"
-        description="It becomes a draft in the admin. Your content and any unsaved edits are kept as the draft."
+        description="It is removed from the website immediately and becomes a draft. Your content and any unsaved edits are saved with it."
         confirmLabel="Unpublish"
-        onConfirm={runConfirm}
+        busy={busy}
+        onConfirm={() => void runConfirm()}
         onCancel={() => setConfirm(null)}
       />
       <ConfirmDialog
@@ -499,9 +586,9 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
         tone="danger"
         icon={<Trash2 size={20} strokeWidth={1.75} />}
         title={`Delete “${baseline.title || "this article"}”?`}
-        description="Removed from this preview only. Nothing on the website or in the project files is deleted."
+        description="It is removed from the website and the admin list. The record is kept in the database (soft delete)."
         confirmLabel="Delete"
-        onConfirm={runConfirm}
+        onConfirm={() => void runConfirm()}
         onCancel={() => setConfirm(null)}
       />
       <ConfirmDialog
@@ -511,7 +598,7 @@ function EditorForm({ mode, postId, siteUrl, today, library, serifClassName, sta
         description="You have unsaved changes to this article. They will be lost."
         confirmLabel="Leave"
         cancelLabel="Keep editing"
-        onConfirm={runConfirm}
+        onConfirm={() => void runConfirm()}
         onCancel={() => setConfirm(null)}
       />
     </div>

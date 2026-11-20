@@ -17,7 +17,7 @@ import "server-only";
  */
 
 import { createHash } from "node:crypto";
-import { MEDIA_UPLOAD } from "@/lib/case-studies/constants";
+import { MEDIA_FOLDERS, MEDIA_UPLOAD, type MediaPurpose } from "@/lib/case-studies/constants";
 
 export interface CloudinaryConfig {
   cloudName: string;
@@ -26,15 +26,36 @@ export interface CloudinaryConfig {
 }
 
 const CLOUD_NAME = /^[a-z0-9_-]{1,64}$/;
+/** Placeholder text copied from setup instructions (e.g. "yaha-api-key", "your-cloud-name"). */
+const PLACEHOLDER = /^(?:yaha|your|my|xxx|changeme|<)/i;
+
+let warned = false;
+
+/** Names (never values) of the variables that are missing or malformed; [] when all are valid. */
+export function cloudinaryConfigProblems(env: NodeJS.ProcessEnv = process.env): string[] {
+  const cloudName = env.CLOUDINARY_CLOUD_NAME?.trim() ?? "";
+  const apiKey = env.CLOUDINARY_API_KEY?.trim() ?? "";
+  const apiSecret = env.CLOUDINARY_API_SECRET?.trim() ?? "";
+  const problems: string[] = [];
+  if (!CLOUD_NAME.test(cloudName) || PLACEHOLDER.test(cloudName)) problems.push("CLOUDINARY_CLOUD_NAME (lowercase letters, digits, - or _)");
+  if (!/^\d{6,20}$/.test(apiKey)) problems.push("CLOUDINARY_API_KEY (digits only)");
+  if (apiSecret.length < 10 || PLACEHOLDER.test(apiSecret)) problems.push("CLOUDINARY_API_SECRET");
+  return problems;
+}
 
 /** The configuration, or null when Cloudinary isn't (fully or validly) configured. */
 export function cloudinaryConfig(env: NodeJS.ProcessEnv = process.env): CloudinaryConfig | null {
   const cloudName = env.CLOUDINARY_CLOUD_NAME?.trim() ?? "";
   const apiKey = env.CLOUDINARY_API_KEY?.trim() ?? "";
   const apiSecret = env.CLOUDINARY_API_SECRET?.trim() ?? "";
-  if (!cloudName || !apiKey || !apiSecret) return null;
-  if (!CLOUD_NAME.test(cloudName) || !/^\d{6,20}$/.test(apiKey) || apiSecret.length < 10) {
-    console.error("[cloudinary] CLOUDINARY_* variables are set but malformed; uploads are disabled.");
+  if (!cloudName && !apiKey && !apiSecret) return null; // not configured: uploads simply off
+  const problems = cloudinaryConfigProblems(env);
+  if (problems.length) {
+    // Once per server process, as a warning, naming the variables only (never their values).
+    if (!warned) {
+      warned = true;
+      console.warn(`[cloudinary] Uploads are off until these are fixed in .env (then restart the server): ${problems.join(", ")}.`);
+    }
     return null;
   }
   return { cloudName, apiKey, apiSecret };
@@ -66,8 +87,9 @@ export interface UploadSignature {
   maxBytes: number;
 }
 
-export function createUploadSignature(config: CloudinaryConfig, now = Date.now()): UploadSignature {
-  const params = { folder: MEDIA_UPLOAD.folder, timestamp: Math.floor(now / 1000), allowed_formats: MEDIA_UPLOAD.formats.join(",") };
+/** One-off signature for the given feature's folder (case studies by default). */
+export function createUploadSignature(config: CloudinaryConfig, now = Date.now(), purpose: MediaPurpose = "case-study"): UploadSignature {
+  const params = { folder: MEDIA_FOLDERS[purpose], timestamp: Math.floor(now / 1000), allowed_formats: MEDIA_UPLOAD.formats.join(",") };
   return {
     cloudName: config.cloudName,
     apiKey: config.apiKey, // public by design in Cloudinary signed uploads; the secret is not
@@ -84,12 +106,12 @@ export function createUploadSignature(config: CloudinaryConfig, now = Date.now()
  * e.g. https://res.cloudinary.com/demo/image/upload/v123/culture-studio/case-studies/abc.jpg
  *      → "culture-studio/case-studies/abc"
  */
-export function publicIdFromUrl(url: string, cloudName: string): string | null {
+export function publicIdFromUrl(url: string, cloudName: string, purpose: MediaPurpose = "case-study"): string | null {
   const prefix = `https://res.cloudinary.com/${cloudName}/image/upload/`;
   if (!url.startsWith(prefix)) return null;
   const rest = url.slice(prefix.length).replace(/^v\d+\//, "");
   const match = rest.match(/^((?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_-]+)\.(jpe?g|png|webp)$/);
-  if (!match || !match[1].startsWith(`${MEDIA_UPLOAD.folder}/`)) return null;
+  if (!match || !match[1].startsWith(`${MEDIA_FOLDERS[purpose]}/`)) return null;
   return match[1];
 }
 
@@ -99,9 +121,14 @@ export type ImageCheck = { ok: true } | { ok: false; message: string; unavailabl
  * Verifies an uploaded image before it is saved: same cloud and folder, public id matches the
  * URL (when given), and Cloudinary confirms it exists with an allowed format and size.
  */
-export async function verifyCloudinaryImage(url: string, publicId: string | undefined, config: CloudinaryConfig | null = cloudinaryConfig()): Promise<ImageCheck> {
+export async function verifyCloudinaryImage(
+  url: string,
+  publicId: string | undefined,
+  config: CloudinaryConfig | null = cloudinaryConfig(),
+  purpose: MediaPurpose = "case-study",
+): Promise<ImageCheck> {
   if (!config) return { ok: false, message: "Image uploads aren't configured on the server. Use an existing site image." };
-  const fromUrl = publicIdFromUrl(url, config.cloudName);
+  const fromUrl = publicIdFromUrl(url, config.cloudName, purpose);
   if (!fromUrl) return { ok: false, message: "This image isn't from the site's Cloudinary upload folder. Upload it again." };
   // Social images store only a URL; covers and gallery images also carry the public id.
   if (publicId !== undefined && publicId !== fromUrl) return { ok: false, message: "The image details don't match. Upload it again." };

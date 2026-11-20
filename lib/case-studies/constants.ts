@@ -131,6 +131,14 @@ export const MEDIA_UPLOAD = {
   folder: "culture-studio/case-studies",
 } as const;
 
+/** Cloudinary upload folder per feature. A signature is issued for exactly one of these. */
+export const MEDIA_FOLDERS = {
+  "case-study": MEDIA_UPLOAD.folder,
+  blog: "culture-studio/blog",
+} as const;
+export type MediaPurpose = keyof typeof MEDIA_FOLDERS;
+export const MEDIA_PURPOSES = Object.keys(MEDIA_FOLDERS) as MediaPurpose[];
+
 /** Approved existing assets offered in the admin picker (all present in /public/images). */
 export const CASE_STUDY_IMAGE_LIBRARY: readonly { url: string; label: string }[] = [
   { url: "/images/case-studies/the-dco-architecture.jpg", label: "Glass towers (architecture)" },

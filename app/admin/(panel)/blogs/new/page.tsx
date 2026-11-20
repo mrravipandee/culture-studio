@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth/require-admin";
 import { blogImageLibrary } from "@/lib/admin/data";
+import { isCloudinaryConfigured } from "@/lib/media/cloudinary";
 import { PRODUCTION_URL } from "@/lib/site";
 import { editorialSerif } from "@/lib/fonts";
 import BlogEditorWorkspace from "@/components/admin/blogs/BlogEditorWorkspace";
@@ -19,5 +20,5 @@ export default function NewBlogPage() {
 async function NewBlog() {
   await requireAdmin();
   const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
-  return <BlogEditorWorkspace mode="create" siteUrl={PRODUCTION_URL} today={today} library={blogImageLibrary} serifClassName={editorialSerif.className} />;
+  return <BlogEditorWorkspace mode="create" siteUrl={PRODUCTION_URL} today={today} library={blogImageLibrary} uploadsEnabled={isCloudinaryConfigured()} serifClassName={editorialSerif.className} />;
 }

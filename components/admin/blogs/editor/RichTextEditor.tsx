@@ -34,7 +34,8 @@ interface Props {
   onChange: (doc: RichNode) => void;
   editorRef: React.MutableRefObject<Editor | null>;
   library: LibraryImage[];
-  onPreviewUrl: (url: string) => void;
+  /** Cloudinary uploads available for inline images. */
+  uploadsEnabled: boolean;
   invalid?: boolean;
   describedBy?: string;
 }
@@ -87,7 +88,7 @@ function toolbarState(e: Editor) {
 const isMac = () => typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
 /** WYSIWYG editor (TipTap). Content in/out as JSON (lib/rich-text.ts). */
-export default function RichTextEditor({ initialContent, onChange, editorRef, library, onPreviewUrl, invalid, describedBy }: Props) {
+export default function RichTextEditor({ initialContent, onChange, editorRef, library, uploadsEnabled, invalid, describedBy }: Props) {
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [linkOpen, setLinkOpen] = useState(false);
   const [imageOpen, setImageOpen] = useState<{ edit: ArticleImageAttrs | null } | null>(null);
@@ -270,7 +271,7 @@ export default function RichTextEditor({ initialContent, onChange, editorRef, li
         open={imageOpen !== null}
         initial={imageOpen?.edit ?? null}
         library={library}
-        onPreviewUrl={onPreviewUrl}
+        uploadsEnabled={uploadsEnabled}
         onClose={() => {
           setImageOpen(null);
           editor.commands.focus();

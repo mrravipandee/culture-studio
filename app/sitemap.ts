@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getPublishedCaseStudies } from "@/lib/case-studies/public";
-import { BLOG_COPY_IN_REVIEW, publicBlogArticles } from "@/lib/content/blog";
+import { BLOG_COPY_IN_REVIEW } from "@/lib/content/blog";
+import { getPublishedArticles } from "@/lib/blog/public";
 import { caseStudiesEnabled } from "@/lib/content/case-studies-publishing";
 import { isIndexable, siteUrl } from "@/lib/site";
 
@@ -8,9 +9,9 @@ import { isIndexable, siteUrl } from "@/lib/site";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (!isIndexable) return [];
   // PUBLISHED case studies only (MongoDB, cached; drafts, archived and deleted never listed).
-  const publishedCaseStudies = caseStudiesEnabled ? await getPublishedCaseStudies() : [];
+  const [publishedCaseStudies, publishedArticles] = await Promise.all([caseStudiesEnabled ? getPublishedCaseStudies() : [], BLOG_COPY_IN_REVIEW ? [] : getPublishedArticles()]);
   // /case-studies is listed only while at least one case study is published.
-  const paths = ["", "/services", "/about", ...(publishedCaseStudies.length ? ["/case-studies"] : []), "/contact"];
+  const paths = ["", "/services", "/about", ...(publishedCaseStudies.length ? ["/case-studies"] : []), ...(publishedArticles.length ? ["/blog"] : []), "/contact"];
   const pages = paths.map((path) => ({
     url: `${siteUrl}${path}`,
     changeFrequency: "monthly" as const,
@@ -22,10 +23,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "yearly" as const,
     priority: 0.5,
   }));
-  // Only published blog articles, and none while their copy is still in review.
-  const articles = (BLOG_COPY_IN_REVIEW ? [] : publicBlogArticles).map((a) => ({
+  // PUBLISHED blog articles only (MongoDB), and none while the launch copy is in review.
+  const articles = publishedArticles.map((a) => ({
     url: `${siteUrl}/blog/${a.slug}`,
-    lastModified: a.date,
+    lastModified: a.updatedAt,
     changeFrequency: "yearly" as const,
     priority: 0.5,
   }));

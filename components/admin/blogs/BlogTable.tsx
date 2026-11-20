@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { ExternalLink, Eye, EyeOff, Pencil, Trash2 } from "lucide-react";
-import type { BlogPost } from "@/lib/admin/types";
+import type { BlogSummary } from "@/lib/admin/types";
 import { formatBlogAdminDate } from "@/lib/admin/blog-utils";
 import ActionMenu, { type ActionMenuItem } from "../ActionMenu";
 import CaseStudyCover from "../case-studies/CaseStudyCover";
@@ -15,11 +15,11 @@ export interface BlogRowActions {
   onDelete: (id: string) => void;
 }
 
-/** Live on the public site: on the publishing list and published here. */
-export const isBlogLive = (b: BlogPost) => b.publicSlug !== null && b.status === "PUBLISHED";
-export const blogPublicUrl = (b: BlogPost) => (b.publicSlug ? `/blog/${b.publicSlug}` : null);
+/** Live on the public site (PUBLISHED in the database). */
+export const isBlogLive = (b: BlogSummary) => b.status === "PUBLISHED" && b.publicSlug !== null;
+export const blogPublicUrl = (b: BlogSummary) => (b.publicSlug ? `/blog/${b.publicSlug}` : null);
 
-export function blogMenu(b: BlogPost, a: BlogRowActions): ActionMenuItem[] {
+export function blogMenu(b: BlogSummary, a: BlogRowActions): ActionMenuItem[] {
   const items: ActionMenuItem[] = [
     { label: "Edit", icon: <Pencil aria-hidden="true" size={15} />, href: `/admin/blogs/${b.id}/edit` },
     { label: "Preview", icon: <Eye aria-hidden="true" size={15} />, href: `/admin/blogs/${b.id}/edit?preview=1` },
@@ -37,7 +37,7 @@ export function blogMenu(b: BlogPost, a: BlogRowActions): ActionMenuItem[] {
 const checkbox = "size-[1.125rem] cursor-pointer accent-[#5a0c14] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy";
 
 interface Props {
-  rows: BlogPost[];
+  rows: BlogSummary[];
   selectedId: string | null;
   checked: Set<string>;
   actions: BlogRowActions;
@@ -94,7 +94,6 @@ export function BlogTable({ rows, selectedId, checked, actions, onToggle, onTogg
                       className="line-clamp-3 rounded text-left text-[0.875rem] font-medium leading-snug text-[#1a0a0c] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-burgundy"
                     >
                       {b.title}
-                      {b.isLocal && <span className="ml-1.5 align-middle text-[0.6875rem] font-normal text-ink-3">· Local</span>}
                     </button>
                   </div>
                 </td>

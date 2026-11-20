@@ -1,18 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth/require-admin";
-import { blogImageLibrary, blogs } from "@/lib/admin/data";
+import { blogImageLibrary } from "@/lib/admin/data";
+import { isCloudinaryConfigured } from "@/lib/media/cloudinary";
 import { PRODUCTION_URL } from "@/lib/site";
 import { editorialSerif } from "@/lib/fonts";
 import BlogEditorWorkspace from "@/components/admin/blogs/BlogEditorWorkspace";
 
 export const metadata: Metadata = { title: "Edit Article" };
 
-/** Prerender the known articles; ids created in the admin are resolved from the client store. */
-export async function generateStaticParams() {
-  return blogs.length ? blogs.map((b) => ({ id: b.id })) : [{ id: "none" }];
-}
-
+/** The article is loaded by id from /api/admin/blogs/[id] in the editor (always the latest version). */
 export default function EditBlogPage({ params, searchParams }: PageProps<"/admin/blogs/[id]/edit">) {
   return (
     <Suspense fallback={<div className="min-h-screen" aria-hidden="true" />}>
@@ -33,6 +30,7 @@ async function EditBlog({ params, searchParams }: Pick<PageProps<"/admin/blogs/[
       siteUrl={PRODUCTION_URL}
       today={today}
       library={blogImageLibrary}
+      uploadsEnabled={isCloudinaryConfigured()}
       serifClassName={editorialSerif.className}
       startInPreview={preview === "1"}
     />

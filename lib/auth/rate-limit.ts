@@ -52,6 +52,8 @@ export const RATE_LIMITS = {
   subscribeEmail: { limit: 3, windowMs: 15 * MINUTES },
   /** Admin subscriber writes. */
   subscriberWrite: { limit: 120, windowMs: 15 * MINUTES },
+  /** Admin blog writes (saves, publishing, deletes). Autosave-free editor, so this is generous. */
+  blogWrite: { limit: 200, windowMs: 15 * MINUTES },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 const hashed = (value: string) => createHash("sha256").update(value).digest("hex").slice(0, 32);
@@ -68,6 +70,7 @@ export const rateLimitKeys = {
   subscribeIp: (ip: string) => `subscribe:ip:${hashed(ip)}`,
   subscribeEmail: (email: string) => `subscribe:email:${hashed(email)}`,
   subscriberWrite: (adminId: string) => `subscriber:write:${adminId}`,
+  blogWrite: (adminId: string) => `blog:write:${adminId}`,
 };
 
 /** Seconds until the bucket allows another attempt, or 0 when allowed. */

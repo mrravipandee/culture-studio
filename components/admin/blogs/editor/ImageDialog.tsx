@@ -17,14 +17,14 @@ interface Props {
   /** Present when editing the selected image. */
   initial: ArticleImageAttrs | null;
   library: LibraryImage[];
-  onPreviewUrl: (url: string) => void;
+  uploadsEnabled: boolean;
   onApply: (attrs: ArticleImageAttrs) => void;
   onRemove: () => void;
   onClose: () => void;
 }
 
 /** Insert or edit an image in the article: source, required alt text, caption, alignment. */
-export default function ImageDialog({ open, initial, library, onPreviewUrl, onApply, onRemove, onClose }: Props) {
+export default function ImageDialog({ open, initial, library, uploadsEnabled, onApply, onRemove, onClose }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
   const [attrs, setAttrs] = useState<ArticleImageAttrs>(initial ?? { src: "", alt: "", caption: "", align: "center" });
   const [errors, setErrors] = useState<{ src?: string; alt?: string }>({});
@@ -70,7 +70,7 @@ export default function ImageDialog({ open, initial, library, onPreviewUrl, onAp
           </h2>
           <CaseStudyCover src={attrs.src || null} alt={attrs.alt} label="Image" sizes="34rem" className="mt-4 aspect-[16/9] rounded-lg" />
           <div className="mt-4">
-            <ImagePicker library={library} selected={attrs.src || null} onPreviewUrl={onPreviewUrl} label={attrs.src ? "Replace image" : "Choose a file"} onPick={(src, alt) => setAttrs((a) => ({ ...a, src, alt: a.alt || alt }))} />
+            <ImagePicker library={library} selected={attrs.src || null} uploadsEnabled={uploadsEnabled} label={attrs.src ? "Replace image" : "Upload image"} onPick={(src, alt) => setAttrs((a) => ({ ...a, src, alt: a.alt || alt }))} />
             {errors.src && (
               <p className="mt-2 flex items-center gap-1.5 text-xs text-[#a3242f]">
                 <AlertCircle aria-hidden="true" size={13} /> {errors.src}

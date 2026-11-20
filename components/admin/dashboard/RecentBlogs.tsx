@@ -2,10 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { editorialSerif } from "@/lib/fonts";
-import type { AdminBlog } from "@/lib/admin/data";
+import type { BlogSummary } from "@/lib/admin/types";
 import { formatDate } from "@/lib/admin/dashboard-utils";
 
-export default function RecentBlogs({ items }: { items: AdminBlog[] }) {
+export default function RecentBlogs({ items }: { items: BlogSummary[] }) {
   return (
     <section
       aria-labelledby="recent-blogs-title"

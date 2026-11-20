@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { AlertCircle, Loader2, Upload } from "lucide-react";
-import { MEDIA_UPLOAD } from "@/lib/case-studies/constants";
+import { MEDIA_UPLOAD, type MediaPurpose } from "@/lib/case-studies/constants";
 import { uploadImageToCloudinary } from "./cloudinary-upload";
 
 interface Props {
@@ -11,13 +11,17 @@ interface Props {
   onUploaded: (image: { url: string; publicId: string }) => void;
   /** Disables the button (e.g. while the form is saving). */
   disabled?: boolean;
+  /** Upload folder (default: case studies). */
+  purpose?: MediaPurpose;
+  /** Button text (default "Upload image"). */
+  text?: string;
 }
 
 /**
  * Picks one image and uploads it to Cloudinary (signed, admin-only). Shows progress and a
  * friendly error; cancels the upload if the editor closes. Only JPG, PNG or WebP up to 5 MB.
  */
-export default function ImageUploadButton({ label, onUploaded, disabled = false }: Props) {
+export default function ImageUploadButton({ label, onUploaded, disabled = false, purpose = "case-study", text = "Upload image" }: Props) {
   const input = useRef<HTMLInputElement>(null);
   const controller = useRef<AbortController | null>(null);
   const [progress, setProgress] = useState<number | null>(null);
@@ -33,7 +37,7 @@ export default function ImageUploadButton({ label, onUploaded, disabled = false 
     setError(null);
     setProgress(0);
     try {
-      const result = await uploadImageToCloudinary(file, { signal: ctrl.signal, onProgress: setProgress });
+      const result = await uploadImageToCloudinary(file, { signal: ctrl.signal, onProgress: setProgress, purpose });
       if (result.ok) onUploaded({ url: result.url, publicId: result.publicId });
       else setError(result.message);
     } catch (e) {
@@ -69,7 +73,7 @@ export default function ImageUploadButton({ label, onUploaded, disabled = false 
         className="inline-flex h-11 items-center gap-2 rounded-md border border-black/20 bg-white px-3.5 text-sm font-medium text-ink transition-colors hover:border-black/40 focus-visible:outline-2 focus-visible:outline-burgundy disabled:opacity-60"
       >
         {uploading ? <Loader2 aria-hidden="true" size={16} className="animate-spin motion-reduce:animate-none" /> : <Upload aria-hidden="true" size={16} />}
-        {uploading ? `Uploading… ${Math.round((progress ?? 0) * 100)}%` : "Upload image"}
+        {uploading ? `Uploading… ${Math.round((progress ?? 0) * 100)}%` : text}
       </button>
       <span className="ml-2 text-xs text-ink-3">JPG, PNG or WebP, up to {MEDIA_UPLOAD.maxBytes / 1024 / 1024} MB.</span>
       <p aria-live="polite" className="sr-only">

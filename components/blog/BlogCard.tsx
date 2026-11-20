@@ -1,17 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
-import { articleReadingTime, blogTopics, isBlogArticlePublic, type BlogArticle } from "@/lib/content/blog";
+import { articleReadingTime, blogTopicLabel, type BlogArticle } from "@/lib/content/blog";
 import BlogMeta from "./BlogMeta";
 
 /**
- * Article card. Published articles link to their reading view (/blog/<slug>): the title is
- * the link, stretched over the whole card so the card is one click target with one
- * accessible name. Unpublished samples stay plain cards.
+ * Article card (published articles only, from lib/blog/public.ts). The title links to the
+ * reading view (/blog/<slug>) and is stretched over the whole card, so the card is one click
+ * target with one accessible name.
  */
 export default function BlogCard({ article, priority = false }: { article: BlogArticle; priority?: boolean }) {
-  const topic = blogTopics.find((t) => t.id === article.topic)?.label;
-  const href = isBlogArticlePublic(article.slug) ? `/blog/${article.slug}` : null;
+  const topic = blogTopicLabel(article.topic);
+  const href = `/blog/${article.slug}`;
 
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-xl border border-black/10 bg-white/70 transition-[box-shadow,border-color] duration-300 has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-2 has-[a:focus-visible]:outline-burgundy hover:border-black/15 hover:shadow-[0_18px_40px_-28px_rgba(36,12,14,0.45)]">
@@ -34,13 +34,9 @@ export default function BlogCard({ article, priority = false }: { article: BlogA
           </span>
         )}
         <h3 className="mt-3 text-lg font-semibold leading-snug tracking-[-0.01em] text-black">
-          {href ? (
-            <Link href={href} className="outline-none after:absolute after:inset-0 after:content-['']">
-              {article.title}
-            </Link>
-          ) : (
-            article.title
-          )}
+          <Link href={href} className="outline-none after:absolute after:inset-0 after:content-['']">
+            {article.title}
+          </Link>
         </h3>
         <p className="mt-2 mb-5 text-sm leading-relaxed text-ink-2">{article.description}</p>
 

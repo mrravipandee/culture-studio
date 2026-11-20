@@ -10,7 +10,7 @@ import "server-only";
 
 import mongoose, { Schema, type Model, type Types } from "mongoose";
 
-export const AUDIT_ENTITY_TYPES = ["CaseStudy", "Subscriber"] as const;
+export const AUDIT_ENTITY_TYPES = ["CaseStudy", "Subscriber", "BlogPost"] as const;
 export type AuditEntityType = (typeof AUDIT_ENTITY_TYPES)[number];
 
 export const AUDIT_ACTIONS = [
@@ -25,6 +25,11 @@ export const AUDIT_ACTIONS = [
   "subscriber.unsubscribed",
   "subscriber.reactivated",
   "subscriber.deleted",
+  "blog.created",
+  "blog.updated",
+  "blog.published",
+  "blog.unpublished",
+  "blog.deleted",
 ] as const;
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 

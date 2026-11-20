@@ -3,18 +3,19 @@
  * Pure and client-safe (types only + rich-text helpers).
  */
 
-import { BLOG_CATEGORIES, BLOG_DEFAULT_AUTHOR, type BlogPost, type BlogStatus } from "./types";
-import { countWords, emptyDoc, hasContent, inspectDoc, isSafeImageSrc, readingTimeLabel, type RichNode } from "@/lib/rich-text";
+import { BLOG_CATEGORIES, BLOG_DEFAULT_AUTHOR, type BlogPost, type BlogStatus, type BlogSummary } from "./types";
+import { countWords, emptyDoc, hasContent, inspectDoc, readingTimeLabel, type RichNode } from "@/lib/rich-text";
+import { isAllowedImageUrl, isCloudinaryUrl } from "@/lib/case-studies/constants";
 import { SLUG_PATTERN, slugify } from "./case-study-utils";
 
 export { slugify, SLUG_PATTERN };
 
 /* Counts ---------------------------------------------------------------------------------- */
 
-export const getTotalBlogs = (list: BlogPost[]) => list.length;
-export const getPublishedBlogCount = (list: BlogPost[]) => list.filter((b) => b.status === "PUBLISHED").length;
-export const getDraftBlogCount = (list: BlogPost[]) => list.filter((b) => b.status === "DRAFT").length;
-export const getBlogsWithBody = (list: BlogPost[]) => list.filter((b) => hasContent(b.content)).length;
+export const getTotalBlogs = (list: BlogSummary[]) => list.length;
+export const getPublishedBlogCount = (list: BlogSummary[]) => list.filter((b) => b.status === "PUBLISHED").length;
+export const getDraftBlogCount = (list: BlogSummary[]) => list.filter((b) => b.status === "DRAFT").length;
+export const getBlogsWithBody = (list: BlogSummary[]) => list.filter((b) => b.wordCount > 0).length;
 
 /* Search and filters -------------------------------------------------------------------------- */
 
@@ -28,7 +29,7 @@ export const emptyBlogFilters: BlogFilters = { search: "", status: "all", catego
 export const hasBlogFilters = (f: BlogFilters) => f.search.trim() !== "" || f.status !== "all" || f.category !== "all";
 
 /** Case-insensitive search over title, slug, category, tags and author. */
-export function matchesBlog(b: BlogPost, query: string) {
+export function matchesBlog(b: BlogSummary, query: string) {
   const q = query.trim().toLowerCase();
   if (!q) return true;
   return [b.title, b.slug, b.category, b.author, ...b.tags].some((field) => field.toLowerCase().includes(q));
@@ -37,9 +38,9 @@ export function matchesBlog(b: BlogPost, query: string) {
 const time = (iso: string | null) => (iso ? Date.parse(iso) || 0 : 0);
 
 /** Newest activity first. */
-export const sortBlogs = (list: BlogPost[]) => [...list].sort((a, b) => time(b.updatedAt) - time(a.updatedAt));
+export const sortBlogs = <T extends BlogSummary>(list: T[]) => [...list].sort((a, b) => time(b.updatedAt) - time(a.updatedAt));
 
-export const filterBlogs = (list: BlogPost[], f: BlogFilters) =>
+export const filterBlogs = <T extends BlogSummary>(list: T[], f: BlogFilters) =>
   sortBlogs(list.filter((b) => (f.status === "all" || b.status === f.status) && (f.category === "all" || b.category === f.category) && matchesBlog(b, f.search)));
 
 export const BLOG_PAGE_SIZE = 6;
@@ -52,12 +53,14 @@ export interface BlogFormValues {
   excerpt: string;
   content: RichNode;
   coverImage: string | null;
+  /** Cloudinary public id of an uploaded cover; null for site images. */
+  coverImagePublicId: string | null;
   coverImageAlt: string;
   coverCaption: string;
   category: string;
   tags: string[];
   author: string;
-  /** YYYY-MM-DD; empty = today when publishing. */
+  /** Date shown on the site (YYYY-MM-DD); empty = the publish date. */
   publishDate: string;
   seoTitle: string;
   seoDescription: string;
@@ -84,6 +87,7 @@ export const emptyBlogForm = (): BlogFormValues => ({
   excerpt: "",
   content: emptyDoc(),
   coverImage: null,
+  coverImagePublicId: null,
   coverImageAlt: "",
   coverCaption: "",
   category: "",
@@ -94,20 +98,19 @@ export const emptyBlogForm = (): BlogFormValues => ({
   seoDescription: "",
 });
 
-const isoDay = (iso: string | null) => (iso ? new Date(iso).toISOString().slice(0, 10) : "");
-
 export const blogToForm = (b: BlogPost): BlogFormValues => ({
   title: b.title,
   slug: b.slug,
   excerpt: b.excerpt,
   content: b.content,
   coverImage: b.coverImage,
+  coverImagePublicId: b.coverImagePublicId,
   coverImageAlt: b.coverImageAlt,
   coverCaption: b.coverCaption,
   category: b.category,
   tags: [...b.tags],
   author: b.author,
-  publishDate: isoDay(b.publishedAt),
+  publishDate: b.displayDate ?? "",
   seoTitle: b.seoTitle,
   seoDescription: b.seoDescription,
 });
@@ -167,16 +170,16 @@ export function validateBlog(raw: BlogFormValues, opts: { takenSlugs: string[]; 
   if (v.author.length > BLOG_LIMITS.author) e.author = `Keep the author name under ${BLOG_LIMITS.author} characters.`;
 
   // Content
-  const issues = inspectDoc(v.content, true);
+  const issues = inspectDoc(v.content);
   if (issues.unknownTypes.length) e.content = "The article contains content that can't be published. Remove the unsupported block and try again.";
   else if (issues.unsafeLinks) e.content = `${issues.unsafeLinks === 1 ? "A link uses" : `${issues.unsafeLinks} links use`} an invalid or unsafe address. Edit or remove ${issues.unsafeLinks === 1 ? "it" : "them"}.`;
-  else if (issues.unsafeImages) e.content = "An image in the article has an invalid address. Replace or remove it.";
+  else if (issues.unsafeImages || hasDisallowedImage(v.content)) e.content = "An image in the article isn't an uploaded or site image. Replace it using the image button.";
   else if (publishing && !hasContent(v.content)) e.content = "Write the article before publishing.";
   else if (publishing && issues.imagesWithoutAlt) e.content = `Add alt text to ${issues.imagesWithoutAlt === 1 ? "the image" : `${issues.imagesWithoutAlt} images`} in the article.`;
   else if (publishing && issues.h1Count) e.content = "Use H2 for sections: the article title is already the page's H1.";
 
   // Cover
-  if (v.coverImage && !isSafeImageSrc(v.coverImage, true)) e.coverImage = "The cover image address is not valid.";
+  if (v.coverImage && !isAllowedImageUrl(v.coverImage)) e.coverImage = "Upload the cover, or choose a site image.";
   else if (publishing && !v.coverImage) e.coverImage = "Add a cover image before publishing.";
   if (v.coverImage && !v.coverImageAlt && publishing) e.coverImageAlt = "Describe the cover image for screen readers.";
   else if (v.coverImageAlt.length > BLOG_LIMITS.alt) e.coverImageAlt = `Keep this under ${BLOG_LIMITS.alt} characters.`;
@@ -198,6 +201,49 @@ export function validateBlog(raw: BlogFormValues, opts: { takenSlugs: string[]; 
 }
 
 export const hasBlogErrors = (e: BlogFormErrors) => Object.keys(e).length > 0;
+
+/** Images inside the body must be uploads or site images (same rule as the server). */
+function hasDisallowedImage(node: RichNode): boolean {
+  if (node.type === "image" && !isAllowedImageUrl(String(node.attrs?.src ?? ""))) return true;
+  return (node.content ?? []).some(hasDisallowedImage);
+}
+
+/* API mapping -------------------------------------------------------------------------------- */
+
+/** Create body (POST /api/admin/blogs). The server re-validates and sanitises everything. */
+export function toBlogInput(raw: BlogFormValues) {
+  const v = normaliseBlogForm(raw);
+  return {
+    title: v.title,
+    ...(v.slug ? { slug: v.slug } : {}),
+    excerpt: v.excerpt,
+    content: v.content,
+    ...(v.category ? { category: v.category } : {}),
+    tags: v.tags,
+    author: v.author,
+    coverImage: v.coverImage
+      ? { url: v.coverImage, ...(v.coverImagePublicId && isCloudinaryUrl(v.coverImage) ? { publicId: v.coverImagePublicId } : {}), alt: v.coverImageAlt, caption: v.coverCaption }
+      : null,
+    displayDate: v.publishDate || null,
+    seo: { ...(v.seoTitle ? { title: v.seoTitle } : {}), ...(v.seoDescription ? { description: v.seoDescription } : {}) },
+  };
+}
+
+type BlogInput = ReturnType<typeof toBlogInput>;
+
+/** PATCH `changes`: only fields that differ from the saved version; clearing the category sends null. */
+export function diffBlogChanges(baseline: BlogFormValues, current: BlogFormValues): Partial<Record<keyof BlogInput, unknown>> {
+  const before = toBlogInput(baseline);
+  const after = toBlogInput(current);
+  const out: Partial<Record<keyof BlogInput, unknown>> = {};
+  const keys = new Set([...Object.keys(before), ...Object.keys(after)] as (keyof BlogInput)[]);
+  for (const key of keys) {
+    if (JSON.stringify(before[key]) === JSON.stringify(after[key])) continue;
+    if (key === "slug" && after.slug === undefined) continue; // an emptied slug is caught by validation
+    out[key] = key === "category" && after.category === undefined ? null : after[key];
+  }
+  return out;
+}
 
 /* SEO and stats -------------------------------------------------------------------------------- */
 
